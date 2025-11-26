@@ -1,0 +1,34 @@
+---
+description: Standards for Python and FastAPI AI/Document Engine development
+globs: ["**/*.py"]
+alwaysApply: false
+---
+# Python & FastAPI Development Rules
+
+## 1. Coding Style
+- **Style Guide:** Follow PEP 8.
+- **Type Hinting:** Strict type hints required for all function arguments and return values.
+- **Docstrings:** Use Google-style docstrings for all public functions/classes.
+- **Formatter:** Use `black` and `isort`.
+
+## 2. FastAPI Patterns
+- **Router Structure:** Split routes into `app/routers/` modules.
+- **Dependencies:** Use `Depends()` for dependency injection (db sessions, services).
+- **Async:** Use `async def` for route handlers and I/O bound operations.
+- **Validation:** Use **Pydantic v2** models for all request bodies and response schemas.
+
+## 3. API Consistency
+- **CamelCase JSON:** Configure Pydantic models to accept/output camelCase for frontend compatibility.
+  ```python
+  model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+  ```
+
+## 4. AI & LangChain
+- **Prompts:** Store prompts in separate files or a dedicated `prompts/` directory, not hardcoded in logic.
+- **Streaming:** Support streaming responses for long-running LLM tasks.
+- **Error Handling:** Wrap LLM calls in try/except blocks to handle API timeouts/failures gracefully.
+
+## 5. Testing
+- **Framework:** Pytest.
+- **Async Tests:** Use `pytest-asyncio` for async endpoints.
+- **Mocking:** Mock external LLM calls during unit tests to save costs and time.

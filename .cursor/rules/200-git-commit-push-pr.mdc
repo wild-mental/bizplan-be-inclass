@@ -1,0 +1,63 @@
+---
+description: Git commit, push, and Pull Request best practices for team collaboration and AI agent safety
+alwaysApply: false
+---
+# Git Commit, Push, and PR Rules
+
+## Atomic Commits
+- One logical change per commit (single purpose, fully functional)
+- Ensure each commit compiles and passes tests
+- Use `git add -p` for selective staging, avoid mixing unrelated changes
+- Write descriptive commit messages explaining WHY, not just WHAT
+
+## Commit Message Format
+- Use Conventional Commits: `<type>(<scope>): <subject>`
+- Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `style`, `perf`
+- Subject: imperative mood, lowercase, no period, max 50 chars
+- Body (optional): detailed explanation, wrap at 72 chars
+- Footer (optional): reference issues with `Closes #123` or `Refs #456`
+
+## Branch Strategy
+- ALWAYS create issue-specific branch before starting work
+- Branch naming: `<type>/<issue-number>-<short-description>`
+  - Examples: `feat/123-user-auth`, `fix/456-payment-bug`, `docs/789-api-guide`
+- Push branch to remote immediately: `git push -u origin <branch-name>`
+- Never commit directly to `main`, `master`, or `dev` branches
+
+## AI Agent Safety Rules
+- Run `git status` and `git diff` before any commit
+- Verify correct branch with `git branch --show-current`
+- Use `--no-verify` ONLY when explicitly requested by user
+- NEVER force push (`--force`, `-f`) without explicit user confirmation
+- Check remote connection before push: `git ls-remote`
+- Confirm credentials are valid before attempting push operations
+
+## Team Collaboration
+- Pull latest changes before starting: `git pull origin <branch>`
+- Rebase feature branches on main regularly to avoid conflicts
+- Create draft PR immediately after first push: `gh pr create --draft`
+- **PR Description must include:**
+  - Summary of changes: **Analyze the full git diff between branches** and summarize the *semantic meaning* of all changes.
+  - Ensure the summary covers all key modifications but remains concise (avoid verbose file listings).
+  - Link to related issues
+- Request reviews before merging; never self-merge without approval
+
+## Examples
+<example>
+# Good: Atomic commit with clear message
+git add src/auth/login.ts src/auth/login.test.ts
+git commit -m "feat(auth): implement JWT token validation
+
+- Add token expiry checking logic
+- Include refresh token rotation
+- Add unit tests for edge cases
+
+Closes #234"
+</example>
+
+<bad-example>
+# Bad: Mixed changes, vague message
+git add .
+git commit -m "updates"
+git push origin main  # ❌ Pushing to main directly
+</bad-example>

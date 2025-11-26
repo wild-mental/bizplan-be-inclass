@@ -1,0 +1,44 @@
+---
+description: Development standards and technology constraints
+globs: ["**/*"]
+alwaysApply: true
+---
+# Development Guidelines
+Referenced in: [001-project-overview.mdc](001-project-overview.mdc), [002-tech-stack.mdc](002-tech-stack.mdc)
+
+## Version Control
+- **System:** Git
+- **Repository:** GitHub
+- **Branching:** Git Flow / Feature Branch Workflow
+- **Commit Policy:** Atomic commits, Conventional Commits format.
+
+## Technology Constraints (C-TEC)
+- **Frontend:** Vite + React + TypeScript (SPA).
+- **Backend Core:** Java 17 + Spring Boot 3.x (REST API).
+- **AI/Doc Engine:** Python + FastAPI + LangChain.
+- **Database:** MySQL 8.x (InnoDB, utf8mb4).
+- **LLM Provider:** Google Gemini (via Internal Gateway).
+
+## Architecture Principles
+- **Micro-Service Ready:** Core API and AI Engine communicate via REST.
+- **Security:**
+  - TLS 1.2+ for all transit.
+  - AES-256 for sensitive data at rest.
+  - Workspace-level data isolation.
+- **Reliability:**
+  - Financial calculations: Rule-based (No hallucinations).
+  - Document Generation: LLM-based (Creative/Structural).
+
+## Performance Standards (NFR)
+- **Wizard Latency:** Step transitions < 800ms (p95).
+- **Doc Generation:** Full draft creation < 10s (p95).
+- **Availability:** 99.5% uptime SLA.
+
+## Development Priorities
+1. **Accuracy:** Financial engine logic must be flawless.
+2. **Compliance:** Output formats (HWP/PDF) must match government templates 100%.
+3. **User Safety:** Prevent data loss via aggressive Auto-save (<10s).
+
+## See also:
+- [001-project-overview.mdc](001-project-overview.mdc)
+- [002-tech-stack.mdc](002-tech-stack.mdc)

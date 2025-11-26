@@ -1,0 +1,65 @@
+---
+description: Universal project principles and meta rules defining structure, philosophy, and quality standards.
+globs: ["**/*"]
+alwaysApply: true
+---
+# META RULES: UNIVERSAL PROJECT PRINCIPLES
+
+## 1. Project Structure and Organization
+- Maintain clear hierarchical organization of rules and documentation.
+- Separate concerns into logical domains (Core, Workflow, Patterns).
+- **Security Isolation:** Enforce strict logical/physical separation of user data (Workspace-based).
+
+## 2. Development Philosophy
+- **Value-Driven:** Every feature must contribute to reducing the user's Time-to-Value (TTV).
+- **Reliability First:** Financial calculations must be deterministic and accurate (Rule-based Engine).
+- **Scalable Architecture:** Design for potential transition from SaaS to On-premise/Private Cloud.
+
+## 3. Problem-Solving Methodology
+- Define problems clearly before attempting solutions.
+- Analyze context and scope thoroughly.
+- **Fail-Safe Design:** Anticipate invalid user inputs (especially in financials) and guide correction.
+
+## 4. Quality Assurance
+- **Zero-Tolerance for Logic Errors:** Financial models and consistency checks must be rigorously tested.
+- **Performance Constraints:** Adhere to p95 < 800ms for Wizard transitions.
+- Security-first approach: AES-256 encryption for sensitive fields.
+
+## 5. Collaboration and Communication
+- Clear documentation of decisions and changes.
+- Standardized processes for team collaboration.
+- Version control best practices with atomic commits.
+
+## 6. Technical Excellence
+- **Tech Stack Adherence:** Strict compliance with defined stack (Java/Spring, Python/FastAPI, React).
+- **Clean Code:** Focus on readability and maintainability for complex logic engines.
+- API-First design for all service interactions.
+
+## 7. Project Lifecycle Management
+- Clear definition of project phases (MVP vs Post-MVP).
+- Systematic error handling and debugging.
+- Continuous improvement processes.
+
+## 8. Architecture Principles
+- **Separation of Concerns:** Decouple AI drafting (LLM) from Financial Engine (Deterministic).
+- Design for scalability and maintainability.
+- Implement proper error handling and recovery.
+
+## 9. Code Quality Standards
+- Follow consistent naming conventions.
+- Write meaningful comments and documentation.
+- Focus on code readability and maintainability.
+
+## 10. Performance and Optimization
+- Optimize for low latency in interactive Wizard steps.
+- Manage LLM token usage efficiently (Cost/Performance balance).
+
+## Implementation Guidelines
+- Apply these principles consistently across all project phases.
+- Adapt specific implementations based on project requirements.
+- Maintain flexibility while adhering to core principles.
+
+## See also:
+- [001-project-overview.mdc](001-project-overview.mdc) for project-specific details
+- [003-development-guidelines.mdc](003-development-guidelines.mdc) for development standards
+- [100-error-fixing-process.mdc](100-error-fixing-process.mdc) for problem resolution

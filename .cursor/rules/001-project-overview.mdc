@@ -1,0 +1,40 @@
+---
+description: Project overview for AI Co-Pilot for First-time Founders
+globs: ["**/*"]
+alwaysApply: true
+---
+# PROJECT OVERVIEW: AI Co-Pilot for First-time Founders
+
+## Vision
+Transform the complex business planning process into a data-driven decision-making journey that reduces failure rates. Act as an intelligent partner to help founders quickly pass funding gates (government grants, loans) and focus on sustainable growth.
+
+## Core Features
+- **Submission Wizard:** Step-by-step guide for government/bank forms (100% template compatibility).
+- **Financial Auto-Engine:** Generates 3-year P&L and cash flow from key variables.
+- **AI Drafting:** Context-aware writing assistance with Easy/Expert modes.
+- **PMF Diagnostic:** Analyzes product-market fit and risks based on standard frameworks.
+- **Docs Export:** One-click HWP/PDF export fully compliant with submission standards.
+
+## Target Audience
+- **First-time Founders:** Non-technical, struggling with business logic and jargon.
+- **Small Business Owners:** Need bank loans but lack financial modeling expertise.
+- **Serial Entrepreneurs:** Seek to verify PMF and unit economics before scaling.
+
+## Project Goals
+- **Pass Funding Gates:** Maximize acceptance rates for grants and loans.
+- **Minimize Prep Time:** Drastically reduce time spent on documentation.
+- **Logic Validation:** Detect and fix inconsistencies between narrative and financials.
+
+## Success Metrics (North Star: TTV)
+- **Time-to-Value (TTV):** < 30 mins to first "submit-ready" draft.
+- **Activation Rate:** > 40% of users complete a draft in first session.
+- **Pass Rate:** > 65% acceptance for submitted proposals.
+
+## Project Philosophy
+- **Failure Avoidance:** Prioritize risk detection over just "generating text".
+- **Logic > Rhetoric:** Ensure financial numbers back up the qualitative claims.
+- **Security First:** Absolute protection of sensitive business ideas and financial data.
+
+## See also:
+- [002-tech-stack.mdc](002-tech-stack.mdc) for implementation details
+- [003-development-guidelines.mdc](003-development-guidelines.mdc) for development standards

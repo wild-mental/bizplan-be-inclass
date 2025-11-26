@@ -1,0 +1,33 @@
+---
+description: Project technical stack definition (Backend Focus)
+alwaysApply: true
+---
+# Technical Stack
+Referenced in: [001-project-overview.mdc](001-project-overview.mdc)
+
+## Backend Core (Spring Boot)
+- Language: Java 17 (LTS)
+- Framework: Spring Boot 3.x
+- Build Tool: Gradle (Kotlin DSL recommended)
+- Database: MySQL 8.x (InnoDB, utf8mb4)
+- ORM: Spring Data JPA (Hibernate)
+- Testing: JUnit 5, Mockito, AssertJ
+
+## AI & Document Engine (Python)
+- Language: Python 3.10+
+- Framework: FastAPI
+- AI Orchestration: LangChain
+- Testing: Pytest
+- LLM Provider: Google Gemini (via Internal Gateway)
+
+## Infrastructure & Tools
+- Containerization: Docker, Docker Compose
+- API Documentation: Swagger/OpenAPI 3.0
+- Version Control: Git
+
+## See also:
+- [003-development-guidelines.mdc](003-development-guidelines.mdc) for usage guidelines
+- [301-spring-boot-java-rules.mdc](301-spring-boot-java-rules.mdc) for Java/Spring rules
+- [302-python-fastapi-rules.mdc](302-python-fastapi-rules.mdc) for Python/FastAPI rules
+- [303-database-mysql-jpa-rules.mdc](303-database-mysql-jpa-rules.mdc) for Database rules
+- [304-api-rest-design-rules.mdc](304-api-rest-design-rules.mdc) for API standards

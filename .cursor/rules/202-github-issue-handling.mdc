@@ -1,0 +1,38 @@
+---
+description: Guidelines for managing GitHub issues, milestones, projects, and Pull Requests using CLI tools
+globs: tasks/**/*.md, .github/**/*.yml
+alwaysApply: false
+---
+# GitHub Issue & Project Management
+
+## Context
+- Applies when creating issues from task documents
+- Applies when managing project roadmaps via GitHub CLI
+- **Applies when creating Pull Requests (refer to Rule 200 for content requirements)**
+
+## Rules
+1. **Issue Creation**:
+   - Source tasks from `tasks/priority-N/` markdown files.
+   - Use `gh issue create` with title `[#NNN] Title`, body from file, and appropriate labels.
+   - Labels must include priority (`priority-N`) and type (`refactoring`, `feature`, etc).
+
+2. **Project & Roadmap**:
+   - Use Project V2 Node IDs for item manipulation (not integer IDs).
+   - Required Fields: `Start Date` and `End Date` (Type: `DATE`).
+   - Set dates via `gh project item-edit --project-id <NodeID>`.
+
+3. **Automation**:
+   - Verify field IDs via `gh project field-list` before editing.
+   - Retry auth refresh if scopes (`project`, `read:project`) are missing.
+
+## Examples
+<example>
+# Create issue and set roadmap dates
+gh issue create -t "[#001] Refactor" -F tasks/001.md -l "priority-1"
+gh project item-edit --id <ItemID> --field-id <StartFieldID> --date 2025-11-22
+</example>
+
+<bad-example>
+# Using integer ID for project edits
+gh project item-edit --project-id 7 ... (Will fail, use Node ID)
+</bad-example>

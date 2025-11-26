@@ -1,0 +1,19 @@
+---
+description: When error or exception occurs, follow this standard structured process for diagnosing and fixing the technical issues.
+alwaysApply: false
+---
+# ERROR FIXING PROCESS
+## Step 1: Phenomenon Definition
+- Describe the observed issue clearly.
+## Step 2: Contextual Scope Exploration
+- Map related files, data flow, functions.
+## Step 3: Problem Core Specification
+- Narrow down root causes with evidence.
+## Step 4: Summarize for Mid-level Developers
+- Avoid jargon, explain simply.
+## Step 5: Highlight Fix Points
+- List parts requiring fixes and reasons.
+## Step 6: Perform Code Fix
+- Cleanly modify code, preserving intent.
+## Step 7: Propose Follow-up Improvements
+- Suggest tests, logging, refactors if needed.

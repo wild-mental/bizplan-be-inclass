@@ -1,0 +1,32 @@
+---
+description: Rules for MySQL Database design and JPA/Hibernate usage
+globs: ["**/*.java", "**/*.sql"]
+alwaysApply: false
+---
+# Database & JPA Rules
+
+## 1. Database Design (MySQL)
+- **Naming Convention:**
+  - Tables: `snake_case` (plural nouns, e.g., `users`, `projects`).
+  - Columns: `snake_case` (e.g., `user_id`, `created_at`).
+- **Primary Keys:** Use UUIDs (Char(36) or Binary(16)) for distributed ID safety, or BigInt Auto_Increment if strictly internal. (SRS implies UUIDs).
+- **Audit Columns:** All tables should have `created_at` and `updated_at`.
+- **Indexes:** Always index Foreign Keys and columns used in `WHERE` or `ORDER BY` clauses.
+
+## 2. JPA / Hibernate Best Practices
+- **Fetch Strategy:**
+  - Explicitly set `fetch = FetchType.LAZY` for `@ManyToOne` and `@OneToOne`. (Default is EAGER, which causes performance issues).
+  - Default `@OneToMany` is already LAZY.
+- **N+1 Problem:**
+  - Detect with logging (Hibernate SQL logs).
+  - Fix using `JOIN FETCH` in JPQL or `@EntityGraph` for read operations.
+- **Transactions:**
+  - Apply `@Transactional(readOnly = true)` at the class level for Services.
+  - Override with `@Transactional` on specific modification methods (create/update/delete).
+- **Entities:**
+  - Use `@Entity` with `@Table(name = "...")`.
+  - Avoid business logic in Entity setters. Use domain methods (e.g., `user.changePassword(...)`).
+
+## 3. Migration
+- Use **Flyway** or **Liquibase** for schema version control.
+- Never modify existing migration files; create new V+1 files.

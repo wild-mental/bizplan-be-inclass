@@ -1,0 +1,32 @@
+---
+description: Standards for Java 17 and Spring Boot 3.x backend development
+globs: ["**/*.java"]
+alwaysApply: false
+---
+# Spring Boot & Java Development Rules
+
+## 1. Coding Style & Conventions
+- **Class Names:** PascalCase (e.g., `UserService`).
+- **Method/Variable Names:** camelCase (e.g., `findUserById`).
+- **Constants:** UPPER_SNAKE_CASE (e.g., `MAX_RETRY_COUNT`).
+- **Lombok:** Use `@Data`, `@Builder`, `@RequiredArgsConstructor` to reduce boilerplate.
+- **Formatting:** Follow Google Java Style Guide (4 spaces indentation).
+
+## 2. Architecture Patterns
+- **Layered Architecture:**
+  - `Controller`: Handles HTTP requests/responses. DTOs <-> Service.
+  - `Service`: Business logic. Entities <-> Repository.
+  - `Repository`: Data access (Spring Data JPA).
+- **DTO Pattern:** NEVER expose `@Entity` in Controllers. Always map to/from DTOs.
+- **Dependency Injection:** Use **Constructor Injection** (via `@RequiredArgsConstructor`) instead of `@Autowired` on fields.
+
+## 3. Best Practices
+- **Exception Handling:** Use global `@RestControllerAdvice` with `ProblemDetail` or custom ErrorResponse DTO.
+- **Validation:** Use `jakarta.validation` annotations (`@NotNull`, `@Email`) in DTOs.
+- **Logging:** Use `@Slf4j`. Log meaningful messages with context.
+- **Streams:** Prefer Java Streams for collection processing where readable.
+
+## 4. Testing
+- **Unit Tests:** JUnit 5 + Mockito. Test Services in isolation.
+- **Integration Tests:** `@SpringBootTest` with H2 or Testcontainers for Controller/Repository tests.
+- **Naming:** `TargetClassTest` / `methodName_scenario_expectedBehavior`.

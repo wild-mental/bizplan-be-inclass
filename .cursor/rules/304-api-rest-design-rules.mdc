@@ -1,0 +1,53 @@
+---
+description: REST API design standards and conventions
+globs: ["**/*Controller.java", "**/*Router.py"]
+alwaysApply: false
+---
+# REST API Design Rules
+
+## 1. Resource Naming
+- Use **Plural Nouns** for resources (e.g., `/api/v1/projects`).
+- Use **Kebab-case** for URLs (e.g., `/api/v1/financial-models`).
+- Avoid verbs in URLs (e.g., NO `/createProject`). Use HTTP methods instead.
+
+## 2. HTTP Methods
+- `GET`: Retrieve resource(s). Safe & Idempotent.
+- `POST`: Create a new resource. Not Idempotent.
+- `PUT`: Full update (replace). Idempotent.
+- `PATCH`: Partial update.
+- `DELETE`: Remove resource.
+
+## 3. JSON Standards
+- **Property Naming:** camelCase (e.g., `firstName`, `projectId`).
+- **Date Format:** ISO-8601 (`yyyy-MM-dd'T'HH:mm:ss.SSSZ`).
+- **Empty Fields:** Omit null fields in response (unless explicit null is meaningful).
+
+## 4. Response Structure (Standard Envelope)
+Maintain a consistent wrapper for all API responses:
+```json
+{
+  "success": true,
+  "data": { ... }, // Actual payload
+  "error": null
+}
+```
+OR
+```json
+{
+  "success": false,
+  "data": null,
+  "error": {
+    "code": "INVALID_INPUT",
+    "message": "Email is required"
+  }
+}
+```
+
+## 5. Status Codes
+- `200 OK`: Success.
+- `201 Created`: Resource created (POST).
+- `400 Bad Request`: Validation error / Invalid input.
+- `401 Unauthorized`: Missing/Invalid token.
+- `403 Forbidden`: Valid token but insufficient permissions.
+- `404 Not Found`: Resource does not exist.
+- `500 Internal Server Error`: Unexpected server error.
