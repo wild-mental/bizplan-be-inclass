@@ -3,11 +3,17 @@
 ## Overview
 이 문서는 `docs/INTEGRATED_WBS_DAG.md`의 의존 관계를 기반으로 작성된 GitHub Issue들의 실행 순서와 병렬 개발 가능 정보를 명시합니다.
 
-## ✅ Status Update
+## ✅ Status Update (2025-11-26)
 **Frontend PoC (EPIC 0) - COMPLETED**
 - #001 ~ #005 이슈들은 별도 프로젝트에서 완료됨
 - UI/UX 검증 완료로 Backend API 개발 즉시 착수 가능
 - 완료된 이슈 파일들은 `completed/` 폴더로 이동됨
+
+**Backend Issues (EPIC 1-3) - CREATED & SCHEDULED**
+- GitHub Issues #2 ~ #11 생성 완료 (2025-11-26)
+- GitHub Projects 로드맵에 일정 설정 완료
+- 시작일: 2025-11-27 (수)
+- 예상 완료일: 2025-12-11 (수)
 
 ## Issue Numbering Strategy
 이슈 번호는 실행 가능 순서를 반영하여 할당되었습니다:
@@ -39,68 +45,92 @@
 ## Phase 2: Core Backend & AI Implementation (EPIC 1)
 **목표**: 핵심 API 및 AI 파이프라인 구축
 
-### Wave 2.1 (시작점)
+### Wave 2.1 (시작점: 2025-11-27)
 **병렬 개발 가능한 작업들:**
-- **#006** - REQ-FUNC-001-BE-001: 프로젝트 생성 및 템플릿 목록 API
+- **#2 (006)** - 프로젝트 생성 및 템플릿 목록 API
+  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/2
+  - 일정: 2025-11-27 ~ 2025-11-29 (3일)
   - 의존성: TASK-BE-INIT (프로젝트 초기 설정 완료 가정)
-  - 병렬 가능: #008, #012
-  - 활성화: #007, #013, #014
+  - 병렬 가능: #4 (008), #8 (012)
+  - 활성화: #3 (007), #9 (013), #10 (014)
 
-- **#008** - REQ-FUNC-003-AI-001: 사업계획서 생성 LLM 엔진 구현
+- **#4 (008)** - 사업계획서 생성 LLM 엔진 구현
+  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/4
+  - 일정: 2025-11-27 ~ 2025-12-01 (5일)
   - 의존성: 없음
-  - 병렬 가능: #006, #012
-  - 활성화: #009, #011
+  - 병렬 가능: #2 (006), #8 (012)
+  - 활성화: #5 (009), #7 (011)
 
-- **#012** - REQ-FUNC-012-BE-001: 재무 추정 및 유닛 이코노믹스 계산 엔진
+- **#8 (012)** - 재무 추정 및 유닛 이코노믹스 계산 엔진
+  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/8
+  - 일정: 2025-11-27 ~ 2025-12-01 (5일)
   - 의존성: 없음 (Pure Logic)
-  - 병렬 가능: #006, #008 (모든 작업과 병렬 가능)
+  - 병렬 가능: #2 (006), #4 (008) (모든 작업과 병렬 가능)
 
-### Wave 2.2 (Wave 2.1의 #006 완료 후)
-- **#007** - REQ-FUNC-002-BE-001: Wizard 단계별 답변 저장/조회 API
-  - 의존성: #006
-  - 병렬 가능: #008, #012 (진행 중인 작업)
-  - 활성화: #009
+### Wave 2.2 (Wave 2.1의 #2 완료 후: 2025-11-30)
+- **#3 (007)** - Wizard 단계별 답변 저장/조회 API
+  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/3
+  - 일정: 2025-11-30 ~ 2025-12-02 (3일)
+  - 의존성: #2 (006)
+  - 병렬 가능: #4 (008), #8 (012) (진행 중인 작업)
+  - 활성화: #5 (009)
 
-### Wave 2.3 (Wave 2.2의 #007 + Wave 2.1의 #008 완료 후)
-- **#009** - REQ-FUNC-003-BE-001: 사업계획서 생성 오케스트레이션 API
-  - 의존성: #007, #008
-  - 병렬 가능: #012 (진행 중일 경우)
-  - 활성화: #010, #015
+**병렬 작업 (NFR):**
+- **#9 (013)** - 데이터 저장/전송 암호화 및 보안 구성
+  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/9
+  - 일정: 2025-11-30 ~ 2025-12-02 (3일)
+  - 의존성: #2 (006)
+  - 병렬 가능: #10 (014)
 
-### Wave 2.4 (Wave 2.3의 #009 완료 후)
-- **#010** - REQ-FUNC-011-BE-001: HWP/PDF 내보내기 기능
-  - 의존성: #009
-  - 병렬 가능: #011 (AI 작업), #012 (진행 중일 경우)
+- **#10 (014)** - 구조화된 로깅 및 Prometheus/Grafana 모니터링
+  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/10
+  - 일정: 2025-11-30 ~ 2025-12-02 (3일)
+  - 의존성: #2 (006)
+  - 병렬 가능: #9 (013)
+
+### Wave 2.3 (Wave 2.2의 #3 + Wave 2.1의 #4 완료 후: 2025-12-03)
+- **#5 (009)** - 사업계획서 생성 오케스트레이션 API
+  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/5
+  - 일정: 2025-12-03 ~ 2025-12-06 (4일)
+  - 의존성: #3 (007), #4 (008)
+  - 병렬 가능: #8 (012) (진행 중일 경우)
+  - 활성화: #6 (010), #11 (015)
+
+### Wave 2.4 (Wave 2.3의 #5 완료 후: 2025-12-07)
+- **#6 (010)** - HWP/PDF 내보내기 기능
+  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/6
+  - 일정: 2025-12-07 ~ 2025-12-11 (5일)
+  - 의존성: #5 (009)
+  - 병렬 가능: #7 (011) (AI 작업), #8 (012) (진행 중일 경우)
 
 ---
 
 ## Phase 3: Special Features (EPIC 2)
 **목표**: PMF 진단 등 부가 기능 개발
 
-### Wave 3.1 (Wave 2.1의 #008 완료 후)
-- **#011** - REQ-FUNC-008-AI-001: PMF 진단 및 리포트 생성 LLM 엔진
-  - 의존성: #008 (FastAPI 환경 공유)
-  - 병렬 가능: #009, #010, #012
+### Wave 3.1 (Wave 2.1의 #4 완료 후: 2025-12-02)
+- **#7 (011)** - PMF 진단 및 리포트 생성 LLM 엔진
+  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/7
+  - 일정: 2025-12-02 ~ 2025-12-05 (4일)
+  - 의존성: #4 (008) (FastAPI 환경 공유)
+  - 병렬 가능: #5 (009), #6 (010), #8 (012)
 
 ---
 
 ## Phase 4: Non-Functional Requirements (EPIC 3)
 **목표**: 보안, 모니터링, 성능 검증
 
-### Wave 4.1 (Wave 2.1의 #006 완료 후)
-**병렬 개발 가능한 작업들:**
-- **#013** - REQ-NF-006-SEC-001: 데이터 저장/전송 암호화 및 보안 구성
-  - 의존성: #006
-  - 병렬 가능: #014
+### Wave 4.1 (Wave 2.1의 #2 완료 후: 2025-11-30)
+**이미 Wave 2.2에서 병렬 처리됨** ✅
+- #9 (013) - 보안 구성 (2025-11-30 ~ 2025-12-02)
+- #10 (014) - 모니터링 구축 (2025-11-30 ~ 2025-12-02)
 
-- **#014** - REQ-NF-012-OPS-001: 구조화된 로깅 및 Prometheus/Grafana 모니터링
-  - 의존성: #006
-  - 병렬 가능: #013
-
-### Wave 4.2 (Wave 2.3의 #009 완료 후)
-- **#015** - REQ-NF-001-PERF-001: API 성능 목표 검증을 위한 k6 부하 테스트
-  - 의존성: #009 (주요 API 구현 완료 필요)
-  - 병렬 가능: #010, #011, #012, #013, #014
+### Wave 4.2 (Wave 2.3의 #5 완료 후: 2025-12-07)
+- **#11 (015)** - API 성능 목표 검증을 위한 k6 부하 테스트
+  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/11
+  - 일정: 2025-12-07 ~ 2025-12-09 (3일)
+  - 의존성: #5 (009) (주요 API 구현 완료 필요)
+  - 병렬 가능: #6 (010), #7 (011), #8 (012)
 
 ---
 
@@ -188,20 +218,24 @@ Week 5:
 
 ## Dependency Matrix (Backend Issues Only)
 
-| Issue | Depends On | Enables | Parallelizable With |
-|-------|------------|---------|---------------------|
-| #006  | BE-INIT    | #007, #013, #014 | #008, #012 |
-| #007  | #006       | #009    | #008, #012 |
-| #008  | -          | #009, #011 | #006, #007, #012 |
-| #009  | #007, #008 | #010, #015 | #012 |
-| #010  | #009       | -       | #011, #012 |
-| #011  | #008       | -       | #009, #010, #012 |
-| #012  | -          | -       | All |
-| #013  | #006       | -       | #014 |
-| #014  | #006       | -       | #013 |
-| #015  | #009       | -       | #010, #011, #012, #013, #014 |
+| GitHub Issue | Task ID | Depends On | Enables | Parallelizable With | Schedule |
+|--------------|---------|------------|---------|---------------------|----------|
+| #2 | 006 | BE-INIT | #3, #9, #10 | #4, #8 | 11/27-11/29 |
+| #3 | 007 | #2 | #5 | #4, #8 | 11/30-12/02 |
+| #4 | 008 | - | #5, #7 | #2, #3, #8 | 11/27-12/01 |
+| #5 | 009 | #3, #4 | #6, #11 | #8 | 12/03-12/06 |
+| #6 | 010 | #5 | - | #7, #8 | 12/07-12/11 |
+| #7 | 011 | #4 | - | #5, #6, #8 | 12/02-12/05 |
+| #8 | 012 | - | - | All | 11/27-12/01 |
+| #9 | 013 | #2 | - | #10 | 11/30-12/02 |
+| #10 | 014 | #2 | - | #9 | 11/30-12/02 |
+| #11 | 015 | #5 | - | #6, #7, #8 | 12/07-12/09 |
 
-**Note**: Frontend 이슈(#001-#005)는 이미 완료되어 의존성에서 제외됨
+**Notes**: 
+- Frontend 이슈(#001-#005)는 이미 완료되어 의존성에서 제외됨
+- GitHub Issue 번호는 실제 저장소의 Issue 번호
+- Task ID는 문서상의 원래 번호
+- Schedule은 GitHub Projects 로드맵에 설정된 실제 일정
 
 ---
 
@@ -209,24 +243,30 @@ Week 5:
 
 **최단 완료 경로 (Critical Path):**
 ```
-#006 → #007 → #009 → #010 → #015
+#2 (006) → #3 (007) → #5 (009) → #6 (010)
+11/27      11/30      12/03      12/07      → 12/11 완료
 ```
 
+**실제 설정된 일정:**
+- 시작일: 2025-11-27 (수)
+- 완료일: 2025-12-11 (수)
+- 총 기간: **15일 (약 3주)**
+- 실 작업일: 약 10-12일 (주말 제외)
+
 **예상 소요 기간 (순차 실행 시):**
-- #006: 3일
-- #007: 3일
-- #009: 4일 (AI #008과 동기화 필요)
-- #010: 5일
-- #015: 3일
+- #2 (006): 3일
+- #3 (007): 3일
+- #5 (009): 4일 (AI #4(008)과 동기화 필요)
+- #6 (010): 5일
+- #11 (015): 3일
 - **Total: 18일** (약 3.5주)
 
-**병렬화 시 최단 기간:**
-- Wave 1: 5일 (#008 AI 엔진이 가장 긴 작업)
-- Wave 2: 3일 (#007)
-- Wave 3: 4일 (#009)
-- Wave 4: 5일 (#010)
-- Wave 5: 3일 (#015)
-- **Total: 20일** (약 4주) - 약간의 대기 시간 포함
+**병렬화를 통한 실제 일정 (확정):**
+- Wave 1 (11/27-12/01): 5일 - #2, #4, #8 병렬
+- Wave 2 (11/30-12/02): 3일 - #3, #9, #10 병렬
+- Wave 3 (12/02-12/06): 5일 - #5, #7 병렬
+- Wave 4 (12/07-12/11): 5일 - #6, #11 병렬
+- **Total: 15일** (약 3주) - 병렬화로 3일 단축
 
 ---
 
@@ -270,7 +310,26 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 ---
 
+## GitHub Project Integration
+
+### Project Information
+- **Project Name**: BizPlan-Backend-Project
+- **Project ID**: `PVT_kwHOBWaOeM4BJJCo`
+- **Roadmap View**: https://github.com/users/wild-mental/projects/10/views/4
+
+### Created Issues
+All 10 backend issues have been created and scheduled:
+- Issues #2-#11 created on 2025-11-26
+- Start/Target dates set in GitHub Projects
+- Issues tracked in Project Roadmap view
+
+### Issue Management
+**Important**: Issue creation and management should be performed by AI Agent using GitHub CLI directly, not through shell scripts. See `.cursor/rules/202-github-issue-handling.mdc` for guidelines.
+
+---
+
 ## Version History
+- v1.2 (2025-11-26): Added actual schedule, GitHub Project integration, and confirmed dates
 - v1.1 (2025-11-26): Updated to reflect EPIC0 (Frontend) completion - Backend focus only
 - v1.0 (2025-11-26): Initial execution plan based on INTEGRATED_WBS_DAG.md
 

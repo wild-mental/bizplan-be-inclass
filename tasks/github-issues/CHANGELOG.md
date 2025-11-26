@@ -1,5 +1,98 @@
 # GitHub Issues 변경 이력
 
+## v1.2 (2025-11-26)
+
+### 🎉 주요 변경사항: Issues 생성 완료 및 일정 설정
+
+**변경 이유**: Backend Issues 생성 완료 및 GitHub Projects 로드맵 일정 설정 완료
+
+### 완료된 작업
+
+#### GitHub Issues 생성 (10개)
+- Issue #2 (Task 006) - 프로젝트 생성 API
+- Issue #3 (Task 007) - Wizard 답변 저장 API
+- Issue #4 (Task 008) - LLM 문서 생성 엔진
+- Issue #5 (Task 009) - 문서 생성 오케스트레이션
+- Issue #6 (Task 010) - HWP/PDF 내보내기
+- Issue #7 (Task 011) - PMF 진단 엔진
+- Issue #8 (Task 012) - 재무 계산 엔진
+- Issue #9 (Task 013) - 보안 구성
+- Issue #10 (Task 014) - 모니터링 구축
+- Issue #11 (Task 015) - 성능 테스트
+
+#### GitHub Projects 일정 설정
+- Start Date 및 Target Date 필드 설정
+- 전체 일정: 2025-11-27 ~ 2025-12-11 (약 3주)
+- Roadmap View에서 시각적 확인 가능
+
+#### 프로세스 개선
+- **Shell Script 제거**: `create_backend_issues.sh` 삭제
+- **AI Agent 직접 제어**: Issue 관리를 AI Agent가 `gh` 명령어로 직접 수행
+- **Rule 업데이트**: `.cursor/rules/202-github-issue-handling.mdc` 대폭 개선
+
+### 문서 업데이트
+
+#### ISSUE_EXECUTION_PLAN.md
+- [x] 실제 생성된 GitHub Issue 번호 반영 (#2-#11)
+- [x] 확정된 일정 추가 (2025-11-27 ~ 2025-12-11)
+- [x] GitHub Projects 정보 추가
+- [x] Dependency Matrix에 Schedule 컬럼 추가
+- [x] Critical Path에 실제 날짜 반영
+- [x] Version 1.2로 업데이트
+
+#### .cursor/rules/202-github-issue-handling.mdc
+- [x] AI Agent 직접 제어 방식 명시
+- [x] Shell Script 사용 금지 규칙 추가
+- [x] Labels 관리 가이드라인 추가
+- [x] Batch Operations 수행 방법 설명
+- [x] 상세한 예제 코드 추가
+- [x] AI Agent Responsibilities 섹션 신설
+
+#### README.md
+- [x] 현재 상태 섹션 추가 (Issues 생성 완료)
+- [x] Shell Script 관련 내용 제거
+- [x] AI Agent Automation 섹션으로 대체
+- [x] GitHub Resources 링크 추가
+- [x] Version 1.2로 업데이트
+
+#### 파일 삭제
+- [x] `create_backend_issues.sh` 제거 (더 이상 사용하지 않음)
+
+### 새로운 워크플로우
+
+**Before (v1.1)**:
+```bash
+# Shell script 실행
+./create_backend_issues.sh
+```
+
+**After (v1.2)**:
+```bash
+# AI Agent가 직접 gh 명령어 실행
+for i in {006..015}; do
+  gh issue create --title "..." --body "..."
+  sleep 2
+done
+```
+
+### GitHub Project 정보
+
+- **Project Name**: BizPlan-Backend-Project
+- **Project ID**: `PVT_kwHOBWaOeM4BJJCo` (Node ID)
+- **Number**: 10
+- **Roadmap View**: https://github.com/users/wild-mental/projects/10/views/4
+
+### 설정된 일정
+
+| Wave | Issues | 기간 | 작업 |
+|------|--------|------|------|
+| Wave 1 | #2, #4, #8 | 11/27-12/01 | Backend Core, AI, Financial (병렬) |
+| Wave 2 | #3, #9, #10 | 11/30-12/02 | Wizard API, Security, Monitoring (병렬) |
+| Wave 3 | #5, #7 | 12/02-12/06 | Orchestration, PMF (병렬) |
+| Wave 4 | #6, #11 | 12/07-12/11 | Export, Performance Test (병렬) |
+
+---
+
 ## v1.1 (2025-11-26)
 
 ### ✅ 주요 변경사항: Frontend PoC 완료 반영
