@@ -6,7 +6,7 @@ plugins {
 
 group = 'vibe.bizplan'
 version = '0.0.1-SNAPSHOT'
-description = 'Demo project for Spring Boot'
+description = 'BizPlan Backend API - AI Co-Pilot for First-time Founders'
 
 java {
 	toolchain {
@@ -19,9 +19,33 @@ repositories {
 }
 
 dependencies {
+	// Web
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	
+	// JPA & Database
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	
+	// Validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	
+	// Lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	
+	// Flyway for DB Migration (Rule 303)
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-mysql'
+	
+	// Core
 	implementation 'org.springframework.boot:spring-boot-starter'
+	
+	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	
+	// Test - H2 for integration tests
+	testRuntimeOnly 'com.h2database:h2'
 }
 
 tasks.named('test') {
