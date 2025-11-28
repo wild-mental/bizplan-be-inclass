@@ -2,12 +2,17 @@
 AI Engine API 테스트
 Issue #008 - 사업계획서 생성 LLM 엔진 테스트
 """
+import time
 import pytest
 from httpx import AsyncClient, ASGITransport
 from unittest.mock import patch, AsyncMock, MagicMock
 
 from app.main import app
 from app.schemas import GenerateRequest
+
+
+# SRS REQ-NF-002: 문서 생성 p95 응답시간 ≤ 10초
+PERFORMANCE_THRESHOLD_SECONDS = 10.0
 
 
 # 테스트용 샘플 데이터
@@ -108,6 +113,55 @@ async def test_generate_with_mocked_llm():
         assert "sections" in data
         assert "generated_at" in data
         assert data["sections"]["problem_definition"] == "문제 정의 내용..."
+
+
+@pytest.mark.anyio
+async def test_generate_response_time_within_threshold():
+    """
+    단일 응답시간 모니터링 테스트
+    
+    SRS REQ-NF-002: 문서 생성 p95 응답시간 ≤ 10초
+    이 테스트는 단일 요청의 응답시간이 임계값 이내인지 확인합니다.
+    
+    Note: 실제 p95 측정은 k6 부하 테스트(Issue #015)에서 수행됩니다.
+    """
+    mock_sections = {
+        "problem_definition": "문제 정의 내용...",
+        "solution_approach": "해결 방안 내용...",
+        "market_analysis": "시장 분석 내용..."
+    }
+    
+    mock_service = MagicMock()
+    mock_service.is_configured.return_value = True
+    mock_service.generate_all_sections = AsyncMock(return_value=mock_sections)
+    
+    with patch("app.main.get_llm_service", return_value=mock_service):
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            # 응답 시간 측정 시작
+            start_time = time.perf_counter()
+            
+            response = await client.post(
+                "/generate",
+                json={"answers": SAMPLE_ANSWERS, "template_type": "KSTARTUP_2025"}
+            )
+            
+            # 응답 시간 측정 종료
+            end_time = time.perf_counter()
+            response_time = end_time - start_time
+        
+        # 응답 성공 확인
+        assert response.status_code == 200
+        
+        # SRS REQ-NF-002: 응답시간이 10초 이내인지 확인
+        assert response_time < PERFORMANCE_THRESHOLD_SECONDS, (
+            f"Response time {response_time:.3f}s exceeds threshold "
+            f"{PERFORMANCE_THRESHOLD_SECONDS}s (REQ-NF-002)"
+        )
+        
+        # 응답 시간 로깅 (테스트 출력에서 확인 가능)
+        print(f"\n[PERF] Response time: {response_time:.3f}s "
+              f"(threshold: {PERFORMANCE_THRESHOLD_SECONDS}s)")
 
 
 if __name__ == "__main__":
