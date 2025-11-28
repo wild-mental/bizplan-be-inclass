@@ -1,6 +1,11 @@
 """
 LLM Service
 LangChain + Google Gemini를 사용한 사업계획서 생성 서비스
+
+Issue: #008 - 사업계획서 생성 LLM 엔진 및 프롬프트 구현
+Related Requirements: REQ-FUNC-003, REQ-FUNC-004
+SRS Document: docs/10_GPT-SRS-V3.md
+Traceability: F4 (AI 초안 생성 + 쉬운/전문가 모드)
 """
 import logging
 from typing import Dict, Any
@@ -113,12 +118,21 @@ class LLMService:
         """
         단일 섹션 생성
         
+        REQ-FUNC-004: 섹션별 AI 작성 보조
+        SRS Acceptance Criteria:
+            Given: 사용자가 특정 섹션을 편집 중인 상태에서
+            When: 'AI로 작성' 또는 'AI로 보완' 버튼을 클릭하면
+            Then: LLM을 통해 생성된 텍스트 후보가 1개 이상 표시됨
+        
         Args:
             section_key: 섹션 키 (problem_definition, solution_approach, market_analysis)
             user_answers: 사용자 답변 딕셔너리
             
         Returns:
             생성된 섹션 텍스트
+            
+        Issue: #008
+        Traceability: TC-FUNC-004
         """
         if section_key not in SECTION_PROMPTS:
             raise ValueError(f"Unknown section: {section_key}")
@@ -149,12 +163,22 @@ class LLMService:
         """
         모든 섹션 생성
         
+        REQ-FUNC-003: 사업계획서 초안 자동 생성
+        SRS Acceptance Criteria:
+            Given: 사용자가 '예비창업패키지' 템플릿을 선택하고 필수 기본 정보를 입력한 상태에서
+            When: '초안 생성' 버튼을 클릭하면
+            Then: 해당 공고의 필수 목차 누락률 0%인 초안 문서가 생성·저장되고 화면에 표시되어야 한다.
+        
         Args:
             answers: Wizard 단계별 사용자 답변
-            template_type: 템플릿 유형
+            template_type: 템플릿 유형 (KSTARTUP_2025, BANK_LOAN_2025, IR_PITCH_2025)
             
         Returns:
             섹션별 생성된 텍스트 딕셔너리
+            필수 섹션: problem_definition, solution_approach, market_analysis
+            
+        Issue: #008
+        Traceability: TC-FUNC-003
         """
         sections = {}
         

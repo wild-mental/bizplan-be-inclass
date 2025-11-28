@@ -4,7 +4,10 @@
 **Frontend PoC (EPIC 0) - COMPLETED**
 - #001 ~ #005 이슈들은 별도 프로젝트에서 완료됨
 - 완료된 이슈 파일들은 `completed/` 폴더로 이동
-- **이 폴더의 이슈들은 Backend 작업에 집중합니다 (#006-#015)**
+
+**Backend Development - IN PROGRESS**
+- #006, #008 완료됨 (2025-11-28) → `completed/` 폴더로 이동
+- **이 폴더의 이슈들은 진행 중인 Backend 작업입니다 (#007, #009-#015)**
 
 ## Overview
 이 폴더에는 `docs/INTEGRATED_WBS_DAG.md`의 의존 관계를 기반으로 작성된 GitHub Issue 형태의 작업 명세가 포함되어 있습니다.
@@ -22,10 +25,10 @@ github-issues/
 │   ├── issue-002-EPIC0-FE-002.md
 │   ├── issue-003-EPIC0-FE-003.md
 │   ├── issue-004-EPIC0-FE-004.md
-│   └── issue-005-EPIC0-FE-005.md
-├── issue-006-REQ-FUNC-001-BE-001.md # ✅ Backend Core Issues (GitHub #2)
-├── issue-007-REQ-FUNC-002-BE-001.md # ✅ (GitHub #3)
-├── issue-008-REQ-FUNC-003-AI-001.md # ✅ AI Engine Issues (GitHub #4)
+│   ├── issue-005-EPIC0-FE-005.md
+│   ├── issue-006-REQ-FUNC-001-BE-001.md # Backend 완료 (GitHub #2, PR #13)
+│   └── issue-008-REQ-FUNC-003-AI-001.md # AI Engine 완료 (GitHub #4, PR #14)
+├── issue-007-REQ-FUNC-002-BE-001.md # 🔄 진행 중 (GitHub #3)
 ├── issue-009-REQ-FUNC-003-BE-001.md # ✅ (GitHub #5)
 ├── issue-010-REQ-FUNC-011-BE-001.md # ✅ (GitHub #6)
 ├── issue-011-REQ-FUNC-008-AI-001.md # ✅ (GitHub #7)
@@ -44,7 +47,7 @@ github-issues/
 | Range | Phase | Description | Status |
 |-------|-------|-------------|--------|
 | #001-#005 | Phase 1 | Frontend PoC (EPIC 0) | ✅ **COMPLETED** |
-| #006-#010 | Phase 2 | Core Backend & AI (EPIC 1) | 🔄 **IN SCOPE** |
+| #006-#010 | Phase 2 | Core Backend & AI (EPIC 1) | 🔄 **IN PROGRESS** (#006✅, #008✅) |
 | #011-#012 | Phase 3 | Special Features (EPIC 2) | 🔄 **IN SCOPE** |
 | #013-#015 | Phase 4 | Non-Functional Requirements (EPIC 3) | 🔄 **IN SCOPE** |
 
@@ -346,13 +349,19 @@ Issues 관련 질문이 있으면:
 
 ---
 
-## Current Status (2025-11-26)
+## Current Status (2025-11-28)
 
 ### Completed
 - ✅ All 10 backend issues created (GitHub #2-#11)
 - ✅ Issues added to GitHub Projects
 - ✅ Schedule dates set in roadmap view
 - ✅ Project timeline: 2025-11-27 ~ 2025-12-11
+- ✅ **Issue #2 (Task #006)**: 프로젝트 생성 및 템플릿 목록 API 구현 (PR #13 MERGED)
+- ✅ **Issue #4 (Task #008)**: 사업계획서 생성 LLM 엔진 및 프롬프트 구현 (PR #14 MERGED)
+
+### In Progress
+- 🔄 **Issue #3 (Task #007)**: Wizard 단계별 답변 저장/조회 API 구현
+- 🔄 **Issue #5-#11**: 나머지 Backend 이슈들 진행 중
 
 ### GitHub Resources
 - **Issues**: https://github.com/wild-mental/bizplan-be-inclass/issues
@@ -361,6 +370,6 @@ Issues 관련 질문이 있으면:
 
 ---
 
-**Last Updated**: 2025-11-26  
-**Version**: 1.2 (Issues created, scheduled, AI Agent automation established)
+**Last Updated**: 2025-11-28  
+**Version**: 1.3 (Backend issues #006, #008 completed and moved to completed folder)
 

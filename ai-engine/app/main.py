@@ -1,6 +1,12 @@
 """
 AI Engine - FastAPI Application
 사업계획서 생성 LLM 엔진 메인 애플리케이션
+
+Issue: #008 - 사업계획서 생성 LLM 엔진 및 프롬프트 구현
+Related Requirements: REQ-FUNC-003, REQ-FUNC-004
+SRS Document: docs/10_GPT-SRS-V3.md
+Traceability: F4 (AI 초안 생성 + 쉬운/전문가 모드)
+API Endpoint: POST /projects/{id}/documents/business-plan:generate (SRS 6.1)
 """
 import logging
 from datetime import datetime, timezone
@@ -89,8 +95,21 @@ async def generate_business_plan(request: GenerateRequest):
     """
     사업계획서 초안 생성 엔드포인트
     
+    REQ-FUNC-003: 사업계획서 초안 자동 생성
+    REQ-FUNC-004: 섹션별 AI 작성 보조
+    
+    SRS Section: 4.1 Functional Requirements
+    API Endpoint: POST /projects/{id}/documents/business-plan:generate (SRS 6.1)
+    
     - **answers**: Wizard 단계별 사용자 답변 (JSON)
     - **template_type**: 사용할 템플릿 유형 (기본: KSTARTUP_2025)
+    
+    Returns:
+        섹션별 생성된 텍스트 딕셔너리
+        필수 섹션: problem_definition, solution_approach, market_analysis
+    
+    Issue: #008
+    Traceability: TC-FUNC-003, TC-FUNC-004
     """
     llm_service = get_llm_service()
     
