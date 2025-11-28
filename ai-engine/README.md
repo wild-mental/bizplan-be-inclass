@@ -31,18 +31,32 @@ pip install -r requirements.txt
 ### 2. 환경변수 설정
 
 ```bash
-# .env 파일 생성
-cat > .env << EOF
-# Google Gemini API Key (필수)
-# https://aistudio.google.com/apikey 에서 발급
-GEMINI_API_KEY=your-api-key-here
+# 템플릿에서 .env 파일 생성
+cp .env.example .env
 
-# 설정 (선택)
-APP_ENV=development
-LLM_MODEL=gemini-1.5-flash
-LLM_TEMPERATURE=0.7
-EOF
+# 실제 값 입력
+vim .env  # 또는 선호하는 에디터 사용
 ```
+
+`.env` 파일 내용:
+```bash
+# ============ Google Gemini API ============
+# https://makersuite.google.com/app/apikey 에서 발급
+GEMINI_API_KEY=your_gemini_api_key_here  # ⚠️ 필수
+
+# ============ Application Settings ============
+APP_ENV=development
+LOG_LEVEL=INFO
+
+# ============ Backend Core Communication ============
+BACKEND_CORE_URL=http://localhost:8080
+
+# ============ LLM Settings ============
+MAX_TOKENS_PER_REQUEST=4096
+REQUEST_TIMEOUT_SECONDS=30
+```
+
+> ⚠️ **보안 주의**: `.env` 파일은 절대 Git에 커밋하지 마세요. `.gitignore`에서 자동 제외됩니다.
 
 ### 3. 서버 실행
 
@@ -160,9 +174,40 @@ ai-engine/
 | 변수명 | 필수 | 기본값 | 설명 |
 |--------|------|--------|------|
 | `GEMINI_API_KEY` | ✅ | - | Google Gemini API Key |
-| `APP_ENV` | - | `development` | 실행 환경 |
+| `APP_ENV` | - | `development` | 실행 환경 (development/production) |
 | `LOG_LEVEL` | - | `INFO` | 로그 레벨 |
+| `BACKEND_CORE_URL` | - | `http://localhost:8080` | Spring Boot 백엔드 URL |
+| `MAX_TOKENS_PER_REQUEST` | - | `4096` | LLM 요청당 최대 토큰 수 |
+| `REQUEST_TIMEOUT_SECONDS` | - | `30` | API 요청 타임아웃 |
 | `LLM_MODEL` | - | `gemini-1.5-flash` | 사용할 Gemini 모델 |
 | `LLM_TEMPERATURE` | - | `0.7` | 생성 온도 (창의성) |
 | `LLM_MAX_RETRIES` | - | `3` | LLM 오류 시 재시도 횟수 |
+
+## 🔒 보안 관리
+
+### 환경변수 보안 원칙
+
+```
+ai-engine/
+├── .env.example    # ✅ Git 포함 - 템플릿 (실제 값 없음)
+├── .env            # ❌ Git 제외 - 실제 API 키 포함
+└── .gitignore      # .env 파일 제외 규칙 포함
+```
+
+### 보안 체크리스트
+
+- [ ] `.env.example`을 복사하여 `.env` 생성
+- [ ] `.env` 파일에 실제 API 키 입력
+- [ ] `.env` 파일이 Git에 추적되지 않는지 확인 (`git status`)
+- [ ] 프로덕션 배포 시 환경변수를 서버/컨테이너에 직접 설정
+
+### CI/CD 환경
+
+GitHub Actions 등에서는 Repository Secrets를 사용:
+
+```yaml
+# .github/workflows/test.yml
+env:
+  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+```
 

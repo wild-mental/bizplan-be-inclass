@@ -1,6 +1,13 @@
 HELP.md
 .gradle
 build/
+
+### Environment Variables (Security) ###
+.env
+.env.*
+!.env.example
+application-local.properties
+application-local.yml
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
@@ -35,3 +42,21 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Python ###
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+*.egg-info/
+dist/
+build/
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/

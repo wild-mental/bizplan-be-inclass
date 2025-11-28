@@ -122,27 +122,38 @@ cd bizplan-be-inclass
 
 2. **Set up environment variables**
 
-Create a `.env` file in the project root:
+```bash
+# Copy the template file
+cp .env.example .env
+
+# Edit with your actual values
+vim .env  # or use your preferred editor
+```
+
+The `.env` file should contain:
 
 ```bash
-# Database Configuration
+# ============ Database Configuration ============
 DB_HOST=localhost
 DB_PORT=3306
 DB_NAME=bizplan
 DB_USERNAME=root
-DB_PASSWORD=your_password
+DB_PASSWORD=your_password           # ⚠️ Required
 
-# Spring Boot Configuration
-SPRING_PROFILES_ACTIVE=dev
+# ============ Spring Boot Configuration ============
+SPRING_PROFILES_ACTIVE=local        # local | dev | prod
+SERVER_PORT=8080
 
-# AI Engine Configuration
-GEMINI_API_KEY=your_gemini_api_key
+# ============ AI Engine Configuration ============
+GEMINI_API_KEY=your_gemini_api_key  # ⚠️ Required
 AI_ENGINE_URL=http://localhost:8001
 
-# Security
-JWT_SECRET=your_jwt_secret_here
-ENCRYPTION_KEY=your_aes_256_key_here
+# ============ Security Configuration ============
+JWT_SECRET=your_jwt_secret_min_32_chars      # ⚠️ Required (min 32 chars)
+ENCRYPTION_KEY=your_aes_256_key_32_chars     # ⚠️ Required (exactly 32 chars)
 ```
+
+> ⚠️ **Security Notice**: Never commit `.env` files to version control. The `.gitignore` is configured to exclude these files.
 
 3. **Build the Spring Boot application**
 
@@ -329,6 +340,39 @@ class UserControllerTest {
 
 ## 🔒 Security
 
+### Environment Variable Management
+
+환경변수는 계층별로 안전하게 관리됩니다:
+
+| 환경 | 방법 | 설명 |
+|------|------|------|
+| **로컬 개발** | `.env` 파일 | `.gitignore`에서 제외, 개발자 로컬 관리 |
+| **CI/CD** | GitHub Secrets | 파이프라인에서 환경변수로 주입 |
+| **스테이징/프로덕션** | 서버 환경변수 | Docker Compose 또는 클라우드 시크릿 |
+
+#### 파일 구조
+
+```
+bizplan-be-inclass/
+├── .env.example                    # ✅ Git 포함 (템플릿)
+├── .env                            # ❌ Git 제외 (실제 값)
+├── src/main/resources/
+│   ├── application.properties      # ✅ 환경변수 참조
+│   └── application-local.properties # ❌ Git 제외 (로컬 설정)
+└── ai-engine/
+    ├── .env.example                # ✅ Git 포함 (템플릿)
+    └── .env                        # ❌ Git 제외 (실제 값)
+```
+
+#### 필수 환경변수
+
+| Variable | Description | Required |
+|----------|-------------|:--------:|
+| `DB_PASSWORD` | MySQL 데이터베이스 비밀번호 | ✅ |
+| `GEMINI_API_KEY` | Google Gemini API 키 | ✅ |
+| `JWT_SECRET` | JWT 토큰 서명 키 (32자 이상) | ✅ |
+| `ENCRYPTION_KEY` | AES-256 암호화 키 (32자) | ✅ |
+
 ### Data Protection
 
 - **Encryption at Rest**: AES-256 for sensitive fields (business ideas, financial data)
@@ -339,6 +383,8 @@ class UserControllerTest {
 
 ### Best Practices
 
+- Never commit `.env` files to version control
+- Use `.env.example` as a template (no real values)
 - Never log sensitive data (passwords, tokens, financial details)
 - Use parameterized queries to prevent SQL injection
 - Validate and sanitize all user inputs
