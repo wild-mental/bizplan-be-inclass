@@ -163,7 +163,35 @@ ai-engine/
 └── README.md
 ```
 
-## 관련 이슈
+## 관련 이슈 및 요구사항 추적
+
+### Issue 및 요구사항 매핑
+
+- **Issue #008**: 사업계획서 생성 LLM 엔진 및 프롬프트 구현
+- **REQ-FUNC-003**: 사업계획서 초안 자동 생성 (SRS 4.1)
+- **REQ-FUNC-004**: 섹션별 AI 작성 보조 (SRS 4.1)
+- **REQ-NF-002**: 문서 생성 성능 - p95 응답시간 ≤ 10초 (SRS 4.2)
+
+### Traceability Matrix (SRS 5. Traceability Matrix)
+
+| Story / Feature | Requirement ID(s) | Test Case ID(s) | 구현 상태 |
+|:---|:---|:---|:---|
+| **F4: AI 초안 생성 + 쉬운/전문가 모드** | REQ-FUNC-003, REQ-FUNC-004 | TC-FUNC-003, TC-FUNC-004 | ✅ 완료 |
+| **EPIC 1: 과제 통과 Job** | REQ-FUNC-003, REQ-FUNC-004; REQ-NF-002 | TC-FUNC-003, TC-FUNC-004; TC-NF-002 | ✅ 완료 |
+
+### 테스트 커버리지
+
+| 테스트 케이스 | SRS 요구사항 | 설명 | 상태 |
+|:---|:---|:---|:---|
+| `test_generate_includes_all_mandatory_sections` | TC-FUNC-003 | 필수 목차 누락률 0% 검증 | ✅ |
+| `test_generate_template_specific_sections` | TC-FUNC-003 | 템플릿별 필수 섹션 검증 | ✅ |
+| `test_generate_single_section` | TC-FUNC-004 | 섹션별 개별 생성 | ✅ |
+| `test_generate_multiple_candidates` | TC-FUNC-004 | 텍스트 후보 1개 이상 반환 | ✅ |
+| `test_generate_response_time_within_threshold` | TC-NF-002 | 성능 테스트 (≤ 10초) | ✅ |
+
+**테스트 실행 결과**: 9개 테스트 모두 통과 (100%)
+
+### 관련 이슈
 
 - **#008**: 본 이슈 (사업계획서 생성 LLM 엔진)
 - **#009**: 오케스트레이션 API (Spring Boot에서 이 서비스 호출)
