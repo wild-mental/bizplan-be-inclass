@@ -15,6 +15,7 @@
 github-issues/
 ├── README.md                          # 이 파일
 ├── ISSUE_EXECUTION_PLAN.md           # 이슈 실행 순서 및 병렬 개발 전략
+├── CHANGELOG.md                       # 변경 이력
 ├── completed/                         # ✅ 완료된 이슈들
 │   ├── README.md                     # 완료 이슈 설명
 │   ├── issue-001-EPIC0-FE-001.md    # Frontend PoC Issues (완료)
@@ -22,17 +23,19 @@ github-issues/
 │   ├── issue-003-EPIC0-FE-003.md
 │   ├── issue-004-EPIC0-FE-004.md
 │   └── issue-005-EPIC0-FE-005.md
-├── issue-006-REQ-FUNC-001-BE-001.md # 🔄 Backend Core Issues (현재 범위)
-├── issue-007-REQ-FUNC-002-BE-001.md
-├── issue-008-REQ-FUNC-003-AI-001.md # 🔄 AI Engine Issues
-├── issue-009-REQ-FUNC-003-BE-001.md
-├── issue-010-REQ-FUNC-011-BE-001.md
-├── issue-011-REQ-FUNC-008-AI-001.md
-├── issue-012-REQ-FUNC-012-BE-001.md
-├── issue-013-REQ-NF-006-SEC-001.md  # 🔄 Non-Functional Issues
-├── issue-014-REQ-NF-012-OPS-001.md
-└── issue-015-REQ-NF-001-PERF-001.md
+├── issue-006-REQ-FUNC-001-BE-001.md # ✅ Backend Core Issues (GitHub #2)
+├── issue-007-REQ-FUNC-002-BE-001.md # ✅ (GitHub #3)
+├── issue-008-REQ-FUNC-003-AI-001.md # ✅ AI Engine Issues (GitHub #4)
+├── issue-009-REQ-FUNC-003-BE-001.md # ✅ (GitHub #5)
+├── issue-010-REQ-FUNC-011-BE-001.md # ✅ (GitHub #6)
+├── issue-011-REQ-FUNC-008-AI-001.md # ✅ (GitHub #7)
+├── issue-012-REQ-FUNC-012-BE-001.md # ✅ (GitHub #8)
+├── issue-013-REQ-NF-006-SEC-001.md  # ✅ Non-Functional Issues (GitHub #9)
+├── issue-014-REQ-NF-012-OPS-001.md  # ✅ (GitHub #10)
+└── issue-015-REQ-NF-001-PERF-001.md # ✅ (GitHub #11)
 ```
+
+**Note**: All backend issues have been created (GitHub #2-#11) and scheduled in [GitHub Projects](https://github.com/users/wild-mental/projects/10/views/4).
 
 ## Issue Numbering Convention
 
@@ -49,25 +52,34 @@ github-issues/
 
 ### 1. Creating Issues in GitHub
 
-**Backend 이슈만 등록** (Frontend는 이미 완료됨):
+**⚠️ Important**: Issues should be created by AI Agent using direct `gh` commands, not shell scripts.
 
+**Backend 이슈 등록 (AI Agent 방식)**:
+
+AI Agent가 다음과 같이 직접 수행:
 ```bash
-# GitHub CLI를 사용한 개별 등록
-gh issue create -F tasks/github-issues/issue-006-REQ-FUNC-001-BE-001.md
+# 개별 이슈 생성
+cd tasks/github-issues
+gh issue create \
+  --title "[#006] 프로젝트 생성 및 템플릿 목록 API 구현" \
+  --body "$(tail -n +3 issue-006-REQ-FUNC-001-BE-001.md)"
 
-# Backend 이슈만 일괄 생성 (completed 폴더 제외)
-for file in tasks/github-issues/issue-*.md; do
-  gh issue create -F "$file"
-done
-
-# 또는 번호 범위 지정
+# AI Agent가 반복문으로 처리 (스크립트 파일 없이)
 for i in {006..015}; do
-  file=$(ls tasks/github-issues/issue-0$i-*.md 2>/dev/null)
-  if [ -f "$file" ]; then
-    gh issue create -F "$file"
+  issue_num=$(printf "%03d" $i)
+  issue_file=$(ls issue-$issue_num-*.md 2>/dev/null | head -1)
+  if [ -f "$issue_file" ]; then
+    title=$(head -1 "$issue_file" | sed 's/^# //')
+    gh issue create --title "$title" --body "$(tail -n +3 $issue_file)"
+    sleep 2  # API rate limiting
   fi
 done
 ```
+
+**현재 상태 (2025-11-26)**:
+- ✅ 모든 Backend 이슈 생성 완료 (Issues #2-#11)
+- ✅ GitHub Projects에 추가 완료
+- ✅ 로드맵 일정 설정 완료
 
 ### 2. Adding Labels
 
@@ -269,27 +281,33 @@ Closes #XXX
 ## Screenshots (if applicable)
 ```
 
-## Automation Scripts
+## AI Agent Automation
 
-### Bulk Issue Creation (Backend Only)
+### Issue Management Guidelines
 
+**⚠️ No Shell Scripts**: Issue management is performed directly by AI Agent using `gh` CLI commands.
+
+**AI Agent Responsibilities**:
+1. Read task files from `tasks/github-issues/`
+2. Execute `gh issue create` for each issue
+3. Add issues to GitHub Projects
+4. Set start/target dates on project roadmap
+5. Handle errors and provide feedback
+6. Verify successful operations
+
+**Example AI Agent Workflow**:
 ```bash
-#!/bin/bash
-# scripts/create_backend_issues.sh
+# 1. Create issue
+gh issue create --title "..." --body "$(tail -n +3 issue-file.md)"
 
-# Backend 이슈만 생성 (#006-#015)
-for i in {006..015}; do
-  issue_file=$(ls tasks/github-issues/issue-$i-*.md 2>/dev/null)
-  if [ -f "$issue_file" ]; then
-    echo "Creating issue from $issue_file"
-    gh issue create -F "$issue_file"
-    sleep 2  # API rate limiting
-  fi
-done
+# 2. Get project item ID
+gh project item-list 10 --owner wild-mental --format json
 
-echo "✅ Backend issues (#006-#015) created successfully"
-echo "ℹ️  Frontend issues (#001-#005) skipped (already completed)"
+# 3. Set schedule dates
+gh project item-edit --id PVTI_xxx --project-id PVT_xxx --field-id PVTF_xxx --date YYYY-MM-DD
 ```
+
+See `.cursor/rules/202-github-issue-handling.mdc` for detailed guidelines.
 
 ### Issue Status Sync
 
@@ -328,6 +346,21 @@ Issues 관련 질문이 있으면:
 
 ---
 
+## Current Status (2025-11-26)
+
+### Completed
+- ✅ All 10 backend issues created (GitHub #2-#11)
+- ✅ Issues added to GitHub Projects
+- ✅ Schedule dates set in roadmap view
+- ✅ Project timeline: 2025-11-27 ~ 2025-12-11
+
+### GitHub Resources
+- **Issues**: https://github.com/wild-mental/bizplan-be-inclass/issues
+- **Project Board**: https://github.com/users/wild-mental/projects/10
+- **Roadmap View**: https://github.com/users/wild-mental/projects/10/views/4
+
+---
+
 **Last Updated**: 2025-11-26  
-**Version**: 1.1 (Frontend EPIC0 완료 반영)
+**Version**: 1.2 (Issues created, scheduled, AI Agent automation established)
 

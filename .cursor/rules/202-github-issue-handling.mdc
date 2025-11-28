@@ -9,30 +9,116 @@ alwaysApply: false
 - Applies when creating issues from task documents
 - Applies when managing project roadmaps via GitHub CLI
 - **Applies when creating Pull Requests (refer to Rule 200 for content requirements)**
+- **AI Agent must perform issue management directly using `gh` commands, not shell scripts**
 
 ## Rules
-1. **Issue Creation**:
-   - Source tasks from `tasks/priority-N/` markdown files.
-   - Use `gh issue create` with title `[#NNN] Title`, body from file, and appropriate labels.
-   - Labels must include priority (`priority-N`) and type (`refactoring`, `feature`, etc).
 
-2. **Project & Roadmap**:
-   - Use Project V2 Node IDs for item manipulation (not integer IDs).
-   - Required Fields: `Start Date` and `End Date` (Type: `DATE`).
-   - Set dates via `gh project item-edit --project-id <NodeID>`.
+### 1. Issue Creation (Direct CLI)
+- **AI Agent performs**: Read task markdown files and create issues using `gh` CLI directly
+- Extract title from first line: `# [#NNN] Title`
+- Extract body from rest of content: `tail -n +3 file.md`
+- Create issue: `gh issue create --title "..." --body "..."`
+- **Do NOT** create shell scripts for batch issue creation
+- Create issues one by one with proper error handling
 
-3. **Automation**:
-   - Verify field IDs via `gh project field-list` before editing.
-   - Retry auth refresh if scopes (`project`, `read:project`) are missing.
+**Example:**
+```bash
+gh issue create \
+  --title "[#006] 프로젝트 생성 및 템플릿 목록 API 구현" \
+  --body "$(tail -n +3 issue-006-REQ-FUNC-001-BE-001.md)"
+```
+
+### 2. Labels Management
+- Labels may not exist in repository initially
+- Create issues first without labels if they fail
+- Add labels later if needed: `gh label create "name" --description "..." --color "..."`
+- Labels are optional for issue creation
+
+### 3. Project & Roadmap Integration
+- **List projects**: `gh project list --owner <username>`
+- **Get field IDs**: `gh project field-list <number> --owner <username>`
+- **Use Project V2 Node IDs** for item manipulation (not integer IDs)
+- **Required Fields**: `Start Date` and `End Date` (Type: `DATE`)
+- **Set dates**: 
+  ```bash
+  gh project item-edit \
+    --id <ItemID> \
+    --project-id <ProjectNodeID> \
+    --field-id <FieldID> \
+    --date YYYY-MM-DD
+  ```
+
+### 4. Batch Operations
+- **AI Agent performs batch operations** by iterating through multiple `gh` commands
+- Use sequential execution with proper error handling
+- Add delays (`sleep 2`) between API calls to avoid rate limiting
+- Log success/failure for each operation
+
+### 5. Workflow Integration
+- Create issue → Add to project → Set schedule dates
+- Verify project item IDs after adding issues
+- Use `gh project item-list` to get item IDs for date setting
 
 ## Examples
-<example>
-# Create issue and set roadmap dates
-gh issue create -t "[#001] Refactor" -F tasks/001.md -l "priority-1"
-gh project item-edit --id <ItemID> --field-id <StartFieldID> --date 2025-11-22
+
+<example what="Creating single issue">
+# AI Agent directly executes
+gh issue create \
+  --title "[#006] API Implementation" \
+  --body "$(tail -n +3 tasks/issue-006.md)"
 </example>
 
-<bad-example>
-# Using integer ID for project edits
-gh project item-edit --project-id 7 ... (Will fail, use Node ID)
+<example what="Setting schedule dates">
+# Get project items first
+gh project item-list 10 --owner wild-mental --format json | jq -r '.items[] | "\(.id)\t\(.content.number)"'
+
+# Set start and target dates
+gh project item-edit \
+  --id PVTI_xxx \
+  --project-id PVT_kwHOBWaOeM4BJJCo \
+  --field-id PVTF_xxx_START \
+  --date 2025-11-27
+
+gh project item-edit \
+  --id PVTI_xxx \
+  --project-id PVT_kwHOBWaOeM4BJJCo \
+  --field-id PVTF_xxx_TARGET \
+  --date 2025-11-30
+</example>
+
+<example what="Batch issue creation by AI Agent">
+# AI Agent iterates through issue files
+for i in {006..015}; do
+  issue_num=$(printf "%03d" $i)
+  issue_file="issue-$issue_num-*.md"
+  
+  if [ -f $issue_file ]; then
+    title=$(head -1 "$issue_file" | sed 's/^# //')
+    gh issue create --title "$title" --body "$(tail -n +3 $issue_file)"
+    sleep 2  # Rate limiting
+  fi
+done
+</example>
+
+<bad-example what="Using shell scripts">
+# ❌ Don't create separate .sh files
+./create_backend_issues.sh
+
+# ✅ Instead: AI Agent executes gh commands directly
 </bad-example>
+
+<bad-example what="Using integer ID for projects">
+# ❌ Wrong: Using integer project ID
+gh project item-edit --project-id 7 ...
+
+# ✅ Correct: Using Node ID
+gh project item-edit --project-id PVT_kwHOBWaOeM4BJJCo ...
+</bad-example>
+
+## AI Agent Responsibilities
+1. Read task specification files from `tasks/github-issues/`
+2. Execute `gh` commands directly for each issue
+3. Handle errors and provide feedback
+4. Set project schedules based on execution plan
+5. Verify successful creation and report status
+6. **Never delegate to shell scripts** - perform operations directly
