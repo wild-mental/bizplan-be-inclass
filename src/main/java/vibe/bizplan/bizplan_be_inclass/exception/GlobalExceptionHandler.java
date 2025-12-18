@@ -17,7 +17,7 @@ import vibe.bizplan.bizplan_be_inclass.dto.ApiResponse;
  * @see <a href="https://github.com/wild-mental/bizplan-be-inclass/issues/2">GitHub Issue #2</a>
  */
 @Slf4j
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = "vibe.bizplan.bizplan_be_inclass.controller")
 public class GlobalExceptionHandler {
 
     /**

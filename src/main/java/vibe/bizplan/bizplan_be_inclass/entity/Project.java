@@ -14,10 +14,7 @@ import java.util.UUID;
  * @see <a href="https://github.com/wild-mental/bizplan-be-inclass/issues/2">GitHub Issue #2</a>
  */
 @Entity
-@Table(name = "projects", indexes = {
-    @Index(name = "idx_projects_status", columnList = "status"),
-    @Index(name = "idx_projects_created_at", columnList = "created_at")
-})
+@Table(name = "projects")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -48,13 +45,13 @@ public class Project {
     /**
      * 레코드 생성 시각
      */
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
 
     /**
      * 레코드 수정 시각
      */
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP")
     private LocalDateTime updatedAt;
 
     /**
