@@ -19,6 +19,10 @@ repositories {
 }
 
 dependencies {
+	// Spring AI (Google Gemini)
+	implementation platform('org.springframework.ai:spring-ai-bom:2.0.0-M1')
+	implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
+
 	// Web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	
