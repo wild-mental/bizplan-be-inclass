@@ -183,6 +183,9 @@ bizplan-be-inclass/
 │   └── rules/           # Development guidelines and standards
 ├── docs/                # Project documentation
 ├── gradle/              # Gradle wrapper
+├── logs/                # Application logs (auto-generated)
+│   ├── gemini-usage.log              # Current Gemini usage log
+│   └── gemini-usage.YYYY-MM-DD.N.log # Rolled logs (daily rotation)
 ├── src/
 │   ├── main/
 │   │   ├── java/
@@ -197,7 +200,8 @@ bizplan-be-inclass/
 │   │   │       └── util/            # Utility Classes
 │   │   └── resources/
 │   │       ├── application.properties
-│   │       └── application-{profile}.properties
+│   │       ├── application-{profile}.properties
+│   │       └── logback-spring.xml   # Logging configuration
 │   └── test/            # Test files
 ├── tasks/               # Task tracking and requirements
 │   ├── functional/      # Functional requirements
@@ -338,6 +342,29 @@ class UserControllerTest {
 }
 ```
 
+#### Gemini Integration Tests
+
+**Test Coverage**:
+- **Unit Tests**: 19 tests (BusinessPlanGenerationServiceTest)
+- **Integration Tests**: 2 tests (BusinessPlanGenerationServiceIntegrationTest)
+- **Repository Tests**: 4 tests (BusinessPlanGenerationRepositoryTest)
+- **Total**: 25 tests with ~95% code coverage
+
+**Running Tests**:
+```bash
+# Run all Gemini-related tests
+./gradlew test --tests "*BusinessPlanGeneration*"
+
+# Run unit tests only (exclude integration tests)
+./gradlew test --tests "*BusinessPlanGeneration*Test" --exclude-tag integration
+
+# Run integration tests (requires GEMINI_API_KEY)
+export GEMINI_API_KEY="your-api-key"
+./gradlew test --tests "*BusinessPlanGenerationServiceIntegrationTest*"
+```
+
+**Test Report**: See [GEMINI_TEST_REPORT.md](./docs/GEMINI_TEST_REPORT.md) for detailed test results and coverage analysis.
+
 ## 🔒 Security
 
 ### Environment Variable Management
@@ -400,11 +427,17 @@ bizplan-be-inclass/
 
 ### Key Documents
 
+#### Project Guidelines
 - [Project Overview](.cursor/rules/001-project-overview.mdc)
 - [Tech Stack](.cursor/rules/002-tech-stack.mdc)
 - [Development Guidelines](.cursor/rules/003-development-guidelines.mdc)
 - [Error Fixing Process](.cursor/rules/100-error-fixing-process.mdc)
 - [Git Commit Guidelines](.cursor/rules/200-git-commit-push-pr.mdc)
+
+#### Gemini Integration Documentation
+- [Gemini Integration Summary](./docs/GEMINI_INTEGRATION_SUMMARY.md) - Complete integration guide, architecture, and logging structure
+- [Gemini Test Report](./docs/GEMINI_TEST_REPORT.md) - Test coverage, results, and quality metrics
+- [Gemini Integration TODO](./docs/GEMINI_INTEGRATION_TODO.md) - Future improvements and enhancement suggestions
 
 ## 🤝 Contributing
 
@@ -466,6 +499,433 @@ Closes #123
 - **Scalability**: Support 1000+ concurrent users
 - **Database Performance**: Query response < 100ms (p95)
 
+## 📈 Monitoring & Analytics
+
+### Gemini Usage Log Schema
+
+The application logs all Gemini API calls to both console and file (`logs/gemini-usage.log`) for comprehensive monitoring and cost tracking.
+
+#### Log File Location
+
+- **Current log**: `logs/gemini-usage.log`
+- **Rolled logs**: `logs/gemini-usage.YYYY-MM-DD.N.log` (daily rotation, max 30 days, 100MB total)
+
+#### Log Format
+
+**File Format (CSV-like)**:
+```
+2025-12-18 14:30:19.500,[Gemini Usage Log] StartTime: 2025-12-18T14:30:15.123Z, EndTime: 2025-12-18T14:30:19.500Z, Duration: 4377ms, Input: 1234, Output: 5678, Total: 6912, Throughput: 1578.25 tokens/sec
+```
+
+**Field Descriptions**:
+
+| Field | Description | Example |
+|-------|-------------|---------|
+| `StartTime` | Gemini API call start time (ISO 8601) | `2025-12-18T14:30:15.123Z` |
+| `EndTime` | Gemini API call end time (ISO 8601) | `2025-12-18T14:30:19.500Z` |
+| `Duration` | Elapsed time in milliseconds | `4377ms` |
+| `Input` | Input tokens (prompt tokens) | `1234` |
+| `Output` | Output tokens (completion tokens) | `5678` |
+| `Total` | Total tokens consumed | `6912` |
+| `Throughput` | Token processing rate (tokens/sec) | `1578.25 tokens/sec` |
+
+**Repository Log Format** (includes `businessPlanId`):
+```
+2025-12-18 14:30:19.501,[Gemini Usage Log] businessPlanId=bp-2025-12-18-550e8400, StartTime: 2025-12-18T14:30:15.123Z, EndTime: 2025-12-18T14:30:19.500Z, Duration: 4377ms, Input: 1234, Output: 5678, Total: 6912, Throughput: 1578.25 tokens/sec
+```
+
+### Cost Tracking
+
+#### Daily Cost Analysis
+
+**Total Daily Token Usage**:
+```bash
+# Extract total tokens from log file
+grep "Total:" logs/gemini-usage.log | \
+  awk -F'Total: ' '{print $2}' | \
+  awk -F',' '{sum+=$1} END {print "Total tokens:", sum}'
+```
+
+**Daily Cost Estimation** (assuming Gemini pricing):
+```bash
+# Calculate cost (example: $0.000125 per 1K input tokens, $0.0005 per 1K output tokens)
+grep "Total:" logs/gemini-usage.log | \
+  awk -F'Input: ' '{print $2}' | \
+  awk -F',' '{input+=$1; output+=$2} END {
+    input_cost = (input / 1000) * 0.000125;
+    output_cost = (output / 1000) * 0.0005;
+    print "Estimated daily cost: $" (input_cost + output_cost)
+  }'
+```
+
+**Daily Request Count**:
+```bash
+# Count requests per day
+grep -c "\[Gemini Usage Log\]" logs/gemini-usage.log
+```
+
+#### Weekly Cost Analysis
+
+**Weekly Token Usage**:
+```bash
+# Aggregate tokens for the last 7 days
+find logs/ -name "gemini-usage.*.log" -mtime -7 -exec grep "Total:" {} \; | \
+  awk -F'Total: ' '{print $2}' | \
+  awk -F',' '{sum+=$1} END {print "Weekly total tokens:", sum}'
+```
+
+**Weekly Average Daily Cost**:
+```bash
+# Calculate average daily cost over the week
+for i in {0..6}; do
+  date=$(date -v-${i}d +%Y-%m-%d 2>/dev/null || date -d "${i} days ago" +%Y-%m-%d)
+  tokens=$(grep "Total:" logs/gemini-usage.${date}.*.log 2>/dev/null | \
+    awk -F'Total: ' '{print $2}' | awk -F',' '{sum+=$1} END {print sum}')
+  echo "${date}: ${tokens:-0} tokens"
+done | awk '{sum+=$2; count++} END {print "Average daily tokens:", sum/count}'
+```
+
+#### Monthly Cost Analysis
+
+**Monthly Token Usage**:
+```bash
+# Aggregate tokens for the current month
+find logs/ -name "gemini-usage.*.log" -newermt "$(date +%Y-%m-01)" -exec grep "Total:" {} \; | \
+  awk -F'Total: ' '{print $2}' | \
+  awk -F',' '{sum+=$1} END {print "Monthly total tokens:", sum}'
+```
+
+**Monthly Cost Breakdown**:
+```bash
+# Monthly cost breakdown by week
+echo "Week 1:"
+find logs/ -name "gemini-usage.*.log" -newermt "$(date +%Y-%m-01)" -not -newermt "$(date +%Y-%m-08)" -exec grep "Total:" {} \; | \
+  awk -F'Total: ' '{print $2}' | awk -F',' '{sum+=$1} END {print sum " tokens"}'
+
+echo "Week 2:"
+find logs/ -name "gemini-usage.*.log" -newermt "$(date +%Y-%m-08)" -not -newermt "$(date +%Y-%m-15)" -exec grep "Total:" {} \; | \
+  awk -F'Total: ' '{print $2}' | awk -F',' '{sum+=$1} END {print sum " tokens"}'
+
+echo "Week 3:"
+find logs/ -name "gemini-usage.*.log" -newermt "$(date +%Y-%m-15)" -not -newermt "$(date +%Y-%m-22)" -exec grep "Total:" {} \; | \
+  awk -F'Total: ' '{print $2}' | awk -F',' '{sum+=$1} END {print sum " tokens"}'
+
+echo "Week 4:"
+find logs/ -name "gemini-usage.*.log" -newermt "$(date +%Y-%m-22)" -exec grep "Total:" {} \; | \
+  awk -F'Total: ' '{print $2}' | awk -F',' '{sum+=$1} END {print sum " tokens"}'
+```
+
+### Performance Monitoring
+
+#### Response Time Analysis
+
+**Average Response Time**:
+```bash
+# Calculate average Gemini API response time
+grep "Duration:" logs/gemini-usage.log | \
+  awk -F'Duration: ' '{print $2}' | \
+  awk -F'ms' '{sum+=$1; count++} END {print "Average duration:", sum/count, "ms"}'
+```
+
+**Response Time Percentiles**:
+```bash
+# Calculate p50, p95, p99 response times
+grep "Duration:" logs/gemini-usage.log | \
+  awk -F'Duration: ' '{print $2}' | \
+  awk -F'ms' '{print $1}' | \
+  sort -n | \
+  awk '{
+    arr[NR] = $1
+  }
+  END {
+    p50 = arr[int(NR*0.50)]
+    p95 = arr[int(NR*0.95)]
+    p99 = arr[int(NR*0.99)]
+    print "p50:", p50 "ms"
+    print "p95:", p95 "ms"
+    print "p99:", p99 "ms"
+  }'
+```
+
+#### Throughput Analysis
+
+**Average Throughput**:
+```bash
+# Calculate average token processing rate
+grep "Throughput:" logs/gemini-usage.log | \
+  awk -F'Throughput: ' '{print $2}' | \
+  awk '{sum+=$1; count++} END {print "Average throughput:", sum/count, "tokens/sec"}'
+```
+
+**Throughput Distribution**:
+```bash
+# Throughput distribution (min, max, median)
+grep "Throughput:" logs/gemini-usage.log | \
+  awk -F'Throughput: ' '{print $2}' | \
+  awk '{print $1}' | \
+  sort -n | \
+  awk '{
+    arr[NR] = $1
+  }
+  END {
+    min = arr[1]
+    max = arr[NR]
+    median = arr[int(NR/2)]
+    print "Min:", min " tokens/sec"
+    print "Median:", median " tokens/sec"
+    print "Max:", max " tokens/sec"
+  }'
+```
+
+#### Hourly Usage Patterns
+
+**Requests per Hour**:
+```bash
+# Count requests per hour
+cut -d',' -f1 logs/gemini-usage.log | \
+  cut -d' ' -f2 | \
+  cut -d':' -f1 | \
+  sort | \
+  uniq -c | \
+  awk '{print $2 ":00 - " $1 " requests"}'
+```
+
+**Peak Usage Hours**:
+```bash
+# Identify peak usage hours
+cut -d',' -f1 logs/gemini-usage.log | \
+  cut -d' ' -f2 | \
+  cut -d':' -f1 | \
+  sort | \
+  uniq -c | \
+  sort -rn | \
+  head -5 | \
+  awk '{print "Hour " $2 ":00 - " $1 " requests"}'
+```
+
+### Advanced Analytics Script
+
+Create a comprehensive analytics script (`scripts/analyze-gemini-usage.sh`):
+
+```bash
+#!/bin/bash
+# analyze-gemini-usage.sh - Comprehensive Gemini usage analytics
+
+LOG_DIR="logs"
+LOG_FILE="${LOG_DIR}/gemini-usage.log"
+
+echo "=== Gemini Usage Analytics ==="
+echo ""
+
+# Daily summary
+echo "📊 Daily Summary (Today)"
+TODAY=$(date +%Y-%m-%d)
+TODAY_TOKENS=$(grep "${TODAY}" "${LOG_FILE}" 2>/dev/null | \
+  grep "Total:" | \
+  awk -F'Total: ' '{print $2}' | \
+  awk -F',' '{sum+=$1} END {print sum}')
+TODAY_REQUESTS=$(grep "${TODAY}" "${LOG_FILE}" 2>/dev/null | grep -c "\[Gemini Usage Log\]")
+echo "  Requests: ${TODAY_REQUESTS:-0}"
+echo "  Total Tokens: ${TODAY_TOKENS:-0}"
+echo ""
+
+# Weekly summary
+echo "📈 Weekly Summary (Last 7 days)"
+WEEKLY_TOKENS=$(find "${LOG_DIR}" -name "gemini-usage.*.log" -mtime -7 -exec grep "Total:" {} \; 2>/dev/null | \
+  awk -F'Total: ' '{print $2}' | \
+  awk -F',' '{sum+=$1} END {print sum}')
+WEEKLY_REQUESTS=$(find "${LOG_DIR}" -name "gemini-usage.*.log" -mtime -7 -exec grep -c "\[Gemini Usage Log\]" {} \; 2>/dev/null | \
+  awk '{sum+=$1} END {print sum}')
+echo "  Requests: ${WEEKLY_REQUESTS:-0}"
+echo "  Total Tokens: ${WEEKLY_TOKENS:-0}"
+echo "  Average Daily: $((WEEKLY_TOKENS / 7)) tokens"
+echo ""
+
+# Performance metrics
+echo "⚡ Performance Metrics"
+AVG_DURATION=$(grep "Duration:" "${LOG_FILE}" 2>/dev/null | \
+  awk -F'Duration: ' '{print $2}' | \
+  awk -F'ms' '{sum+=$1; count++} END {if(count>0) print sum/count; else print 0}')
+AVG_THROUGHPUT=$(grep "Throughput:" "${LOG_FILE}" 2>/dev/null | \
+  awk -F'Throughput: ' '{print $2}' | \
+  awk '{sum+=$1; count++} END {if(count>0) print sum/count; else print 0}')
+echo "  Average Duration: ${AVG_DURATION}ms"
+echo "  Average Throughput: ${AVG_THROUGHPUT} tokens/sec"
+echo ""
+
+# Cost estimation (example pricing)
+echo "💰 Cost Estimation (Example Pricing)"
+INPUT_TOKENS=$(grep "Input:" "${LOG_FILE}" 2>/dev/null | \
+  awk -F'Input: ' '{print $2}' | \
+  awk -F',' '{sum+=$1} END {print sum}')
+OUTPUT_TOKENS=$(grep "Output:" "${LOG_FILE}" 2>/dev/null | \
+  awk -F'Output: ' '{print $2}' | \
+  awk -F',' '{sum+=$1} END {print sum}')
+INPUT_COST=$(echo "scale=4; (${INPUT_TOKENS:-0} / 1000) * 0.000125" | bc)
+OUTPUT_COST=$(echo "scale=4; (${OUTPUT_TOKENS:-0} / 1000) * 0.0005" | bc)
+TOTAL_COST=$(echo "scale=4; ${INPUT_COST} + ${OUTPUT_COST}" | bc)
+echo "  Input Tokens: ${INPUT_TOKENS:-0} ($${INPUT_COST})"
+echo "  Output Tokens: ${OUTPUT_TOKENS:-0} ($${OUTPUT_COST})"
+echo "  Total Estimated Cost: $${TOTAL_COST}"
+echo ""
+```
+
+**Usage**:
+```bash
+chmod +x scripts/analyze-gemini-usage.sh
+./scripts/analyze-gemini-usage.sh
+```
+
+### Log File Management
+
+#### Log Retention Policy
+
+**Current Policy** (configured in `logback-spring.xml`):
+- **Rolling Strategy**: Daily + Size-based (10MB per file)
+- **Retention Period**: Maximum 30 days
+- **Total Size Limit**: 100MB (oldest files deleted when exceeded)
+- **File Pattern**: `logs/gemini-usage.YYYY-MM-DD.N.log`
+
+**Log File Locations**:
+- **Current log**: `logs/gemini-usage.log`
+- **Rolled logs**: `logs/gemini-usage.2025-12-19.0.log`, `logs/gemini-usage.2025-12-19.1.log`, etc.
+- **Test logs**: `logs/gemini-usage-test.log` (test environment only)
+
+**Check Log File Size**:
+```bash
+du -h logs/gemini-usage.log
+```
+
+**View Recent Logs**:
+```bash
+tail -n 100 logs/gemini-usage.log
+```
+
+**Search by Date Range**:
+```bash
+# Logs from specific date
+grep "2025-12-18" logs/gemini-usage.log
+
+# Logs from date range
+grep -E "2025-12-(1[8-9]|2[0-5])" logs/gemini-usage.log
+```
+
+**Archive Old Logs**:
+```bash
+# Archive logs older than 30 days
+find logs/ -name "gemini-usage.*.log" -mtime +30 -exec gzip {} \;
+```
+
+**Log Management Best Practices**:
+- Logs are automatically rotated when file size exceeds 10MB or daily
+- Old logs are automatically deleted when total size exceeds 100MB
+- Logs directory is excluded from Git (`.gitignore`)
+- For production, consider integrating with centralized logging (ELK, Grafana Loki)
+
+### Integration with Monitoring Tools
+
+The log format is designed to be easily parsed by monitoring tools:
+
+- **Grafana**: Use LogQL queries to visualize metrics
+- **ELK Stack**: Parse CSV format with Logstash
+- **Prometheus**: Export metrics via log exporter
+- **Custom Dashboards**: Parse CSV format with Python pandas or similar tools
+
+For more detailed information, see:
+- [GEMINI_INTEGRATION_SUMMARY.md](./docs/GEMINI_INTEGRATION_SUMMARY.md) - Complete integration documentation
+- [GEMINI_TEST_REPORT.md](./docs/GEMINI_TEST_REPORT.md) - Test coverage and results
+- [GEMINI_INTEGRATION_TODO.md](./docs/GEMINI_INTEGRATION_TODO.md) - Future improvements and enhancements
+
+## 🔧 Maintenance & Operations
+
+### Log Management
+
+#### Gemini Usage Logs
+
+**Log File Location**: `logs/gemini-usage.log`
+
+**Retention Policy**:
+- Daily rotation + size-based (10MB per file)
+- Maximum 30 days retention
+- Total size limit: 100MB
+- Automatic cleanup of oldest files when limit exceeded
+
+**Log Format**: CSV format for easy analysis
+```
+2025-12-19 19:11:20.171,[Gemini Usage Log] businessPlanId=bp-2025-12-19-d7cfda31, StartTime: 2025-12-19T12:11:02.346440Z, EndTime: 2025-12-19T12:11:20.170608Z, Duration: 17824ms, Input: 1370, Output: 2465, Total: 3835, Throughput: 215.16 tokens/sec
+```
+
+**Quick Analysis Commands**:
+```bash
+# Today's total token usage
+grep "$(date +%Y-%m-%d)" logs/gemini-usage.log | grep "Total:" | awk -F'Total: ' '{print $2}' | awk -F',' '{sum+=$1} END {print "Total tokens:", sum}'
+
+# Average response time
+grep "Duration:" logs/gemini-usage.log | awk -F'Duration: ' '{print $2}' | awk -F'ms' '{sum+=$1; count++} END {print "Average:", sum/count, "ms"}'
+
+# Request count by hour
+cut -d',' -f1 logs/gemini-usage.log | cut -d' ' -f2 | cut -d':' -f1 | sort | uniq -c
+```
+
+**For detailed analysis scripts and cost tracking**, see [Monitoring & Analytics](#-monitoring--analytics) section above.
+
+### Health Checks
+
+**Application Health**:
+```bash
+# Check if application is running
+curl http://localhost:8080/actuator/health
+
+# Check Swagger UI
+open http://localhost:8080/swagger-ui.html
+```
+
+**Database Health**:
+```bash
+# Check database connection
+mysql -u root -p -e "SELECT 1" bizplan
+```
+
+**Gemini API Health**:
+```bash
+# Check recent Gemini API calls
+tail -n 10 logs/gemini-usage.log
+
+# Check for errors
+grep -i "error\|exception\|failed" logs/gemini-usage.log
+```
+
+### Performance Monitoring
+
+**Key Metrics to Monitor**:
+- **Response Time**: Average Gemini API response time (target: < 10s p95)
+- **Throughput**: Token processing rate (tokens/sec)
+- **Error Rate**: Failed API calls / Total calls
+- **Cost**: Daily/weekly/monthly token usage and estimated costs
+
+**Monitoring Dashboard** (Future):
+- Integrate with Prometheus/Grafana for real-time metrics
+- Set up alerts for error rate spikes or cost thresholds
+- See [GEMINI_INTEGRATION_TODO.md](./docs/GEMINI_INTEGRATION_TODO.md) for monitoring improvements
+
+### Backup & Recovery
+
+**Log Files**:
+- Logs are automatically rotated and retained for 30 days
+- For longer retention, archive logs before deletion:
+```bash
+# Archive logs older than 30 days
+find logs/ -name "gemini-usage.*.log" -mtime +30 -exec gzip {} \;
+```
+
+**Database**:
+- Regular MySQL backups recommended
+- Use Flyway migrations for schema versioning
+
+**Configuration**:
+- Environment variables stored in `.env` (not in Git)
+- Keep `.env.example` updated as template
+
 ## 🐛 Troubleshooting
 
 ### Common Issues
@@ -496,6 +956,27 @@ lsof -i :8080
 
 # Kill the process
 kill -9 <PID>
+```
+
+**Gemini API errors**
+```bash
+# Check if GEMINI_API_KEY is set
+echo $GEMINI_API_KEY
+
+# Check recent API errors
+grep -i "error\|exception" logs/gemini-usage.log | tail -20
+
+# Verify API key is valid
+curl -H "Content-Type: application/json" \
+  -d '{"contents":[{"parts":[{"text":"test"}]}]}' \
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_API_KEY}"
+```
+
+**ObjectMapper bean not found**
+```bash
+# This should be resolved by JacksonConfig
+# Verify configuration
+grep -r "JacksonConfig" src/main/java/
 ```
 
 ## 📞 Support

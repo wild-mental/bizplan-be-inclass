@@ -14,7 +14,7 @@ Referenced in: [001-project-overview.mdc](001-project-overview.mdc), [002-tech-s
 
 ## Technology Constraints (C-TEC)
 - **Frontend:** Vite + React + TypeScript (SPA).
-- **Backend Core:** Java 17 + Spring Boot 3.x (REST API).
+- **Backend Core:** Java 21 + Spring Boot 4.0.0 (REST API).
 - **AI/Doc Engine:** Python + FastAPI + LangChain.
 - **Database:** MySQL 8.x (InnoDB, utf8mb4).
 - **LLM Provider:** Google Gemini (via Internal Gateway).

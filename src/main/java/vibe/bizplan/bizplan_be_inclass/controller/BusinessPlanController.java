@@ -6,14 +6,17 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vibe.bizplan.bizplan_be_inclass.dto.ApiResponse;
+import vibe.bizplan.bizplan_be_inclass.dto.businessplan.BusinessPlanGenerateRequest;
 import vibe.bizplan.bizplan_be_inclass.dto.businessplan.BusinessPlanGenerateResponse;
 import vibe.bizplan.bizplan_be_inclass.dto.businessplan.BusinessPlanGenerateResponse.BusinessPlanSection;
 import vibe.bizplan.bizplan_be_inclass.dto.businessplan.BusinessPlanGenerateResponse.GenerationMetadata;
 import vibe.bizplan.bizplan_be_inclass.dto.businessplan.BusinessPlanGenerateResponse.ExportOptions;
+import vibe.bizplan.bizplan_be_inclass.service.BusinessPlanGenerationService;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -46,15 +49,18 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/business-plan")
 @Slf4j
+@RequiredArgsConstructor
 @Tag(name = "Business Plan", description = "사업계획서 API - AI 기반 사업계획서 생성")
 public class BusinessPlanController {
+
+    private final BusinessPlanGenerationService businessPlanGenerationService;
 
     /**
      * 사업계획서 생성 요청
      * 
      * AI_GENERATION_BE_API_SUBMIT.md 스펙에 따른 응답 반환
      * 
-     * @param request FE에서 전송한 전체 데이터 (Map으로 수신)
+     * @param request FE에서 전송한 전체 데이터
      * @return 생성된 사업계획서 응답
      */
     @Operation(
@@ -245,7 +251,7 @@ public class BusinessPlanController {
     })
     @PostMapping("/generate")
     public ResponseEntity<ApiResponse<BusinessPlanGenerateResponse>> generateBusinessPlan(
-            @RequestBody Map<String, Object> request) {
+            @RequestBody BusinessPlanGenerateRequest request) {
         
         long startTime = System.currentTimeMillis();
         
@@ -257,10 +263,16 @@ public class BusinessPlanController {
         log.info("========================================");
         
         // requestInfo 추출
-        Map<String, Object> requestInfo = extractMap(request, "requestInfo");
-        String projectId = extractString(requestInfo, "projectId", "proj-" + UUID.randomUUID().toString().substring(0, 8));
-        String userId = extractString(requestInfo, "userId", "user-001");
-        String templateType = extractString(requestInfo, "templateType", "pre-startup");
+        BusinessPlanGenerateRequest.RequestInfo requestInfo = request.getRequestInfo();
+        String projectId = requestInfo != null && requestInfo.getProjectId() != null
+                ? requestInfo.getProjectId()
+                : "proj-" + UUID.randomUUID().toString().substring(0, 8);
+        String userId = requestInfo != null && requestInfo.getUserId() != null
+                ? requestInfo.getUserId()
+                : "user-001";
+        String templateType = requestInfo != null && requestInfo.getTemplateType() != null
+                ? requestInfo.getTemplateType()
+                : "pre-startup";
         
         log.info("📋 requestInfo:");
         log.info("   - projectId: {}", projectId);
@@ -268,63 +280,32 @@ public class BusinessPlanController {
         log.info("   - templateType: {}", templateType);
         
         // businessPlanData 추출 및 요약 로깅
-        Map<String, Object> businessPlanData = extractMap(request, "businessPlanData");
+        BusinessPlanGenerateRequest.BusinessPlanData businessPlanData = request.getBusinessPlanData();
         String itemName = extractItemName(businessPlanData);
         logBusinessPlanDataSummary(businessPlanData);
         
         // generationOptions 추출 및 로깅
-        Map<String, Object> generationOptions = extractMap(request, "generationOptions");
+        BusinessPlanGenerateRequest.GenerationOptions generationOptions = request.getGenerationOptions();
         logGenerationOptions(generationOptions);
         
         // ========================================
-        // 2. 사업계획서 생성 (POC: Mock 데이터)
+        // 2. 사업계획서 생성 (Gemini 호출 - Spring AI)
         // ========================================
-        String businessPlanId = "bp-" + java.time.LocalDate.now().toString() + "-" + UUID.randomUUID().toString().substring(0, 8);
-        String generatedAt = Instant.now().toString();
-        
-        // Mock 섹션 데이터 생성
-        List<BusinessPlanSection> sections = createMockSections(itemName);
-        
-        // Mock 메타데이터 생성
-        long generationTimeMs = System.currentTimeMillis() - startTime + 4500; // 실제 생성 시간 시뮬레이션
-        GenerationMetadata metadata = GenerationMetadata.builder()
-                .totalSections(sections.size())
-                .wordCount(3847)
-                .characterCount(12450)
-                .generationTimeMs(generationTimeMs)
-                .modelUsed("gemini-pro")
-                .promptTokens(2500)
-                .completionTokens(4200)
-                .totalTokens(6700)
-                .build();
-        
-        // Mock 내보내기 옵션 생성
-        ExportOptions exportOptions = ExportOptions.builder()
-                .availableFormats(List.of("pdf", "hwp", "docx", "markdown"))
-                .downloadUrls(Map.of(
-                        "pdf", "/api/v1/business-plan/" + businessPlanId + "/export/pdf",
-                        "hwp", "/api/v1/business-plan/" + businessPlanId + "/export/hwp",
-                        "docx", "/api/v1/business-plan/" + businessPlanId + "/export/docx",
-                        "markdown", "/api/v1/business-plan/" + businessPlanId + "/export/markdown"
-                ))
-                .build();
-        
-        // 응답 생성 (AI_GENERATION_BE_API_SUBMIT.md Section 4 스펙 준수)
-        BusinessPlanGenerateResponse response = BusinessPlanGenerateResponse.builder()
-                .businessPlanId(businessPlanId)
-                .projectId(projectId)
-                .generatedAt(generatedAt)
-                .templateType(templateType)
-                .sections(sections)
-                .metadata(metadata)
-                .exportOptions(exportOptions)
-                .build();
+        BusinessPlanGenerateResponse response = businessPlanGenerationService.generateBusinessPlan(
+                request,
+                projectId,
+                templateType,
+                itemName,
+                startTime
+        );
         
         log.info("========================================");
         log.info("✅ 사업계획서 생성 완료");
-        log.info("   - businessPlanId: {}", businessPlanId);
-        log.info("   - sections: {} 개", sections.size());
-        log.info("   - generationTimeMs: {} ms", generationTimeMs);
+        log.info("   - businessPlanId: {}", response.getBusinessPlanId());
+        log.info("   - sections: {} 개", 
+                response.getSections() != null ? response.getSections().size() : 0);
+        log.info("   - generationTimeMs: {}", 
+                response.getMetadata() != null ? response.getMetadata().getGenerationTimeMs() : "N/A");
         log.info("========================================");
         
         return ResponseEntity.ok(ApiResponse.success(response));
@@ -332,7 +313,7 @@ public class BusinessPlanController {
 
     /**
      * 사업계획서 조회
-     * 
+     *
      * @param businessPlanId 사업계획서 ID
      * @return 사업계획서 응답
      */
@@ -401,9 +382,12 @@ public class BusinessPlanController {
     /**
      * businessPlanData에서 아이템명 추출
      */
-    private String extractItemName(Map<String, Object> businessPlanData) {
-        Map<String, Object> step1 = extractMap(businessPlanData, "step1_problemRecognition");
-        return extractString(step1, "itemName", "AI 기반 맞춤형 학습 플랫폼");
+    private String extractItemName(BusinessPlanGenerateRequest.BusinessPlanData businessPlanData) {
+        if (businessPlanData == null || businessPlanData.getStep1_problemRecognition() == null) {
+            return "AI 기반 맞춤형 학습 플랫폼";
+        }
+        String itemName = businessPlanData.getStep1_problemRecognition().getItemName();
+        return itemName != null ? itemName : "AI 기반 맞춤형 학습 플랫폼";
     }
     
     /**
@@ -575,34 +559,45 @@ public class BusinessPlanController {
     /**
      * businessPlanData 수신 현황 로깅
      */
-    private void logBusinessPlanDataSummary(Map<String, Object> businessPlanData) {
-        Map<String, Object> step1 = extractMap(businessPlanData, "step1_problemRecognition");
-        String itemName = extractString(step1, "itemName", "[아이템명 미입력]");
+    private void logBusinessPlanDataSummary(BusinessPlanGenerateRequest.BusinessPlanData businessPlanData) {
+        BusinessPlanGenerateRequest.Step1ProblemRecognition step1 =
+                businessPlanData != null ? businessPlanData.getStep1_problemRecognition() : null;
+        String itemName = step1 != null && step1.getItemName() != null
+                ? step1.getItemName()
+                : "[아이템명 미입력]";
         
         log.info("📊 businessPlanData 수신 현황:");
-        log.info("   - Step1 (문제 인식): {} itemName = {}", 
-                step1.isEmpty() ? "❌" : "✅", itemName);
-        log.info("   - Step2 (시장 분석): {}", 
-                businessPlanData.containsKey("step2_marketAnalysis") ? "✅" : "❌");
-        log.info("   - Step3 (실현 방안): {}", 
-                businessPlanData.containsKey("step3_solutionFeasibility") ? "✅" : "❌");
-        log.info("   - Step4 (사업화 전략): {}", 
-                businessPlanData.containsKey("step4_commercializationStrategy") ? "✅" : "❌");
-        log.info("   - Step5 (팀 역량): {}", 
-                businessPlanData.containsKey("step5_teamCapability") ? "✅" : "❌");
-        log.info("   - Step6 (재무 계획): {}", 
-                businessPlanData.containsKey("step6_financialPlan") ? "✅" : "❌");
+        log.info("   - Step1 (문제 인식): {} itemName = {}",
+                step1 != null ? "✅" : "❌", itemName);
+        log.info("   - Step2 (시장 분석): {}",
+                businessPlanData != null && businessPlanData.getStep2_marketAnalysis() != null ? "✅" : "❌");
+        log.info("   - Step3 (실현 방안): {}",
+                businessPlanData != null && businessPlanData.getStep3_solutionFeasibility() != null ? "✅" : "❌");
+        log.info("   - Step4 (사업화 전략): {}",
+                businessPlanData != null && businessPlanData.getStep4_commercializationStrategy() != null ? "✅" : "❌");
+        log.info("   - Step5 (팀 역량): {}",
+                businessPlanData != null && businessPlanData.getStep5_teamCapability() != null ? "✅" : "❌");
+        log.info("   - Step6 (재무 계획): {}",
+                businessPlanData != null && businessPlanData.getStep6_financialPlan() != null ? "✅" : "❌");
     }
     
     /**
      * generationOptions 로깅
      */
-    private void logGenerationOptions(Map<String, Object> generationOptions) {
-        String tone = extractString(generationOptions, "tone", "professional");
-        String targetLength = extractString(generationOptions, "targetLength", "standard");
-        String outputFormat = extractString(generationOptions, "outputFormat", "markdown");
-        String language = extractString(generationOptions, "language", "ko");
-        List<?> sections = extractList(generationOptions, "sections");
+    private void logGenerationOptions(BusinessPlanGenerateRequest.GenerationOptions generationOptions) {
+        String tone = generationOptions != null && generationOptions.getTone() != null
+                ? generationOptions.getTone()
+                : "professional";
+        String targetLength = generationOptions != null && generationOptions.getTargetLength() != null
+                ? generationOptions.getTargetLength()
+                : "standard";
+        String outputFormat = generationOptions != null && generationOptions.getOutputFormat() != null
+                ? generationOptions.getOutputFormat()
+                : "markdown";
+        String language = generationOptions != null && generationOptions.getLanguage() != null
+                ? generationOptions.getLanguage()
+                : "ko";
+        List<String> sections = generationOptions != null ? generationOptions.getSections() : null;
         
         log.info("⚙️ generationOptions:");
         log.info("   - tone: {}", tone);
@@ -610,40 +605,5 @@ public class BusinessPlanController {
         log.info("   - outputFormat: {}", outputFormat);
         log.info("   - language: {}", language);
         log.info("   - sections: {} 개", sections != null ? sections.size() : 0);
-    }
-    
-    /**
-     * Map에서 중첩 Map 추출
-     */
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> extractMap(Map<String, Object> source, String key) {
-        Object value = source.get(key);
-        if (value instanceof Map) {
-            return (Map<String, Object>) value;
-        }
-        return Map.of();
-    }
-    
-    /**
-     * Map에서 String 값 추출 (기본값 지원)
-     */
-    private String extractString(Map<String, Object> source, String key, String defaultValue) {
-        Object value = source.get(key);
-        if (value instanceof String) {
-            return (String) value;
-        }
-        return defaultValue;
-    }
-    
-    /**
-     * Map에서 List 값 추출
-     */
-    @SuppressWarnings("unchecked")
-    private List<?> extractList(Map<String, Object> source, String key) {
-        Object value = source.get(key);
-        if (value instanceof List) {
-            return (List<?>) value;
-        }
-        return null;
     }
 }

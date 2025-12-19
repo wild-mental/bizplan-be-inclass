@@ -60,3 +60,6 @@ build/
 .pytest_cache/
 .coverage
 htmlcov/
+
+### Logs ###
+logs/

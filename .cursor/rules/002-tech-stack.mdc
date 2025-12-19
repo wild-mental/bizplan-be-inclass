@@ -6,8 +6,8 @@ alwaysApply: true
 Referenced in: [001-project-overview.mdc](001-project-overview.mdc)
 
 ## Backend Core (Spring Boot)
-- Language: Java 17 (LTS)
-- Framework: Spring Boot 3.x
+- Language: Java 21 (LTS)
+- Framework: Spring Boot 4.0.0
 - Build Tool: Gradle (Kotlin DSL recommended)
 - Database: MySQL 8.x (InnoDB, utf8mb4)
 - ORM: Spring Data JPA (Hibernate)

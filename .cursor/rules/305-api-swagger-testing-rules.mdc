@@ -1,0 +1,43 @@
+---
+description: API implementation must be verified via Swagger examples and test calls
+globs: ["**/*Controller.java", "**/*Router.py"]
+alwaysApply: false
+---
+# API Swagger Testing Rules (305)
+
+## 1. Mandatory Swagger Documentation
+- **All public REST APIs** must be reflected in the Swagger/OpenAPI schema.
+- When creating or modifying controllers:
+  - Document **request and response specifications** using annotations such as `@Operation`, `@ApiResponses`, and `@RequestBody`/`@Parameter`.
+  - Provide JSON examples (`examples` / `ExampleObject`) that match the **actual format consumed/produced by the frontend**.
+
+## 2. Required Swagger Verification After Implementation
+- After implementing or updating any API, you **must** perform the following steps **before merging/committing code**:
+  1. Start the server: `./gradlew bootRun` (or the relevant script for your stack).
+  2. Access Swagger UI in your browser: `http://localhost:8080/swagger-ui/index.html`
+  3. Select the affected API and **review request examples** (request body, query/path parameters) directly in Swagger.
+  4. Use the **Try it out** feature to execute a real test call.
+
+## 3. Response Format and Status Code Validation
+- When performing test calls via Swagger, verify the following:
+  - **HTTP Status Codes**: Ensure they comply (`200/201/4xx/5xx`) with policies defined in [304-api-rest-design-rules.mdc].
+  - **Response JSON Structure**: Confirm the use of standard response wrappers such as `success`, `data`, `error`, etc.
+  - **Presence of Required Fields**: Check that all fields marked mandatory in the API spec and DTO definitions are present in the response.
+  - **Consistency with Examples**: Confirm that the actual response structure and types match as closely as possible to the definitions in `examples`.
+
+## 4. Checklist to Prevent Regressions
+- The following should be verified not only for new features, but also for any changes to existing APIs:
+  - [ ] Re-read the **request/response specification** for the endpoint in Swagger UI.
+  - [ ] Ensure any changed DTO/entity fields are reflected in the Swagger schema.
+  - [ ] Perform at least one real test call using Swagger UI and manually check the response.
+  - [ ] For APIs with error cases, reproduce at least one representative error response in Swagger.
+
+## 5. PR / Code Review Verification Points
+- Reviewers should approve PRs based on the following:
+  - All required **Swagger annotations** (`@Operation`, `@ApiResponses`, etc.) are present.
+  - **Example requests and responses** are provided in Swagger UI, and the PR description or commit message notes successful manual validation in Swagger.
+  - When needed, the PR description includes a **sample Request Body** enabling others to reproduce the test on their local environment.
+
+## 6. Exceptions
+- Even for temporary internal debug or POC endpoints, **Swagger documentation and test call procedures must not be omitted without explicit team agreement**.
+- For special cases that cannot be tested via Swagger UI (e.g., file uploads, webhooks), you must validate via alternative tools (Postman/REST Client scripts, etc.) and specify the details in the PR.
