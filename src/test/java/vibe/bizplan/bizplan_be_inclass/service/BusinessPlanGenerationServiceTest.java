@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -20,6 +22,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import vibe.bizplan.bizplan_be_inclass.dto.businessplan.BusinessPlanGenerateRequest;
 import vibe.bizplan.bizplan_be_inclass.dto.businessplan.BusinessPlanGenerateResponse;
 import vibe.bizplan.bizplan_be_inclass.repository.BusinessPlanGenerationRepository;
+import vibe.bizplan.bizplan_be_inclass.repository.BusinessPlanRepository;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
@@ -49,6 +52,9 @@ class BusinessPlanGenerationServiceTest {
 
     @Mock
     private BusinessPlanGenerationRepository generationRepository;
+
+    @Mock
+    private BusinessPlanRepository businessPlanRepository;
 
     @InjectMocks
     private BusinessPlanGenerationService service;
@@ -137,10 +143,77 @@ class BusinessPlanGenerationServiceTest {
 
         // then
         assertThat(response.getSections()).isNotNull();
+        // H2 헤더가 있는 경우 섹션이 분할됨
         assertThat(response.getSections()).hasSize(1);
         assertThat(response.getSections().get(0).getId()).isEqualTo("section-1");
-        assertThat(response.getSections().get(0).getTitle()).isEqualTo("AI 보강 사업계획서");
-        assertThat(response.getSections().get(0).getContent()).contains("사업 개요");
+        // H2 헤더에서 추출한 제목이 사용됨
+        assertThat(response.getSections().get(0).getTitle()).isEqualTo("1. 사업 개요");
+        assertThat(response.getSections().get(0).getContent()).contains("생성된 사업계획서 내용입니다");
+        
+        // DB 저장이 호출되었는지 확인 (Rule 306: Service Layer에서 Repository 호출)
+        verify(businessPlanRepository, times(1)).save(any());
+    }
+
+    @Test
+    @DisplayName("generateBusinessPlan - 여러 H2 헤더가 있는 경우 섹션이 올바르게 분할된다")
+    void generateBusinessPlan_multipleH2Headers_createsMultipleSections() {
+        // given: 여러 H2 헤더를 포함한 마크다운 콘텐츠
+        AssistantMessage assistantMessage = mock(AssistantMessage.class);
+        when(assistantMessage.getText()).thenReturn("""
+                ## 1. 사업 개요
+                
+                첫 번째 섹션의 내용입니다.
+                
+                ## 2. 시장 분석
+                
+                두 번째 섹션의 내용입니다.
+                
+                ## 3. 재무 계획
+                
+                세 번째 섹션의 내용입니다.
+                """);
+
+        Generation generation = mock(Generation.class);
+        when(generation.getOutput()).thenReturn(assistantMessage);
+
+        ChatResponse chatResponse = mock(ChatResponse.class);
+        when(chatResponse.getResult()).thenReturn(generation);
+        when(chatResponse.getMetadata()).thenReturn(mockMetadata);
+
+        when(chatModel.call(any(Prompt.class))).thenReturn(chatResponse);
+
+        String projectId = "proj-12345";
+        String templateType = "pre-startup";
+        String itemName = "AI 기반 학습 플랫폼";
+        long startTimeMs = System.currentTimeMillis();
+
+        // when
+        BusinessPlanGenerateResponse response = service.generateBusinessPlan(
+                request, projectId, templateType, itemName, startTimeMs
+        );
+
+        // then: 여러 섹션이 생성되어야 함
+        assertThat(response.getSections()).isNotNull();
+        assertThat(response.getSections().size()).isGreaterThan(1); // 여러 섹션이 있어야 함
+        
+        // 각 섹션이 올바르게 분할되었는지 확인
+        assertThat(response.getSections().get(0).getTitle()).isEqualTo("1. 사업 개요");
+        assertThat(response.getSections().get(0).getContent()).contains("첫 번째 섹션의 내용입니다");
+        
+        if (response.getSections().size() > 1) {
+            assertThat(response.getSections().get(1).getTitle()).isEqualTo("2. 시장 분석");
+            assertThat(response.getSections().get(1).getContent()).contains("두 번째 섹션의 내용입니다");
+        }
+        
+        if (response.getSections().size() > 2) {
+            assertThat(response.getSections().get(2).getTitle()).isEqualTo("3. 재무 계획");
+            assertThat(response.getSections().get(2).getContent()).contains("세 번째 섹션의 내용입니다");
+        }
+        
+        System.out.println("생성된 섹션 수: " + response.getSections().size());
+        for (int i = 0; i < response.getSections().size(); i++) {
+            System.out.println("섹션 " + (i + 1) + ": " + response.getSections().get(i).getTitle());
+        }
     }
 
     @Test
@@ -431,7 +504,14 @@ class BusinessPlanGenerationServiceTest {
         verify(chatModel, times(1)).call(any(Prompt.class));
     }
 
+    /**
+     * 통합 테스트: 실제 리포지토리를 사용하는 로깅 테스트
+     * 통합 테스트 실행 시에만 활성화 (runIntegrationTests=true 시스템 프로퍼티 필요)
+     * 단위 테스트 실행 시에는 자동으로 제외됨
+     */
     @Test
+    @Tag("integration")
+    @EnabledIfSystemProperty(named = "runIntegrationTests", matches = "true")
     @DisplayName("generateBusinessPlan - 실제 리포지토리를 사용해 로깅까지 수행된다")
     void generateBusinessPlan_withRealRepository_logsUsage() throws JsonProcessingException {
         // given: 실제 리포지토리 + 로그 캡처 설정
@@ -445,8 +525,9 @@ class BusinessPlanGenerationServiceTest {
         ObjectMapper realMapper = new ObjectMapper();
 
         // 별도의 서비스 인스턴스를 생성 (Mock ChatModel + Real Repository)
+        BusinessPlanRepository realBusinessPlanRepository = mock(BusinessPlanRepository.class);
         BusinessPlanGenerationService integrationService =
-                new BusinessPlanGenerationService(chatModel, realMapper, realRepository);
+                new BusinessPlanGenerationService(chatModel, realMapper, realRepository, realBusinessPlanRepository);
         ReflectionTestUtils.setField(integrationService, "geminiModelName", "gemini-2.5-flash-lite");
 
         // ChatModel 응답 모킹 (간단 버전)
@@ -493,15 +574,23 @@ class BusinessPlanGenerationServiceTest {
         assertThat(msg).contains("Throughput:");
     }
 
+    /**
+     * 통합 테스트: 실제 파일 로깅을 검증하는 테스트
+     * 통합 테스트 실행 시에만 활성화 (runIntegrationTests=true 시스템 프로퍼티 필요)
+     * 단위 테스트 실행 시에는 자동으로 제외됨
+     */
     @Test
+    @Tag("integration")
+    @EnabledIfSystemProperty(named = "runIntegrationTests", matches = "true")
     @DisplayName("generateBusinessPlan - 실제 파일에 로그가 기록되는지 검증")
     void generateBusinessPlan_withRealRepository_writesToFile() throws JsonProcessingException {
         // given: 실제 리포지토리 사용
         BusinessPlanGenerationRepository realRepository = new BusinessPlanGenerationRepository();
         ObjectMapper realMapper = new ObjectMapper();
+        BusinessPlanRepository realBusinessPlanRepository = mock(BusinessPlanRepository.class);
 
         BusinessPlanGenerationService integrationService =
-                new BusinessPlanGenerationService(chatModel, realMapper, realRepository);
+                new BusinessPlanGenerationService(chatModel, realMapper, realRepository, realBusinessPlanRepository);
         ReflectionTestUtils.setField(integrationService, "geminiModelName", "gemini-2.5-flash-lite");
 
         // ChatModel 응답 모킹
