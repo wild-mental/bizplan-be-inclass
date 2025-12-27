@@ -78,6 +78,24 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Gemini 생성 예외 처리
+     * 
+     * @param ex GeminiGenerationException
+     * @return 에러 응답
+     */
+    @ExceptionHandler(GeminiGenerationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleGeminiGenerationException(
+            GeminiGenerationException ex) {
+        
+        log.error("Gemini generation failed: businessPlanId={}, errorCode={}, retryCount={}, message={}",
+                ex.getBusinessPlanId(), ex.getErrorCode(), ex.getRetryCount(), ex.getMessage(), ex.getCause());
+        
+        return ResponseEntity
+                .status(ex.getHttpStatus())
+                .body(ApiResponse.error(ex.getErrorCode(), ex.getMessage()));
+    }
+
+    /**
      * 기타 예외 처리 (500 Internal Server Error)
      * 
      * @param ex Exception
