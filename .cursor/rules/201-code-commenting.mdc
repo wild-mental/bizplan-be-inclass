@@ -3,6 +3,18 @@ description: Enforces mandatory meaningful comments throughout the codebase to i
 alwaysApply: false
 ---
 # COMMENTS
-- Always include meaningful comments.
-- Delete comments only if they are obsolete.
-- Comments should improve code readability and maintainability.
+
+## Basic Comments
+- All code must include comments that provide thorough, general explanations of engineering processes, understandable to both technical and non-technical stakeholders.
+- Comments should clearly describe intent, business context, core logic, workflow steps, and potential edge cases in plain language.
+- Remove or update any outdated or inaccurate comments without exception.
+- Explanations must allow first-time readers to easily grasp the rationale, structure, and purpose of the code, facilitating effective collaboration and future maintenance.
+- When technical terminology is unavoidable, include brief clarifications or examples in plain English to ensure clarity for non-engineers.
+
+## Engineer Friendly Comments
+- For code implementing highly abstract algorithms, comments must explicitly address:
+  - How memory is allocated, utilized, and potentially released at both the language and system level.
+  - The lifecycle and scope of key variables and data structures throughout the execution.
+  - The management of dependencies, including external libraries or system resources, and any initialization/cleanup requirements.
+  - The relationship between the algorithm and the surrounding call structure (e.g., entry points, synchronous/asynchronous flows, error propagation).
+- Such comments should clarify not just "what" the code does, but "how" it interacts with lower-level platform features and why specific engineering decisions were made, supporting future troubleshooting and optimization.

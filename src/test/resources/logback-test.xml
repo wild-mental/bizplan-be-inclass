@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!-- 콘솔 출력 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %5level --- [%15.15t] %-40.40logger{39} : %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Gemini Usage Log 전용 파일 출력 (테스트용) -->
+    <appender name="GEMINI_USAGE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 테스트용 파일 경로: logs/gemini-usage-test.log -->
+        <file>logs/gemini-usage-test.log</file>
+        
+        <!-- 즉시 flush하여 테스트에서 파일 내용을 바로 확인 가능하도록 -->
+        <immediateFlush>true</immediateFlush>
+        
+        <!-- 롤링 정책: 일별 + 크기 기반 롤링 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/gemini-usage-test.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+            <totalSizeCap>50MB</totalSizeCap>
+        </rollingPolicy>
+        
+        <!-- INFO 레벨만 기록 (WARN/ERROR/DEBUG는 제외) -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>NEUTRAL</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        
+        <encoder>
+            <!-- CSV 형식으로 저장하여 분석 용이하게 -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS},%msg%n</pattern>
+            <!-- 즉시 flush -->
+            <immediateFlush>true</immediateFlush>
+        </encoder>
+    </appender>
+
+    <!-- Gemini 에러 로그 전용 파일 출력 (테스트용) -->
+    <appender name="GEMINI_ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 테스트용 파일 경로: logs/gemini-usage-test-err.log -->
+        <file>logs/gemini-usage-test-err.log</file>
+        
+        <!-- 즉시 flush하여 테스트에서 파일 내용을 바로 확인 가능하도록 -->
+        <immediateFlush>true</immediateFlush>
+        
+        <!-- 롤링 정책: 일별 + 크기 기반 롤링 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/gemini-usage-test-err.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+            <totalSizeCap>50MB</totalSizeCap>
+        </rollingPolicy>
+        
+        <!-- WARN/ERROR 레벨만 기록 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+        
+        <encoder>
+            <!-- 상세한 에러 정보 포함 (스택 트레이스 포함) -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %5level --- [%15.15t] %-40.40logger{39} : %msg%n%ex</pattern>
+            <!-- 즉시 flush -->
+            <immediateFlush>true</immediateFlush>
+        </encoder>
+    </appender>
+
+    <!-- Repository의 INFO 레벨 로그만 Usage 파일로 기록 -->
+    <!-- Repository는 "[Gemini Usage Log]" 메시지만 기록하므로 필터 불필요 -->
+    <logger name="vibe.bizplan.bizplan_be_inclass.repository.BusinessPlanGenerationRepository" level="INFO" additivity="true">
+        <appender-ref ref="GEMINI_USAGE_FILE"/>
+    </logger>
+    
+    <!-- Service와 Repository의 WARN/ERROR 레벨 로그는 에러 파일로 기록 -->
+    <logger name="vibe.bizplan.bizplan_be_inclass.service.BusinessPlanGenerationService" level="WARN" additivity="true">
+        <appender-ref ref="GEMINI_ERROR_FILE"/>
+    </logger>
+    
+    <logger name="vibe.bizplan.bizplan_be_inclass.repository.BusinessPlanGenerationRepository" level="WARN" additivity="true">
+        <appender-ref ref="GEMINI_ERROR_FILE"/>
+    </logger>
+
+    <!-- 루트 로거: 콘솔 출력 -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

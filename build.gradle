@@ -19,6 +19,10 @@ repositories {
 }
 
 dependencies {
+	// Spring AI (Google Gemini)
+	implementation platform('org.springframework.ai:spring-ai-bom:2.0.0-M1')
+	implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
+
 	// Web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	
@@ -58,4 +62,11 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	
+	// 통합 테스트 실행 시 로깅 테스트 활성화
+	// IntegrationTest로 끝나는 테스트 클래스를 실행할 때 자동으로 활성화
+	if (project.hasProperty('integration') || 
+		project.gradle.startParameter.taskNames.any { it.contains('IntegrationTest') }) {
+		systemProperty 'runIntegrationTests', 'true'
+	}
 }

@@ -1,0 +1,427 @@
+---
+description: Detailed rules for Spring Boot three-tier architecture (Controller-Service-Repository)
+globs: ["**/*Controller.java", "**/*Service.java", "**/*Repository.java"]
+alwaysApply: false
+---
+# Three-Tier Architecture Rules
+
+Referenced in: [301-spring-boot-java-rules.mdc](301-spring-boot-java-rules.mdc), [303-database-mysql-jpa-rules.mdc](303-database-mysql-jpa-rules.mdc)
+
+## 1. Architecture Overview
+
+```
+┌─────────────────────────────────────┐
+│         Controller Layer            │  ← HTTP/REST Interface
+│  (DTOs, Request/Response Handling)  │
+│  - Request Validation               │
+│  - DTO ↔ Entity Mapping             │
+│  - HTTP Status Code Management      │
+└──────────────┬──────────────────────┘
+               │
+               │ Calls Service Methods
+               │ (DTOs only, NO Entities)
+               │
+┌──────────────▼──────────────────────┐
+│          Service Layer              │  ← Business Logic
+│   (Domain Logic, Transactions)      │
+│  - Business Rules                   │
+│  - Entity ↔ DTO Mapping              │
+│  - Transaction Management            │
+│  - External API Calls                │
+└──────────────┬──────────────────────┘
+               │
+               │ Calls Repository Methods
+               │ (Entities only, NO DTOs)
+               │
+┌──────────────▼──────────────────────┐
+│        Repository Layer             │  ← Data Access
+│    (Spring Data JPA, Entities)      │
+│  - CRUD Operations                   │
+│  - Query Methods                     │
+│  - Entity Persistence                │
+└──────────────┬──────────────────────┘
+               │
+               │ SQL/JPQL
+               │
+┌──────────────▼──────────────────────┐
+│          Database (MySQL)           │
+└─────────────────────────────────────┘
+```
+
+## 2. Layer Responsibilities
+
+### 2.1 Controller Layer
+
+**Package**: `*.controller`
+
+**Responsibilities**:
+- ✅ HTTP 요청/응답 처리
+- ✅ Request DTO 검증 (`@Valid`, `@NotNull` 등)
+- ✅ DTO ↔ Entity 변환 (Service 호출 전/후)
+- ✅ HTTP 상태 코드 결정
+- ✅ Swagger/OpenAPI 문서화 (`@Operation`, `@ApiResponse`)
+- ✅ 로깅 (요청 수신, 응답 반환)
+
+**MUST NOT**:
+- ❌ 비즈니스 로직 포함
+- ❌ Entity 직접 사용 (DTO만 사용)
+- ❌ Repository 직접 호출
+- ❌ 트랜잭션 관리 (`@Transactional` 사용 금지)
+
+**Example**:
+```java
+@RestController
+@RequestMapping("/api/v1/business-plan")
+@RequiredArgsConstructor
+@Slf4j
+public class BusinessPlanController {
+    private final BusinessPlanService businessPlanService;
+    
+    @PostMapping("/generate")
+    @Operation(summary = "사업계획서 생성")
+    public ResponseEntity<ApiResponse<BusinessPlanResponse>> generate(
+            @Valid @RequestBody BusinessPlanRequest request) {
+        log.info("사업계획서 생성 요청 수신");
+        
+        // DTO → Service 호출
+        BusinessPlanResponse response = businessPlanService.generateBusinessPlan(request);
+        
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+}
+```
+
+### 2.2 Service Layer
+
+**Package**: `*.service`
+
+**Responsibilities**:
+- ✅ 비즈니스 로직 구현
+- ✅ DTO ↔ Entity 변환
+- ✅ 트랜잭션 관리 (`@Transactional`)
+- ✅ 외부 API 호출 (Gemini, 외부 서비스 등)
+- ✅ 예외 처리 및 변환
+- ✅ 데이터 검증 (비즈니스 규칙)
+
+**MUST NOT**:
+- ❌ HTTP 관련 코드 (Request/Response 객체 직접 사용)
+- ❌ Controller에 직접 의존
+- ❌ Entity를 DTO로 직접 반환 (명시적 변환 필요)
+
+**Transaction Management**:
+```java
+@Service
+@RequiredArgsConstructor
+@Slf4j
+@Transactional(readOnly = true)  // 기본은 읽기 전용
+public class BusinessPlanService {
+    private final BusinessPlanRepository repository;
+    
+    @Transactional  // 쓰기 작업은 명시적으로 트랜잭션
+    public BusinessPlanResponse generateBusinessPlan(BusinessPlanRequest request) {
+        // 1. DTO → Entity 변환
+        BusinessPlan entity = mapToEntity(request);
+        
+        // 2. 비즈니스 로직
+        entity = processBusinessLogic(entity);
+        
+        // 3. Repository 저장
+        BusinessPlan saved = repository.save(entity);
+        
+        // 4. Entity → DTO 변환
+        return mapToResponse(saved);
+    }
+}
+```
+
+### 2.3 Repository Layer
+
+**Package**: `*.repository`
+
+**Responsibilities**:
+- ✅ 데이터 접근 (CRUD)
+- ✅ JPA Query Methods
+- ✅ Entity Persistence
+- ✅ 사용량 로깅 (선택적)
+
+**MUST NOT**:
+- ❌ 비즈니스 로직 포함
+- ❌ DTO 직접 사용 (Entity만 사용)
+- ❌ 트랜잭션 관리 (Service에서 관리)
+
+**Example**:
+```java
+@Repository
+public interface BusinessPlanRepository extends JpaRepository<BusinessPlan, UUID> {
+    // Query Methods
+    List<BusinessPlan> findByProjectId(UUID projectId);
+    
+    // Custom Query
+    @Query("SELECT bp FROM BusinessPlan bp WHERE bp.status = :status")
+    List<BusinessPlan> findByStatus(@Param("status") String status);
+}
+```
+
+## 3. Data Flow Rules
+
+### 3.1 Request Flow (Controller → Service → Repository)
+
+```
+HTTP Request (JSON)
+    ↓
+Controller: Request DTO 생성
+    ↓
+Controller: @Valid 검증
+    ↓
+Service: DTO → Entity 변환
+    ↓
+Service: 비즈니스 로직 처리
+    ↓
+Repository: Entity 저장
+    ↓
+Database: INSERT/UPDATE
+```
+
+### 3.2 Response Flow (Repository → Service → Controller)
+
+```
+Database: SELECT 결과
+    ↓
+Repository: Entity 반환
+    ↓
+Service: Entity → DTO 변환
+    ↓
+Service: 비즈니스 로직 적용
+    ↓
+Controller: DTO → Response 변환
+    ↓
+HTTP Response (JSON)
+```
+
+### 3.3 DTO ↔ Entity Mapping Rules
+
+**Service Layer에서만 변환 수행**:
+- Controller는 DTO만 다룸
+- Repository는 Entity만 다룸
+- Service가 변환 책임을 가짐
+
+**Mapping 방법**:
+- 간단한 경우: 수동 매핑 (명확성)
+- 복잡한 경우: MapStruct 또는 수동 Builder 패턴
+
+```java
+// Service에서 변환 예시
+private BusinessPlan mapToEntity(BusinessPlanRequest request) {
+    return BusinessPlan.builder()
+            .projectId(UUID.fromString(request.getProjectId()))
+            .templateType(request.getTemplateType())
+            .requestDataJson(objectMapper.writeValueAsString(request))
+            .build();
+}
+
+private BusinessPlanResponse mapToResponse(BusinessPlan entity) {
+    return BusinessPlanResponse.builder()
+            .businessPlanId(entity.getId().toString())
+            .projectId(entity.getProjectId().toString())
+            .sections(parseSections(entity.getSectionsJson()))
+            .build();
+}
+```
+
+## 4. Exception Handling
+
+### 4.1 Layer별 예외 처리
+
+**Controller**:
+- ✅ `@Valid` 검증 실패 → `MethodArgumentNotValidException` (자동 처리)
+- ✅ Service 예외를 그대로 전달 (GlobalExceptionHandler에서 처리)
+
+**Service**:
+- ✅ 비즈니스 예외 발생 시 커스텀 예외로 변환
+- ✅ Repository 예외를 비즈니스 예외로 변환
+- ✅ 예외에 컨텍스트 정보 포함 (businessPlanId, projectId 등)
+
+**Repository**:
+- ✅ JPA 예외는 그대로 전달 (Service에서 처리)
+- ✅ 데이터 접근 예외는 Service로 전달
+
+### 4.2 Global Exception Handler
+
+```java
+@RestControllerAdvice
+@Slf4j
+public class GlobalExceptionHandler {
+    
+    @ExceptionHandler(BusinessPlanNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNotFound(BusinessPlanNotFoundException ex) {
+        return ResponseEntity.status(404)
+                .body(ApiResponse.error("NOT_FOUND", ex.getMessage()));
+    }
+    
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<Void>> handleValidation(MethodArgumentNotValidException ex) {
+        // Validation 에러 처리
+    }
+}
+```
+
+## 5. Transaction Management
+
+### 5.1 Service Layer에서만 트랜잭션 관리
+
+**Rules**:
+- ✅ Service 클래스에 `@Transactional(readOnly = true)` 기본 설정
+- ✅ 쓰기 작업 메서드에 `@Transactional` 명시
+- ✅ Controller/Repository에는 `@Transactional` 사용 금지
+
+**Example**:
+```java
+@Service
+@Transactional(readOnly = true)  // 기본 읽기 전용
+public class BusinessPlanService {
+    
+    @Transactional  // 쓰기 작업
+    public BusinessPlanResponse create(BusinessPlanRequest request) {
+        // ...
+    }
+    
+    // 읽기 작업은 기본 설정 사용
+    public BusinessPlanResponse findById(UUID id) {
+        // ...
+    }
+}
+```
+
+## 6. Dependency Injection
+
+### 6.1 Constructor Injection Only
+
+**Rules**:
+- ✅ `@RequiredArgsConstructor` (Lombok) 사용
+- ✅ `@Autowired` 필드 주입 금지
+- ✅ Setter 주입 금지
+
+**Example**:
+```java
+@Service
+@RequiredArgsConstructor  // Constructor Injection
+@Slf4j
+public class BusinessPlanService {
+    private final BusinessPlanRepository repository;
+    private final ObjectMapper objectMapper;
+    // Lombok이 자동으로 생성자 생성
+}
+```
+
+## 7. Testing Strategy
+
+### 7.1 Layer별 테스트
+
+**Controller Test**:
+- MockMvc 사용
+- Service Mock
+- DTO 검증 테스트
+
+**Service Test**:
+- Repository Mock
+- 비즈니스 로직 테스트
+- 트랜잭션 테스트
+
+**Repository Test**:
+- `@DataJpaTest` 사용
+- 실제 DB (H2) 사용
+- Query 메서드 테스트
+
+## 8. Common Patterns
+
+### 8.1 CRUD Operations
+
+```java
+// Service Pattern
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class BusinessPlanService {
+    private final BusinessPlanRepository repository;
+    
+    @Transactional
+    public BusinessPlanResponse create(BusinessPlanRequest request) {
+        BusinessPlan entity = mapToEntity(request);
+        BusinessPlan saved = repository.save(entity);
+        return mapToResponse(saved);
+    }
+    
+    public BusinessPlanResponse findById(UUID id) {
+        BusinessPlan entity = repository.findById(id)
+                .orElseThrow(() -> new BusinessPlanNotFoundException(id));
+        return mapToResponse(entity);
+    }
+    
+    @Transactional
+    public BusinessPlanResponse update(UUID id, BusinessPlanRequest request) {
+        BusinessPlan entity = repository.findById(id)
+                .orElseThrow(() -> new BusinessPlanNotFoundException(id));
+        updateEntity(entity, request);
+        BusinessPlan saved = repository.save(entity);
+        return mapToResponse(saved);
+    }
+    
+    @Transactional
+    public void delete(UUID id) {
+        BusinessPlan entity = repository.findById(id)
+                .orElseThrow(() -> new BusinessPlanNotFoundException(id));
+        repository.delete(entity);
+    }
+}
+```
+
+## 9. Violations to Avoid
+
+### ❌ Anti-Patterns
+
+1. **Controller에서 Repository 직접 호출**
+   ```java
+   // ❌ BAD
+   @RestController
+   public class BadController {
+       private final BusinessPlanRepository repository;  // 금지!
+   }
+   ```
+
+2. **Service에서 HTTP 객체 직접 사용**
+   ```java
+   // ❌ BAD
+   @Service
+   public class BadService {
+       public void process(HttpServletRequest request) {  // 금지!
+       }
+   }
+   ```
+
+3. **Entity를 Controller에서 직접 반환**
+   ```java
+   // ❌ BAD
+   @GetMapping("/{id}")
+   public BusinessPlan get(@PathVariable UUID id) {  // Entity 직접 반환 금지!
+       return repository.findById(id).orElseThrow();
+   }
+   ```
+
+4. **Repository에 비즈니스 로직 포함**
+   ```java
+   // ❌ BAD
+   @Repository
+   public class BadRepository {
+       public void validateAndSave(BusinessPlan plan) {  // 비즈니스 로직 금지!
+           if (plan.getStatus().equals("invalid")) {
+               throw new ValidationException();
+           }
+           save(plan);
+       }
+   }
+   ```
+
+## See also:
+- [301-spring-boot-java-rules.mdc](301-spring-boot-java-rules.mdc) for general Java/Spring rules
+- [303-database-mysql-jpa-rules.mdc](303-database-mysql-jpa-rules.mdc) for database design rules
+- [304-api-rest-design-rules.mdc](304-api-rest-design-rules.mdc) for API design rules
