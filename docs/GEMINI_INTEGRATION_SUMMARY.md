@@ -15,8 +15,9 @@
 6. [API 인터페이스 유지](#api-인터페이스-유지)
 7. [토큰 사용량 추적](#토큰-사용량-추적)
 8. [로깅 구조](#로깅-구조)
-9. [테스트 코드](#테스트-코드)
-10. [추가 구현 사항](#추가-구현-사항)
+9. [데이터베이스 저장](#데이터베이스-저장)
+10. [테스트 코드](#테스트-코드)
+11. [추가 구현 사항](#추가-구현-사항)
 
 ---
 
@@ -133,7 +134,8 @@ Controller → Service → Repository
 |--------|--------|------|
 | **Controller** | `BusinessPlanController` | HTTP 요청/응답 처리, 요청 데이터 추출/검증 |
 | **Service** | `BusinessPlanGenerationService` | 비즈니스 로직, Gemini 호출, DTO 매핑 |
-| **Repository** | `BusinessPlanGenerationRepository` | 사용량 로깅 (향후 DB 저장 확장) |
+| **Repository** | `BusinessPlanGenerationRepository` | 사용량 로깅 |
+| **Repository** | `BusinessPlanRepository` | 사업계획서 데이터 DB 저장 (JPA) |
 
 ---
 
@@ -295,8 +297,14 @@ POST /api/v1/business-plan/generate
 - FE에서 표시하여 사용자에게 투명성 제공
 - API 응답을 통한 실시간 사용량 확인
 
+#### 데이터베이스 저장 (2025-12-20 완료)
+- ✅ `BusinessPlan` 엔티티 생성
+- ✅ `BusinessPlanRepository` 인터페이스 생성
+- ✅ 요청 데이터, 응답 데이터, Gemini 메타데이터 모두 DB 저장
+- ✅ 3-tier 구조 준수 (Service Layer에서 DTO → Entity 변환)
+
 #### 향후 확장 가능성
-- DB 저장 시 사용량 통계/알림 기능 확장 가능
+- 사용량 통계/알림 기능 확장 가능
 - 대시보드 구축 (Grafana 등)
 - 예산 초과 알림 기능
 
@@ -798,6 +806,115 @@ public class JacksonConfig {
 
 ---
 
+## 데이터베이스 저장
+
+### 개요
+
+2025-12-20에 비즈니스 플랜 생성 요청 시 제출된 요청 데이터, 생성된 사업계획서 문서 응답, 그리고 Gemini 요청 메타데이터를 모두 데이터베이스에 저장하는 기능이 구현되었습니다.
+
+### 구현 내용
+
+#### 1. 엔티티 및 Repository 생성
+
+**BusinessPlan 엔티티** (`entity/BusinessPlan.java`):
+- 요청 데이터 전체 (JSON)
+- 응답 섹션 데이터 (JSON)
+- Gemini 메타데이터 (토큰 사용량, 시간 정보 등 JSON)
+- 프로젝트 ID, 사용자 ID, 템플릿 유형 등 메타 정보
+
+**BusinessPlanRepository** (`repository/BusinessPlanRepository.java`):
+- Spring Data JPA 인터페이스
+- `findByBusinessPlanId()`, `findByProjectId()`, `findByUserId()`, `findByTemplateType()` 메서드 제공
+
+#### 2. 데이터베이스 스키마
+
+**Flyway 마이그레이션** (`V2__create_business_plans_table.sql`):
+```sql
+CREATE TABLE business_plans (
+    id CHAR(36) NOT NULL PRIMARY KEY,                    -- UUID
+    business_plan_id VARCHAR(50) NOT NULL UNIQUE,        -- bp-2025-12-20-xxx
+    project_id CHAR(36),                                 -- FK to projects (nullable)
+    user_id VARCHAR(36),
+    template_type VARCHAR(20) NOT NULL,
+    request_data_json TEXT NOT NULL,                     -- 요청 전체 JSON
+    response_sections_json TEXT NOT NULL,                -- 응답 섹션들 JSON
+    gemini_metadata_json TEXT,                           -- Gemini 메타데이터 JSON
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL
+)
+```
+
+#### 3. Service Layer 통합
+
+**BusinessPlanGenerationService**에 `saveBusinessPlanToDatabase()` 메서드 추가:
+- DTO → Entity 변환 (Rule 306: 3-tier 구조 준수)
+- JSON 직렬화 (요청, 응답, 메타데이터)
+- 트랜잭션 관리 (`@Transactional`)
+- 예외 처리 (JSON 직렬화 실패, UUID 파싱 실패 등)
+
+#### 4. 저장되는 데이터 상세
+
+**요청 데이터** (`request_data_json`):
+- `BusinessPlanGenerateRequest` 전체를 JSON으로 직렬화
+- 6단계 사업계획서 입력 데이터 포함
+- 생성 옵션 (톤, 길이, 포맷 등) 포함
+
+**응답 데이터** (`response_sections_json`):
+- 생성된 `BusinessPlanSection` 리스트를 JSON으로 직렬화
+- 각 섹션의 ID, 제목, 내용, 순서 포함
+
+**Gemini 메타데이터** (`gemini_metadata_json`):
+```json
+{
+  "startTimeIso": "2025-12-20T14:30:15.123Z",
+  "endTimeIso": "2025-12-20T14:30:19.500Z",
+  "durationMs": 4377,
+  "promptTokens": 1234,
+  "completionTokens": 5678,
+  "totalTokens": 6912,
+  "tokensPerSecond": 1578.25,
+  "modelUsed": "gemini-2.5-flash-lite",
+  "generationTimeMs": 4500,
+  "wordCount": 3847,
+  "characterCount": 12450,
+  "totalSections": 6
+}
+```
+
+### 3-Tier 구조 준수
+
+**Rule 306: Three-Tier Architecture Rules** 준수:
+- ✅ Controller: HTTP 요청/응답 처리, DTO만 사용
+- ✅ Service: 비즈니스 로직, DTO ↔ Entity 변환, 트랜잭션 관리
+- ✅ Repository: 데이터 접근, Entity만 사용
+
+**데이터 흐름**:
+```
+HTTP Request (JSON)
+    ↓
+Controller: Request DTO 생성
+    ↓
+Service: DTO → Entity 변환 + 비즈니스 로직
+    ↓
+Repository: Entity 저장
+    ↓
+Database: INSERT
+```
+
+### 테스트
+
+**BusinessPlanRepositoryTest**:
+- `save_validBusinessPlan_savesSuccessfully()`: 저장 기능 검증
+- `findByBusinessPlanId()`: ID로 조회 검증
+- `findByProjectId()`: 프로젝트별 조회 검증
+- `findByUserId()`: 사용자별 조회 검증
+- `findByTemplateType()`: 템플릿별 조회 검증
+
+**BusinessPlanGenerationServiceTest**:
+- DB 저장 호출 검증 (`verify(businessPlanRepository, times(1)).save(any())`)
+
+---
+
 ## 참고 문서
 
 - [Spring AI Documentation](https://docs.spring.io/spring-ai/reference/)
@@ -809,4 +926,4 @@ public class JacksonConfig {
 ---
 
 **작성자**: AI Assistant  
-**최종 수정일**: 2025-12-19
+**최종 수정일**: 2025-12-20
