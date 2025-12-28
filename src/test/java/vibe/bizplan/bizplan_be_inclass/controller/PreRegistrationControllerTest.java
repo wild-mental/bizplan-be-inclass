@@ -20,8 +20,7 @@ import vibe.bizplan.bizplan_be_inclass.exception.ResourceNotFoundException;
 import vibe.bizplan.bizplan_be_inclass.service.PreRegistrationService;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -31,6 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * PreRegistrationController 단위 테스트
  * MockMvc를 사용한 컨트롤러 레이어 테스트
+ * 
+ * PRE-SUB-FUNC-002 명세서 준수
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("PreRegistrationController 테스트")
@@ -71,7 +72,9 @@ class PreRegistrationControllerTest {
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.discountCode").value("MR2026-ABC123"))
                 .andExpect(jsonPath("$.data.discountRate").value(30))
-                .andExpect(jsonPath("$.data.selectedPlan").value("pro"));
+                .andExpect(jsonPath("$.data.plan").value("pro"))
+                .andExpect(jsonPath("$.data.promotionPhase").value("A"))
+                .andExpect(jsonPath("$.data.savings").value(239700));
     }
 
     @Test
@@ -116,8 +119,7 @@ class PreRegistrationControllerTest {
                 .name("")  // 빈 이름
                 .email("test@example.com")
                 .phone("010-1234-5678")
-                .selectedPlan(PlanType.pro)
-                .agreeTerms(true)
+                .plan(PlanType.pro)
                 .build();
         
         // when & then
@@ -136,8 +138,7 @@ class PreRegistrationControllerTest {
                 .name("테스트")
                 .email("invalid-email")  // 잘못된 이메일
                 .phone("010-1234-5678")
-                .selectedPlan(PlanType.pro)
-                .agreeTerms(true)
+                .plan(PlanType.pro)
                 .build();
         
         // when & then
@@ -195,7 +196,8 @@ class PreRegistrationControllerTest {
         mockMvc.perform(get("/api/v1/pre-registrations/test-uuid"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.discountCode").value("MR2026-ABC123"));
+                .andExpect(jsonPath("$.data.discountCode").value("MR2026-ABC123"))
+                .andExpect(jsonPath("$.data.registrationId").value("test-uuid"));
     }
 
     @Test
@@ -225,8 +227,9 @@ class PreRegistrationControllerTest {
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.isActive").value(true))
                 .andExpect(jsonPath("$.data.currentPhase").value("A"))
-                .andExpect(jsonPath("$.data.discountRate").value(30))
-                .andExpect(jsonPath("$.data.prices.pro.original").value(799000));
+                .andExpect(jsonPath("$.data.phases").isArray())
+                .andExpect(jsonPath("$.data.countdown").isNotEmpty())
+                .andExpect(jsonPath("$.data.pricing.pro.original").value(799000));
     }
 
     // ========== Helper Methods ==========
@@ -236,42 +239,68 @@ class PreRegistrationControllerTest {
                 .name("테스트")
                 .email("test@example.com")
                 .phone("010-1234-5678")
-                .selectedPlan(PlanType.pro)
-                .agreeTerms(true)
-                .agreeMarketing(false)
+                .plan(PlanType.pro)
+                .marketingConsent(false)
                 .build();
     }
 
     private PreRegistrationResponse createTestResponse() {
         return PreRegistrationResponse.builder()
-                .id("test-uuid")
+                .registrationId("test-uuid")
+                .plan("pro")
+                .promotionPhase("A")
                 .discountCode("MR2026-ABC123")
                 .discountRate(30)
-                .selectedPlan("pro")
                 .originalPrice(799000)
                 .discountedPrice(559300)
-                .savedAmount(239700)
-                .registeredAt(LocalDateTime.now())
-                .status("CONFIRMED")
+                .savings(239700)
+                .expiresAt(LocalDateTime.now().plusDays(5))
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
     private PromotionInfoResponse createPromotionInfoResponse() {
-        Map<String, PromotionInfoResponse.PriceInfo> prices = new HashMap<>();
-        prices.put("plus", PromotionInfoResponse.PriceInfo.builder()
-                .original(399000).discounted(279300).saved(119700).build());
-        prices.put("pro", PromotionInfoResponse.PriceInfo.builder()
-                .original(799000).discounted(559300).saved(239700).build());
-        prices.put("premium", PromotionInfoResponse.PriceInfo.builder()
-                .original(1499000).discounted(1049300).saved(449700).build());
+        Map<String, PromotionInfoResponse.PriceInfo> pricing = new HashMap<>();
+        pricing.put("plus", PromotionInfoResponse.PriceInfo.builder()
+                .original(399000).discounted(279300).savings(119700).build());
+        pricing.put("pro", PromotionInfoResponse.PriceInfo.builder()
+                .original(799000).discounted(559300).savings(239700).build());
+        pricing.put("premium", PromotionInfoResponse.PriceInfo.builder()
+                .original(1499000).discounted(1049300).savings(449700).build());
+
+        List<PromotionInfoResponse.PhaseInfo> phases = List.of(
+            PromotionInfoResponse.PhaseInfo.builder()
+                    .phase("A")
+                    .name("연말연시 특별 할인")
+                    .discountRate(30)
+                    .startDate(LocalDateTime.now().minusDays(1))
+                    .endDate(LocalDateTime.now().plusDays(5))
+                    .isCurrentPhase(true)
+                    .build(),
+            PromotionInfoResponse.PhaseInfo.builder()
+                    .phase("B")
+                    .name("얼리버드 할인")
+                    .discountRate(10)
+                    .startDate(LocalDateTime.now().plusDays(5))
+                    .endDate(LocalDateTime.now().plusMonths(2))
+                    .isCurrentPhase(false)
+                    .build()
+        );
+
+        PromotionInfoResponse.CountdownInfo countdown = PromotionInfoResponse.CountdownInfo.builder()
+                .targetDate(LocalDateTime.now().plusDays(5))
+                .remainingDays(5L)
+                .remainingHours(0L)
+                .remainingMinutes(0L)
+                .remainingSeconds(0L)
+                .build();
 
         return PromotionInfoResponse.builder()
                 .isActive(true)
                 .currentPhase("A")
-                .discountRate(30)
-                .phaseAEnd(LocalDateTime.now().plusDays(5))
-                .phaseBEnd(LocalDateTime.now().plusMonths(2))
-                .prices(prices)
+                .phases(phases)
+                .countdown(countdown)
+                .pricing(pricing)
                 .build();
     }
 }

@@ -28,6 +28,8 @@ import static org.mockito.Mockito.*;
 
 /**
  * PreRegistrationService 단위 테스트
+ * 
+ * PRE-SUB-FUNC-002 명세서 준수
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("PreRegistrationService 테스트")
@@ -61,7 +63,7 @@ class PreRegistrationServiceTest {
         when(preRegistrationRepository.save(any())).thenAnswer(invocation -> {
             PreRegistration entity = invocation.getArgument(0);
             ReflectionTestUtils.setField(entity, "id", UUID.randomUUID());
-            ReflectionTestUtils.setField(entity, "registeredAt", LocalDateTime.now());
+            ReflectionTestUtils.setField(entity, "createdAt", LocalDateTime.now());
             return entity;
         });
         
@@ -72,8 +74,11 @@ class PreRegistrationServiceTest {
         assertThat(response).isNotNull();
         assertThat(response.getDiscountCode()).startsWith("MR2026-");
         assertThat(response.getDiscountRate()).isEqualTo(30);
-        assertThat(response.getSelectedPlan()).isEqualTo("pro");
+        assertThat(response.getPlan()).isEqualTo("pro");
         assertThat(response.getOriginalPrice()).isEqualTo(799000);
+        assertThat(response.getPromotionPhase()).isEqualTo("A");
+        assertThat(response.getExpiresAt()).isNotNull();
+        assertThat(response.getSavings()).isGreaterThan(0);
         
         verify(preRegistrationRepository, times(1)).save(any());
     }
@@ -166,6 +171,7 @@ class PreRegistrationServiceTest {
         // then
         assertThat(response).isNotNull();
         assertThat(response.getDiscountCode()).isEqualTo("MR2026-TEST01");
+        assertThat(response.getRegistrationId()).isEqualTo(testId.toString());
     }
 
     @Test
@@ -194,7 +200,7 @@ class PreRegistrationServiceTest {
         
         // then
         assertThat(response).isNotNull();
-        assertThat(response.getSelectedPlan()).isEqualTo("pro");
+        assertThat(response.getPlan()).isEqualTo("pro");
     }
 
     @Test
@@ -210,8 +216,10 @@ class PreRegistrationServiceTest {
         assertThat(response).isNotNull();
         assertThat(response.getIsActive()).isTrue();
         assertThat(response.getCurrentPhase()).isIn("A", "B");
-        assertThat(response.getPrices()).containsKeys("plus", "pro", "premium");
-        assertThat(response.getPrices().get("pro").getOriginal()).isEqualTo(799000);
+        assertThat(response.getPhases()).hasSize(2);
+        assertThat(response.getPricing()).containsKeys("plus", "pro", "premium");
+        assertThat(response.getPricing().get("pro").getOriginal()).isEqualTo(799000);
+        assertThat(response.getCountdown()).isNotNull();
     }
 
     // ========== Helper Methods ==========
@@ -221,9 +229,8 @@ class PreRegistrationServiceTest {
                 .name("테스트")
                 .email("test@example.com")
                 .phone("010-1234-5678")
-                .selectedPlan(PlanType.pro)
-                .agreeTerms(true)
-                .agreeMarketing(false)
+                .plan(PlanType.pro)
+                .marketingConsent(false)
                 .build();
     }
 
@@ -260,23 +267,23 @@ class PreRegistrationServiceTest {
     }
 
     private PreRegistration createTestEntity() {
+        LocalDateTime now = LocalDateTime.now();
         PreRegistration entity = PreRegistration.builder()
                 .name("테스트")
                 .email("test@example.com")
                 .phone("010-1234-5678")
                 .selectedPlan(PreRegistration.PlanType.pro)
-                .agreeTerms(true)
-                .agreeMarketing(false)
+                .marketingConsent(false)
+                .promotionPhase("A")
                 .discountCode("MR2026-TEST01")
                 .discountRate(30)
                 .originalPrice(799000)
                 .discountedPrice(559300)
+                .expiresAt(now.plusDays(5))
                 .build();
         ReflectionTestUtils.setField(entity, "id", UUID.randomUUID());
-        ReflectionTestUtils.setField(entity, "registeredAt", LocalDateTime.now());
         ReflectionTestUtils.setField(entity, "createdAt", LocalDateTime.now());
         ReflectionTestUtils.setField(entity, "updatedAt", LocalDateTime.now());
         return entity;
     }
 }
-

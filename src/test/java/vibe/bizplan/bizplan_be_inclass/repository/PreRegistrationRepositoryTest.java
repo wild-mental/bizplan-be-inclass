@@ -11,6 +11,7 @@ import vibe.bizplan.bizplan_be_inclass.entity.PreRegistration;
 import vibe.bizplan.bizplan_be_inclass.entity.PreRegistration.PlanType;
 import vibe.bizplan.bizplan_be_inclass.entity.PreRegistration.RegistrationStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * PreRegistrationRepository 테스트
  * 
+ * PRE-SUB-FUNC-002 명세서 준수
  * Rule 306: Repository Layer 테스트는 실제 DB 사용
  * Rule 303: 실제 DB (H2) 사용하여 Query Methods 검증
  */
@@ -49,6 +51,8 @@ class PreRegistrationRepositoryTest {
         assertThat(found).isPresent();
         assertThat(found.get().getEmail()).isEqualTo("test@example.com");
         assertThat(found.get().getSelectedPlan()).isEqualTo(PlanType.pro);
+        assertThat(found.get().getPromotionPhase()).isEqualTo("A");
+        assertThat(found.get().getExpiresAt()).isNotNull();
     }
 
     @Test
@@ -116,12 +120,13 @@ class PreRegistrationRepositoryTest {
                 .email("plus@example.com")
                 .phone("010-2222-2222")
                 .selectedPlan(PlanType.plus)
-                .agreeTerms(true)
-                .agreeMarketing(false)
+                .marketingConsent(false)
+                .promotionPhase("A")
                 .discountCode("MR2026-TEST02")
                 .discountRate(30)
                 .originalPrice(399000)
                 .discountedPrice(279300)
+                .expiresAt(LocalDateTime.now().plusDays(5))
                 .build();
         repository.save(plusEntity);
         
@@ -138,19 +143,20 @@ class PreRegistrationRepositoryTest {
     @DisplayName("마케팅 동의 수 조회")
     void countMarketingAgreed() {
         // given
-        repository.save(testEntity);  // agreeMarketing = false
+        repository.save(testEntity);  // marketingConsent = false
         
         PreRegistration marketingAgreedEntity = PreRegistration.builder()
                 .name("마케팅 동의자")
                 .email("marketing@example.com")
                 .phone("010-3333-3333")
                 .selectedPlan(PlanType.pro)
-                .agreeTerms(true)
-                .agreeMarketing(true)  // 마케팅 동의
+                .marketingConsent(true)  // 마케팅 동의
+                .promotionPhase("A")
                 .discountCode("MR2026-TEST03")
                 .discountRate(30)
                 .originalPrice(799000)
                 .discountedPrice(559300)
+                .expiresAt(LocalDateTime.now().plusDays(5))
                 .build();
         repository.save(marketingAgreedEntity);
         
@@ -186,12 +192,13 @@ class PreRegistrationRepositoryTest {
                 .email(email)
                 .phone("010-1234-5678")
                 .selectedPlan(PlanType.pro)
-                .agreeTerms(true)
-                .agreeMarketing(false)
+                .marketingConsent(false)
+                .promotionPhase("A")
                 .discountCode(discountCode)
                 .discountRate(30)
                 .originalPrice(799000)
                 .discountedPrice(559300)
+                .expiresAt(LocalDateTime.now().plusDays(5))
                 .build();
     }
 }
