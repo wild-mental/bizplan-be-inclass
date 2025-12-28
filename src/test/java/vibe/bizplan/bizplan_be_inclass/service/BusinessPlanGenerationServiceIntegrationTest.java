@@ -83,9 +83,22 @@ class BusinessPlanGenerationServiceIntegrationTest {
         }
 
         // when: 실제 Gemini API 호출
-        BusinessPlanGenerateResponse response = service.generateBusinessPlan(
-                request, projectId, templateType, itemName, startTimeMs
-        );
+        BusinessPlanGenerateResponse response;
+        try {
+            response = service.generateBusinessPlan(
+                    request, projectId, templateType, itemName, startTimeMs
+            );
+        } catch (Exception e) {
+            // API 할당량 초과 등의 경우 테스트 스킵
+            Throwable cause = e;
+            while (cause != null) {
+                if (cause instanceof com.google.genai.errors.ClientException) {
+                    assumeTrue(false, "Gemini API 할당량이 초과되었거나 API 키에 문제가 있습니다. 테스트를 건너뜁니다: " + cause.getMessage());
+                }
+                cause = cause.getCause();
+            }
+            throw e;
+        }
 
         // 로그가 파일에 기록되도록 대기 (비동기 로그 기록을 위해 충분한 시간 확보)
         try {
@@ -172,12 +185,14 @@ class BusinessPlanGenerationServiceIntegrationTest {
             );
         } catch (Exception e) {
             // API 할당량 초과 등의 경우 테스트 스킵
-            if (e.getMessage() != null && e.getMessage().contains("quota") || 
-                e.getMessage() != null && e.getMessage().contains("429")) {
-                System.out.println("⚠️ API 할당량 초과로 인해 테스트를 건너뜁니다: " + e.getMessage());
-                return; // 테스트 종료 (실패로 간주하지 않음)
+            Throwable cause = e;
+            while (cause != null) {
+                if (cause instanceof com.google.genai.errors.ClientException) {
+                    assumeTrue(false, "Gemini API 할당량이 초과되었거나 API 키에 문제가 있습니다. 테스트를 건너뜁니다: " + cause.getMessage());
+                }
+                cause = cause.getCause();
             }
-            throw e; // 다른 예외는 재발생
+            throw e;
         }
 
         // given: 긴 프롬프트
@@ -193,12 +208,14 @@ class BusinessPlanGenerationServiceIntegrationTest {
             );
         } catch (Exception e) {
             // API 할당량 초과 등의 경우 테스트 스킵
-            if (e.getMessage() != null && e.getMessage().contains("quota") || 
-                e.getMessage() != null && e.getMessage().contains("429")) {
-                System.out.println("⚠️ API 할당량 초과로 인해 테스트를 건너뜁니다: " + e.getMessage());
-                return; // 테스트 종료 (실패로 간주하지 않음)
+            Throwable cause = e;
+            while (cause != null) {
+                if (cause instanceof com.google.genai.errors.ClientException) {
+                    assumeTrue(false, "Gemini API 할당량이 초과되었거나 API 키에 문제가 있습니다. 테스트를 건너뜁니다: " + cause.getMessage());
+                }
+                cause = cause.getCause();
             }
-            throw e; // 다른 예외는 재발생
+            throw e;
         }
 
         // 로그 기록 대기
