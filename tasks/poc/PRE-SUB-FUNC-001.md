@@ -40,7 +40,7 @@
 
 ## 🛠️ 사전 준비: SQLite + Flyway 설정
 
-> 📖 **참고:** [SQLLITE_FLYWAY_GUIDE.md](/docs/SQLLITE_FLYWAY_GUIDE.md)
+> 📖 **참고:** [SQLITE_FLYWAY_GUIDE.md](/docs/SQLITE_FLYWAY_GUIDE.md)
 
 ### 의존성 추가 (build.gradle)
 
@@ -117,8 +117,10 @@ CREATE TABLE IF NOT EXISTS pre_registrations (
     business_category TEXT,
     
     -- 동의 항목 (SQLite BOOLEAN은 0/1로 저장)
-    agree_terms INTEGER NOT NULL DEFAULT 1,
-    agree_marketing INTEGER NOT NULL DEFAULT 0,
+    marketing_consent INTEGER NOT NULL DEFAULT 0,
+    
+    -- 프로모션 정보
+    promotion_phase TEXT NOT NULL CHECK (promotion_phase IN ('A', 'B')),
     
     -- 할인 정보
     discount_code TEXT NOT NULL UNIQUE,
@@ -126,10 +128,12 @@ CREATE TABLE IF NOT EXISTS pre_registrations (
     original_price INTEGER NOT NULL,
     discounted_price INTEGER NOT NULL,
     
+    -- 만료일 (ISO 8601 형식 TEXT)
+    expires_at TEXT NOT NULL,
+    
     -- 상태 관리 (ENUM 대신 TEXT + CHECK)
-    status TEXT NOT NULL DEFAULT 'confirmed' 
-        CHECK (status IN ('pending', 'confirmed', 'cancelled', 'converted')),
-    registered_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+    status TEXT NOT NULL DEFAULT 'CONFIRMED' 
+        CHECK (status IN ('PENDING', 'CONFIRMED', 'CANCELLED', 'CONVERTED')),
     
     -- 감사 컬럼 (ISO 8601 형식 TEXT)
     created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
@@ -140,7 +144,8 @@ CREATE TABLE IF NOT EXISTS pre_registrations (
 CREATE INDEX IF NOT EXISTS idx_pre_registrations_email ON pre_registrations(email);
 CREATE INDEX IF NOT EXISTS idx_pre_registrations_status ON pre_registrations(status);
 CREATE INDEX IF NOT EXISTS idx_pre_registrations_selected_plan ON pre_registrations(selected_plan);
-CREATE INDEX IF NOT EXISTS idx_pre_registrations_registered_at ON pre_registrations(registered_at);
+CREATE INDEX IF NOT EXISTS idx_pre_registrations_discount_code ON pre_registrations(discount_code);
+CREATE INDEX IF NOT EXISTS idx_pre_registrations_created_at ON pre_registrations(created_at);
 ```
 
 ### 1.2 프로모션 설정 테이블
@@ -305,14 +310,15 @@ public class PreRegistration {
     private String businessCategory;
 
     // 동의 항목
-    @Column(name = "agree_terms", nullable = false)
-    private Boolean agreeTerms;
+    @Column(name = "marketing_consent", nullable = false)
+    private Boolean marketingConsent;
 
-    @Column(name = "agree_marketing", nullable = false)
-    private Boolean agreeMarketing;
+    // 프로모션 정보
+    @Column(name = "promotion_phase", nullable = false, length = 5)
+    private String promotionPhase;
 
     // 할인 정보
-    @Column(name = "discount_code", nullable = false, unique = true, length = 20)
+    @Column(name = "discount_code", nullable = false, unique = true, length = 50)
     private String discountCode;
 
     @Column(name = "discount_rate", nullable = false)
@@ -324,14 +330,15 @@ public class PreRegistration {
     @Column(name = "discounted_price", nullable = false)
     private Integer discountedPrice;
 
+    // 만료일
+    @Column(name = "expires_at", nullable = false)
+    private LocalDateTime expiresAt;
+
     // 상태 관리
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     @Builder.Default
     private RegistrationStatus status = RegistrationStatus.CONFIRMED;
-
-    @Column(name = "registered_at", nullable = false)
-    private LocalDateTime registeredAt;
 
     // 감사 컬럼
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -345,12 +352,18 @@ public class PreRegistration {
         LocalDateTime now = LocalDateTime.now();
         this.createdAt = now;
         this.updatedAt = now;
-        this.registeredAt = now;
     }
 
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 상태 변경 메서드
+     */
+    public void updateStatus(RegistrationStatus newStatus) {
+        this.status = newStatus;
     }
 
     // Enum 정의
@@ -359,7 +372,7 @@ public class PreRegistration {
     }
 
     public enum RegistrationStatus {
-        pending, confirmed, cancelled, converted
+        PENDING, CONFIRMED, CANCELLED, CONVERTED
     }
 }
 ```
@@ -521,16 +534,16 @@ public interface PreRegistrationRepository extends JpaRepository<PreRegistration
     // 요금제별 조회
     List<PreRegistration> findBySelectedPlan(PlanType planType);
 
-    // 기간별 등록 수 조회
-    @Query("SELECT COUNT(p) FROM PreRegistration p WHERE p.registeredAt BETWEEN :start AND :end")
-    Long countByRegisteredAtBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+    // 기간별 등록 수 조회 (createdAt 기준)
+    @Query("SELECT COUNT(p) FROM PreRegistration p WHERE p.createdAt BETWEEN :start AND :end")
+    Long countByCreatedAtBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     // 요금제별 통계
     @Query("SELECT p.selectedPlan, COUNT(p) FROM PreRegistration p GROUP BY p.selectedPlan")
     List<Object[]> countByPlanType();
 
-    // 마케팅 동의율
-    @Query("SELECT COUNT(p) FROM PreRegistration p WHERE p.agreeMarketing = true")
+    // 마케팅 동의율 (필드명: marketingConsent)
+    @Query("SELECT COUNT(p) FROM PreRegistration p WHERE p.marketingConsent = true")
     Long countMarketingAgreed();
 
     // 검색 (이름 또는 이메일)
@@ -579,6 +592,9 @@ import lombok.*;
 
 /**
  * 사전 등록 요청 DTO
+ * 
+ * PRE-SUB-FUNC-002 명세서 준수
+ * Rule 304: Request DTO validation
  */
 @Getter
 @Setter
@@ -602,17 +618,17 @@ public class PreRegistrationRequest {
     private String phone;
 
     @NotNull(message = "요금제 선택은 필수입니다")
-    private PlanType selectedPlan;
+    private PlanType plan;
 
     @Size(max = 50, message = "사업 분야는 50자 이내여야 합니다")
     private String businessCategory;
 
-    @NotNull(message = "개인정보 수집 동의는 필수입니다")
-    @AssertTrue(message = "개인정보 수집에 동의해야 합니다")
-    private Boolean agreeTerms;
+    @Builder.Default
+    private Boolean marketingConsent = false;
 
-    private Boolean agreeMarketing = false;
-
+    /**
+     * 요금제 유형
+     */
     public enum PlanType {
         plus, pro, premium
     }
@@ -631,6 +647,9 @@ import java.time.LocalDateTime;
 
 /**
  * 사전 등록 응답 DTO
+ * 
+ * PRE-SUB-FUNC-002 명세서 준수
+ * Rule 304: Response DTO
  */
 @Getter
 @Setter
@@ -639,15 +658,55 @@ import java.time.LocalDateTime;
 @Builder
 public class PreRegistrationResponse {
 
-    private String id;
-    private String discountCode;
+    /**
+     * 등록 ID (UUID)
+     */
+    private String registrationId;
+    
+    /**
+     * 선택한 요금제
+     */
+    private String plan;
+    
+    /**
+     * 적용된 프로모션 Phase ("A" or "B")
+     */
+    private String promotionPhase;
+    
+    /**
+     * 적용된 할인율 (%)
+     */
     private Integer discountRate;
-    private String selectedPlan;
+    
+    /**
+     * 발급된 할인 코드
+     */
+    private String discountCode;
+    
+    /**
+     * 정가
+     */
     private Integer originalPrice;
+    
+    /**
+     * 할인가
+     */
     private Integer discountedPrice;
-    private Integer savedAmount;
-    private LocalDateTime registeredAt;
-    private String status;
+    
+    /**
+     * 절약 금액
+     */
+    private Integer savings;
+    
+    /**
+     * 할인 코드 만료일
+     */
+    private LocalDateTime expiresAt;
+    
+    /**
+     * 등록 일시
+     */
+    private LocalDateTime createdAt;
 }
 ```
 
@@ -658,10 +717,14 @@ package vibe.bizplan.bizplan_be_inclass.dto.preregistration;
 
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 /**
  * 현재 프로모션 정보 응답 DTO
+ * 
+ * PRE-SUB-FUNC-002 명세서 준수
+ * Rule 304: Response DTO
  */
 @Getter
 @Setter
@@ -670,13 +733,67 @@ import java.util.Map;
 @Builder
 public class PromotionInfoResponse {
 
+    /**
+     * 프로모션 활성 상태
+     */
     private Boolean isActive;
-    private String currentPhase;  // "A", "B", "ENDED"
-    private Integer discountRate;
-    private LocalDateTime phaseAEnd;
-    private LocalDateTime phaseBEnd;
-    private Map<String, PriceInfo> prices;
+    
+    /**
+     * 현재 Phase ("A", "B", "ENDED", "NOT_STARTED")
+     */
+    private String currentPhase;
+    
+    /**
+     * Phase 상세 정보 목록
+     */
+    private List<PhaseInfo> phases;
+    
+    /**
+     * 카운트다운 정보
+     */
+    private CountdownInfo countdown;
+    
+    /**
+     * 요금제별 가격 정보
+     */
+    private Map<String, PriceInfo> pricing;
 
+    /**
+     * Phase 상세 정보 DTO
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class PhaseInfo {
+        private String phase;
+        private String name;
+        private Integer discountRate;
+        private LocalDateTime startDate;
+        private LocalDateTime endDate;
+        private Boolean isCurrentPhase;
+    }
+
+    /**
+     * 카운트다운 정보 DTO
+     */
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class CountdownInfo {
+        private LocalDateTime targetDate;
+        private Long remainingDays;
+        private Long remainingHours;
+        private Long remainingMinutes;
+        private Long remainingSeconds;
+    }
+
+    /**
+     * 가격 정보 DTO
+     */
     @Getter
     @Setter
     @NoArgsConstructor
@@ -685,7 +802,7 @@ public class PromotionInfoResponse {
     public static class PriceInfo {
         private Integer original;
         private Integer discounted;
-        private Integer saved;
+        private Integer savings;
     }
 }
 ```
@@ -762,10 +879,11 @@ public class PreRegistrationService {
 
     /**
      * 사전 등록 신청
+     * PRE-SUB-FUNC-002: POST /api/v1/pre-registrations
      */
     @Transactional
     public PreRegistrationResponse register(PreRegistrationRequest request) {
-        log.info("사전 등록 요청: email={}, plan={}", request.getEmail(), request.getSelectedPlan());
+        log.info("사전 등록 요청: email={}, plan={}", request.getEmail(), request.getPlan());
 
         // 1. 이메일 중복 체크
         if (preRegistrationRepository.existsByEmail(request.getEmail())) {
@@ -781,32 +899,38 @@ public class PreRegistrationService {
 
         // 3. 할인율 및 가격 계산
         Integer discountRate = promotion.getCurrentDiscountRate();
-        PlanType planType = PlanType.valueOf(request.getSelectedPlan().name());
+        PlanType planType = request.getPlan();
         Integer originalPrice = ORIGINAL_PRICES.get(planType);
         Integer discountedPrice = calculateDiscountedPrice(originalPrice, discountRate);
 
-        // 4. 할인 코드 생성
-        String discountCode = generateDiscountCode();
+        // 4. 할인 코드 생성 (MR2026-{PLAN}-{PHASE}{RANDOM} 형식)
+        String discountCode = generateDiscountCode(planType, currentPhase);
 
-        // 5. Entity 생성 및 저장
+        // 5. 만료일 계산 (현재 Phase 종료일)
+        LocalDateTime expiresAt = "A".equals(currentPhase) 
+            ? promotion.getPhaseAEnd() 
+            : promotion.getPhaseBEnd();
+
+        // 6. Entity 생성 및 저장
         PreRegistration entity = PreRegistration.builder()
                 .name(request.getName())
                 .email(request.getEmail())
                 .phone(request.getPhone())
-                .selectedPlan(planType)
+                .selectedPlan(convertToPlanType(planType))
                 .businessCategory(request.getBusinessCategory())
-                .agreeTerms(request.getAgreeTerms())
-                .agreeMarketing(request.getAgreeMarketing() != null ? request.getAgreeMarketing() : false)
+                .marketingConsent(request.getMarketingConsent() != null ? request.getMarketingConsent() : false)
+                .promotionPhase(currentPhase)
                 .discountCode(discountCode)
                 .discountRate(discountRate)
                 .originalPrice(originalPrice)
                 .discountedPrice(discountedPrice)
+                .expiresAt(expiresAt)
                 .build();
 
         PreRegistration saved = preRegistrationRepository.save(entity);
         log.info("사전 등록 완료: id={}, discountCode={}", saved.getId(), discountCode);
 
-        // 6. 응답 생성
+        // 7. 응답 생성
         return mapToResponse(saved);
     }
 
@@ -848,30 +972,37 @@ public class PreRegistrationService {
 
     /**
      * 현재 프로모션 정보 조회
+     * PRE-SUB-FUNC-002: GET /api/v1/promotions/current
      */
     public PromotionInfoResponse getPromotionInfo() {
         Promotion promotion = getActivePromotion();
         String currentPhase = promotion.getCurrentPhase();
         Integer discountRate = promotion.getCurrentDiscountRate();
 
-        Map<String, PromotionInfoResponse.PriceInfo> prices = new HashMap<>();
+        // Phase 목록 생성
+        List<PromotionInfoResponse.PhaseInfo> phases = buildPhaseList(promotion, currentPhase);
+
+        // 카운트다운 계산
+        PromotionInfoResponse.CountdownInfo countdown = buildCountdown(promotion, currentPhase);
+
+        // 요금제별 가격 정보 계산
+        Map<String, PromotionInfoResponse.PriceInfo> pricing = new HashMap<>();
         for (Map.Entry<PlanType, Integer> entry : ORIGINAL_PRICES.entrySet()) {
             Integer original = entry.getValue();
             Integer discounted = calculateDiscountedPrice(original, discountRate);
-            prices.put(entry.getKey().name(), PromotionInfoResponse.PriceInfo.builder()
+            pricing.put(entry.getKey().name(), PromotionInfoResponse.PriceInfo.builder()
                     .original(original)
                     .discounted(discounted)
-                    .saved(original - discounted)
+                    .savings(original - discounted)
                     .build());
         }
 
         return PromotionInfoResponse.builder()
                 .isActive(!"ENDED".equals(currentPhase) && !"NOT_STARTED".equals(currentPhase))
                 .currentPhase(currentPhase)
-                .discountRate(discountRate)
-                .phaseAEnd(promotion.getPhaseAEnd())
-                .phaseBEnd(promotion.getPhaseBEnd())
-                .prices(prices)
+                .phases(phases)
+                .countdown(countdown)
+                .pricing(pricing)
                 .build();
     }
 
@@ -882,38 +1013,87 @@ public class PreRegistrationService {
                 .orElseThrow(() -> new ResourceNotFoundException("활성화된 프로모션이 없습니다."));
     }
 
+    private List<PromotionInfoResponse.PhaseInfo> buildPhaseList(Promotion promotion, String currentPhase) {
+        List<PromotionInfoResponse.PhaseInfo> phases = new ArrayList<>();
+        
+        phases.add(PromotionInfoResponse.PhaseInfo.builder()
+                .phase("A")
+                .name("연말연시 특별 할인")
+                .discountRate(promotion.getPhaseADiscountRate())
+                .startDate(promotion.getPhaseAStart())
+                .endDate(promotion.getPhaseAEnd())
+                .isCurrentPhase("A".equals(currentPhase))
+                .build());
+        
+        phases.add(PromotionInfoResponse.PhaseInfo.builder()
+                .phase("B")
+                .name("얼리버드 할인")
+                .discountRate(promotion.getPhaseBDiscountRate())
+                .startDate(promotion.getPhaseBStart())
+                .endDate(promotion.getPhaseBEnd())
+                .isCurrentPhase("B".equals(currentPhase))
+                .build());
+        
+        return phases;
+    }
+
+    private PromotionInfoResponse.CountdownInfo buildCountdown(Promotion promotion, String currentPhase) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime targetDate = "A".equals(currentPhase) ? promotion.getPhaseAEnd() : promotion.getPhaseBEnd();
+        
+        if (targetDate == null) return null;
+        
+        Duration duration = Duration.between(now, targetDate);
+        long totalSeconds = Math.max(0, duration.getSeconds());
+        
+        return PromotionInfoResponse.CountdownInfo.builder()
+                .targetDate(targetDate)
+                .remainingDays(totalSeconds / (24 * 3600))
+                .remainingHours((totalSeconds % (24 * 3600)) / 3600)
+                .remainingMinutes((totalSeconds % 3600) / 60)
+                .remainingSeconds(totalSeconds % 60)
+                .build();
+    }
+
     private Integer calculateDiscountedPrice(Integer originalPrice, Integer discountRate) {
         double discount = originalPrice * (discountRate / 100.0);
         return (int) Math.round(originalPrice - discount);
     }
 
-    private String generateDiscountCode() {
+    private String generateDiscountCode(PlanType planType, String phase) {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         SecureRandom random = new SecureRandom();
         StringBuilder code = new StringBuilder("MR2026-");
-        for (int i = 0; i < 6; i++) {
+        code.append(planType.name().toUpperCase()).append("-");
+        code.append(phase);
+        for (int i = 0; i < 4; i++) {
             code.append(chars.charAt(random.nextInt(chars.length())));
         }
         
         // 중복 체크
         String generatedCode = code.toString();
         if (preRegistrationRepository.findByDiscountCode(generatedCode).isPresent()) {
-            return generateDiscountCode(); // 재귀 호출로 재생성
+            return generateDiscountCode(planType, phase); // 재귀 호출로 재생성
         }
         return generatedCode;
     }
 
+    private PreRegistration.PlanType convertToPlanType(PlanType planType) {
+        return PreRegistration.PlanType.valueOf(planType.name());
+    }
+
     private PreRegistrationResponse mapToResponse(PreRegistration entity) {
         return PreRegistrationResponse.builder()
-                .id(entity.getId().toString())
-                .discountCode(entity.getDiscountCode())
+                .registrationId(entity.getId().toString())
+                .plan(entity.getSelectedPlan().name())
+                .promotionPhase(entity.getPromotionPhase())
                 .discountRate(entity.getDiscountRate())
-                .selectedPlan(entity.getSelectedPlan().name())
+                .discountCode(entity.getDiscountCode())
                 .originalPrice(entity.getOriginalPrice())
                 .discountedPrice(entity.getDiscountedPrice())
-                .savedAmount(entity.getOriginalPrice() - entity.getDiscountedPrice())
-                .registeredAt(entity.getRegisteredAt())
-                .status(entity.getStatus().name())
+                .savings(entity.getOriginalPrice() - entity.getDiscountedPrice())
+                .expiresAt(entity.getExpiresAt())
+                .createdAt(entity.getCreatedAt())
                 .build();
     }
 }
@@ -1370,50 +1550,52 @@ public class AdminPreRegistrationController {
 
 ## 📋 구현 체크리스트
 
-### Phase 0: SQLite + Flyway 설정 (필수)
-- [ ] build.gradle에 SQLite 및 Flyway 의존성 추가
-- [ ] application.properties에 SQLite 데이터소스 설정
-- [ ] Hibernate SQLite Dialect 설정
-- [ ] data/ 디렉토리 생성 (DB 파일 저장 위치)
+### Phase 0: SQLite + Flyway 설정 (필수) ✅
+- [x] build.gradle에 SQLite 및 Flyway 의존성 추가
+- [x] application.properties에 SQLite 데이터소스 설정
+- [x] Hibernate SQLite Dialect 설정
+- [x] data/ 디렉토리 생성 (DB 파일 저장 위치)
 
-### Phase 1: 데이터베이스 (필수)
-- [ ] V3__create_pre_registrations_table.sql 마이그레이션 (SQLite 문법)
-- [ ] V4__create_promotions_table.sql 마이그레이션 (SQLite 문법)
-- [ ] 초기 프로모션 데이터 삽입 (하드코딩 UUID)
+### Phase 1: 데이터베이스 (필수) ✅
+- [x] V3__create_pre_registrations_table.sql 마이그레이션 (SQLite 문법)
+- [x] V4__create_promotions_table.sql 마이그레이션 (SQLite 문법)
+- [x] 초기 프로모션 데이터 삽입 (하드코딩 UUID)
 
-### Phase 2: Entity & Repository (필수)
-- [ ] PreRegistration 엔티티
-- [ ] Promotion 엔티티
-- [ ] PreRegistrationRepository
-- [ ] PromotionRepository
+### Phase 2: Entity & Repository (필수) ✅
+- [x] PreRegistration 엔티티
+- [x] Promotion 엔티티
+- [x] PreRegistrationRepository
+- [x] PromotionRepository
 
-### Phase 3: DTO (필수)
-- [ ] PreRegistrationRequest (유효성 검사 포함)
-- [ ] PreRegistrationResponse
-- [ ] PromotionInfoResponse
-- [ ] EmailCheckResponse
+### Phase 3: DTO (필수) ✅
+- [x] PreRegistrationRequest (유효성 검사 포함)
+- [x] PreRegistrationResponse
+- [x] PromotionInfoResponse (phases, countdown 포함)
+- [x] EmailCheckResponse
 
-### Phase 4: Service (필수)
-- [ ] PreRegistrationService
-- [ ] 할인 코드 생성 로직
-- [ ] 가격 계산 로직
+### Phase 4: Service (필수) ✅
+- [x] PreRegistrationService
+- [x] 할인 코드 생성 로직 (MR2026-{PLAN}-{PHASE}{RANDOM} 형식)
+- [x] 가격 계산 로직
 
-### Phase 5: Controller (필수)
-- [ ] POST /api/v1/pre-registrations
-- [ ] GET /api/v1/pre-registrations/check-email
-- [ ] GET /api/v1/pre-registrations/{id}
-- [ ] GET /api/v1/promotions/current
-- [ ] Swagger 문서화
+### Phase 5: Controller (필수) ✅
+- [x] POST /api/v1/pre-registrations
+- [x] GET /api/v1/pre-registrations/check-email
+- [x] GET /api/v1/pre-registrations/{id}
+- [x] GET /api/v1/pre-registrations/code/{discountCode}
+- [x] GET /api/v1/promotions/current
+- [x] Swagger 문서화
 
-### Phase 6: 예외 처리 (필수)
-- [ ] DuplicateEmailException
-- [ ] PromotionEndedException
-- [ ] GlobalExceptionHandler 업데이트
+### Phase 6: 예외 처리 (필수) ✅
+- [x] DuplicateEmailException
+- [x] PromotionEndedException
+- [x] ResourceNotFoundException
+- [x] GlobalExceptionHandler 업데이트
 
-### Phase 7: 테스트 (필수)
-- [ ] Repository 테스트 (4개 이상)
-- [ ] Service 테스트 (6개 이상)
-- [ ] Controller 테스트 (5개 이상)
+### Phase 7: 테스트 (필수) ✅
+- [x] Repository 테스트 (8개)
+- [x] Service 테스트 (10개)
+- [x] Controller 테스트 (10개)
 
 ### Phase 8: 관리자 기능 (선택)
 - [ ] AdminPreRegistrationController
@@ -1425,23 +1607,30 @@ public class AdminPreRegistrationController {
 
 ## 📝 API 엔드포인트 요약
 
-| Method | Endpoint | 설명 |
-|--------|----------|------|
-| POST | `/api/v1/pre-registrations` | 사전 등록 신청 |
-| GET | `/api/v1/pre-registrations/check-email?email=` | 이메일 중복 체크 |
-| GET | `/api/v1/pre-registrations/{id}` | 등록 정보 조회 |
-| GET | `/api/v1/pre-registrations/code/{discountCode}` | 할인 코드로 조회 |
-| GET | `/api/v1/promotions/current` | 현재 프로모션 정보 |
-| GET | `/api/v1/admin/pre-registrations` | 관리자: 목록 조회 |
-| GET | `/api/v1/admin/pre-registrations/statistics` | 관리자: 통계 |
-| GET | `/api/v1/admin/pre-registrations/export` | 관리자: CSV 내보내기 |
-| PATCH | `/api/v1/admin/pre-registrations/{id}/status` | 관리자: 상태 변경 |
+### 구현 완료 ✅
+
+| Method | Endpoint | 설명 | 상태 |
+|--------|----------|------|------|
+| POST | `/api/v1/pre-registrations` | 사전 등록 신청 | ✅ |
+| GET | `/api/v1/pre-registrations/check-email?email=` | 이메일 중복 체크 | ✅ |
+| GET | `/api/v1/pre-registrations/{id}` | 등록 정보 조회 | ✅ |
+| GET | `/api/v1/pre-registrations/code/{discountCode}` | 할인 코드로 조회 | ✅ |
+| GET | `/api/v1/promotions/current` | 현재 프로모션 정보 | ✅ |
+
+### 관리자 기능 (미구현)
+
+| Method | Endpoint | 설명 | 상태 |
+|--------|----------|------|------|
+| GET | `/api/v1/admin/pre-registrations` | 관리자: 목록 조회 | ⏳ |
+| GET | `/api/v1/admin/pre-registrations/statistics` | 관리자: 통계 | ⏳ |
+| GET | `/api/v1/admin/pre-registrations/export` | 관리자: CSV 내보내기 | ⏳ |
+| PATCH | `/api/v1/admin/pre-registrations/{id}/status` | 관리자: 상태 변경 | ⏳ |
 
 ---
 
 ## 🔗 참고 문서
 
-- [SQLLITE_FLYWAY_GUIDE.md](/docs/SQLLITE_FLYWAY_GUIDE.md) - SQLite + Flyway 설정 가이드 ⭐
+- [SQLITE_FLYWAY_GUIDE.md](/docs/SQLITE_FLYWAY_GUIDE.md) - SQLite + Flyway 설정 가이드 ⭐
 - [306-three-tier-architecture-rules.mdc](/.cursor/rules/306-three-tier-architecture-rules.mdc)
 - [304-api-rest-design-rules.mdc](/.cursor/rules/304-api-rest-design-rules.mdc)
 - [305-api-swagger-testing-rules.mdc](/.cursor/rules/305-api-swagger-testing-rules.mdc)
@@ -1463,4 +1652,4 @@ public class AdminPreRegistrationController {
 ---
 
 *Created: 2025-12-26*
-*Last Updated: 2025-12-27 (SQLite + Flyway 방식 적용)*
+*Last Updated: 2025-12-28 (구현 완료, PRE-SUB-FUNC-002 명세서와 동기화)*
