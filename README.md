@@ -52,8 +52,9 @@
                                                     │
                                          ┌──────────▼───────────┐
                                          │                      │
-                                         │   MySQL 데이터베이스  │
-                                         │   (InnoDB, utf8mb4)  │
+                                         │   SQLite (로컬)      │
+                                         │   MySQL (운영)       │
+                                         │   H2 (테스트)        │
                                          │                      │
                                          └──────────────────────┘
                                                     
@@ -83,7 +84,10 @@
 - **언어**: Java 21 (LTS)
 - **프레임워크**: Spring Boot 4.0.0
 - **빌드 도구**: Gradle (Kotlin DSL)
-- **DB**: MySQL 8.x (InnoDB, utf8mb4)
+- **DB**: 
+  - 로컬 개발: SQLite (Flyway 마이그레이션)
+  - 테스트: H2 (In-Memory)
+  - 운영/스테이징: MySQL 8.x (InnoDB, utf8mb4)
 - **ORM**: Spring Data JPA (Hibernate)
 - **테스트**: JUnit 5, Mockito, AssertJ
 
@@ -106,9 +110,10 @@
 ### 사전 필요사항
 
 - Java 21 이상
-- Gradle 8.x
-- Python 3.10+
-- MySQL 8.x
+- Gradle 8.x 이상
+- Python 3.10+ (AI 엔진용, 선택사항)
+- SQLite 3.x (로컬 개발용, 기본 포함)
+- MySQL 8.x (운영 환경용, 선택사항)
 - Docker & Docker Compose (선택사항)
 
 ### 설치 절차
@@ -342,13 +347,32 @@ class UserControllerTest {
 }
 ```
 
-#### Gemini 연동 테스트
+#### 전체 테스트 커버리지
 
-**테스트 커버리지**
-- **단위 테스트**: 19건 (BusinessPlanGenerationServiceTest)
-- **통합 테스트**: 2건 (BusinessPlanGenerationServiceIntegrationTest)
-- **Repository 테스트**: 4건 (BusinessPlanGenerationRepositoryTest)
-- **총**: 25건 (~95% 커버리지)
+**테스트 통계**
+- **총 테스트**: 153개
+- **성공**: 153개 (100%)
+- **Repository 테스트**: 10개
+- **Service 테스트**: 8개
+- **Controller 테스트**: 8개
+- **통합 테스트**: 2개 (Gemini API)
+
+**테스트 실행**
+```bash
+# 전체 테스트 실행
+./gradlew test
+
+# 특정 레이어 테스트
+./gradlew test --tests "*RepositoryTest"
+./gradlew test --tests "*ServiceTest"
+./gradlew test --tests "*ControllerTest"
+
+# Gemini 통합 테스트 (GEMINI_API_KEY 필요)
+export GEMINI_API_KEY="your-api-key"
+./gradlew test --tests "*BusinessPlanGenerationServiceIntegrationTest"
+```
+
+**테스트 리포트**: 자세한 결과는 [종합 테스트 결과 보고서](./docs/reports/COMPREHENSIVE_TEST_REPORT.md) 참고
 
 **테스트 실행**
 ```bash
@@ -499,6 +523,75 @@ SHOW INDEX FROM business_plans;
 ---
 
 ## 📝 최근 업데이트
+
+### 2025-12-29: 전체 백엔드 기능 구현 완료
+
+#### 주요 구현 내용
+
+**인증 시스템**
+- ✅ JWT 기반 인증 (회원가입, 로그인, 토큰 갱신, 소셜 로그인)
+- ✅ Spring Security 통합
+- ✅ 사용자, 구독, 리프레시 토큰 관리
+
+**사전 등록 및 프로모션**
+- ✅ 사전 등록 API (이메일 중복 체크, 할인 코드 생성)
+- ✅ 프로모션 정보 조회 API
+- ✅ 단계별 할인율 및 카운트다운 제공
+
+**프로젝트 관리**
+- ✅ 프로젝트 CRUD API
+- ✅ 템플릿 목록 조회
+- ✅ 사용자별 프로젝트 목록 조회
+
+**사업계획서 작성 Wizard**
+- ✅ 8단계 Wizard 데이터 저장/조회
+- ✅ 자동 저장 기능
+- ✅ 자금 집행계획 검증 (예비창업패키지)
+
+**재무 시뮬레이션**
+- ✅ 3년 재무 예측 계산
+- ✅ 손익분기점 분석
+- ✅ 연도별/월별 예측 데이터 생성
+
+**AI 평가**
+- ✅ 6대 영역 평가 (시장성, 수행능력, 핵심기술, 경제성, 실현가능성, 사회적가치)
+- ✅ 평가 상태 조회 (비동기 처리)
+- ✅ 평가 결과 조회 (강점/약점/권장사항)
+
+**문서 내보내기**
+- ✅ HWP, PDF, DOCX 형식 지원
+- ✅ 비동기 처리
+- ✅ 다운로드 링크 제공
+
+**사업계획서 생성**
+- ✅ Google Gemini 기반 AI 생성
+- ✅ 토큰 사용량 추적 및 로깅
+- ✅ DB 저장 기능
+
+#### 테스트 커버리지
+
+- **총 테스트**: 153개
+- **성공률**: 100% (153/153)
+- **Repository 테스트**: 10개
+- **Service 테스트**: 8개
+- **Controller 테스트**: 8개
+- **통합 테스트**: 2개 (Gemini API)
+
+자세한 내용은 [종합 테스트 결과 보고서](./docs/reports/COMPREHENSIVE_TEST_REPORT.md) 참고
+
+#### 데이터베이스
+
+- **로컬 개발**: SQLite (Flyway 마이그레이션)
+- **테스트**: H2 (In-Memory)
+- **운영**: MySQL 8.x
+
+#### API 문서화
+
+- ✅ Swagger/OpenAPI 3.0 완전 적용
+- ✅ 모든 엔드포인트 문서화
+- ✅ `/swagger-ui.html`에서 확인 가능
+
+---
 
 ### 2025-12-20: 데이터베이스 저장 기능 구현
 
