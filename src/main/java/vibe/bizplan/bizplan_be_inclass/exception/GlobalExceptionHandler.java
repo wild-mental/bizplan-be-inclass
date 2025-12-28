@@ -96,6 +96,57 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 이메일 중복 예외 처리 (409 Conflict)
+     * 
+     * @param ex DuplicateEmailException
+     * @return 에러 응답
+     */
+    @ExceptionHandler(DuplicateEmailException.class)
+    public ResponseEntity<ApiResponse<Void>> handleDuplicateEmailException(
+            DuplicateEmailException ex) {
+        
+        log.warn("Duplicate email: {}", ex.getMessage());
+        
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error("DUPLICATE_EMAIL", ex.getMessage()));
+    }
+
+    /**
+     * 프로모션 종료 예외 처리 (410 Gone)
+     * 
+     * @param ex PromotionEndedException
+     * @return 에러 응답
+     */
+    @ExceptionHandler(PromotionEndedException.class)
+    public ResponseEntity<ApiResponse<Void>> handlePromotionEndedException(
+            PromotionEndedException ex) {
+        
+        log.warn("Promotion ended: {}", ex.getMessage());
+        
+        return ResponseEntity
+                .status(HttpStatus.GONE)
+                .body(ApiResponse.error("PROMOTION_ENDED", ex.getMessage()));
+    }
+
+    /**
+     * 리소스 미발견 예외 처리 (404 Not Found)
+     * 
+     * @param ex ResourceNotFoundException
+     * @return 에러 응답
+     */
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleResourceNotFoundException(
+            ResourceNotFoundException ex) {
+        
+        log.warn("Resource not found: {}", ex.getMessage());
+        
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error("NOT_FOUND", ex.getMessage()));
+    }
+
+    /**
      * 기타 예외 처리 (500 Internal Server Error)
      * 
      * @param ex Exception
