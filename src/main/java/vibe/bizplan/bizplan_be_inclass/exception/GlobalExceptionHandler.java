@@ -147,6 +147,40 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 인증 예외 처리 (401 Unauthorized)
+     * 
+     * @param ex AuthenticationException
+     * @return 에러 응답
+     */
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAuthenticationException(
+            AuthenticationException ex) {
+        
+        log.warn("Authentication failed: {}", ex.getMessage());
+        
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error("AUTHENTICATION_FAILED", ex.getMessage()));
+    }
+
+    /**
+     * 유효하지 않은 토큰 예외 처리 (401 Unauthorized)
+     * 
+     * @param ex InvalidTokenException
+     * @return 에러 응답
+     */
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidTokenException(
+            InvalidTokenException ex) {
+        
+        log.warn("Invalid token: {}", ex.getMessage());
+        
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error("INVALID_TOKEN", ex.getMessage()));
+    }
+
+    /**
      * 기타 예외 처리 (500 Internal Server Error)
      * 
      * @param ex Exception
