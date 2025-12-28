@@ -1,6 +1,6 @@
 -- ============================================
 -- V3: Create pre_registrations table (SQLite)
--- 사전 등록 프로모션 데이터 저장
+-- PRE-SUB-FUNC-002 명세서 준수
 -- ============================================
 
 CREATE TABLE IF NOT EXISTS pre_registrations (
@@ -17,8 +17,10 @@ CREATE TABLE IF NOT EXISTS pre_registrations (
     business_category TEXT,
     
     -- 동의 항목 (SQLite BOOLEAN은 0/1로 저장)
-    agree_terms INTEGER NOT NULL DEFAULT 1,
-    agree_marketing INTEGER NOT NULL DEFAULT 0,
+    marketing_consent INTEGER NOT NULL DEFAULT 0,
+    
+    -- 프로모션 정보
+    promotion_phase TEXT NOT NULL CHECK (promotion_phase IN ('A', 'B')),
     
     -- 할인 정보
     discount_code TEXT NOT NULL UNIQUE,
@@ -26,10 +28,12 @@ CREATE TABLE IF NOT EXISTS pre_registrations (
     original_price INTEGER NOT NULL,
     discounted_price INTEGER NOT NULL,
     
+    -- 만료일 (ISO 8601 형식 TEXT)
+    expires_at TEXT NOT NULL,
+    
     -- 상태 관리 (ENUM 대신 TEXT + CHECK)
-    status TEXT NOT NULL DEFAULT 'confirmed' 
-        CHECK (status IN ('pending', 'confirmed', 'cancelled', 'converted')),
-    registered_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+    status TEXT NOT NULL DEFAULT 'CONFIRMED' 
+        CHECK (status IN ('PENDING', 'CONFIRMED', 'CANCELLED', 'CONVERTED')),
     
     -- 감사 컬럼 (ISO 8601 형식 TEXT)
     created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
@@ -40,5 +44,5 @@ CREATE TABLE IF NOT EXISTS pre_registrations (
 CREATE INDEX IF NOT EXISTS idx_pre_registrations_email ON pre_registrations(email);
 CREATE INDEX IF NOT EXISTS idx_pre_registrations_status ON pre_registrations(status);
 CREATE INDEX IF NOT EXISTS idx_pre_registrations_selected_plan ON pre_registrations(selected_plan);
-CREATE INDEX IF NOT EXISTS idx_pre_registrations_registered_at ON pre_registrations(registered_at);
-
+CREATE INDEX IF NOT EXISTS idx_pre_registrations_discount_code ON pre_registrations(discount_code);
+CREATE INDEX IF NOT EXISTS idx_pre_registrations_created_at ON pre_registrations(created_at);

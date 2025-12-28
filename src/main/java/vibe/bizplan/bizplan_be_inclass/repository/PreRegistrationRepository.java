@@ -16,6 +16,7 @@ import java.util.UUID;
 /**
  * 사전 등록 Repository
  * 
+ * PRE-SUB-FUNC-002 명세서 준수
  * Rule 306: Repository Layer - DB 접근 전담
  */
 @Repository
@@ -47,10 +48,10 @@ public interface PreRegistrationRepository extends JpaRepository<PreRegistration
     List<PreRegistration> findBySelectedPlan(PlanType planType);
 
     /**
-     * 기간별 등록 수 조회
+     * 기간별 등록 수 조회 (createdAt 기준)
      */
-    @Query("SELECT COUNT(p) FROM PreRegistration p WHERE p.registeredAt BETWEEN :start AND :end")
-    Long countByRegisteredAtBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+    @Query("SELECT COUNT(p) FROM PreRegistration p WHERE p.createdAt BETWEEN :start AND :end")
+    Long countByCreatedAtBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     /**
      * 요금제별 통계
@@ -59,9 +60,9 @@ public interface PreRegistrationRepository extends JpaRepository<PreRegistration
     List<Object[]> countByPlanType();
 
     /**
-     * 마케팅 동의율
+     * 마케팅 동의율 (필드명: marketingConsent)
      */
-    @Query("SELECT COUNT(p) FROM PreRegistration p WHERE p.agreeMarketing = true")
+    @Query("SELECT COUNT(p) FROM PreRegistration p WHERE p.marketingConsent = true")
     Long countMarketingAgreed();
 
     /**
@@ -70,4 +71,3 @@ public interface PreRegistrationRepository extends JpaRepository<PreRegistration
     @Query("SELECT p FROM PreRegistration p WHERE p.name LIKE %:keyword% OR p.email LIKE %:keyword%")
     List<PreRegistration> searchByKeyword(@Param("keyword") String keyword);
 }
-

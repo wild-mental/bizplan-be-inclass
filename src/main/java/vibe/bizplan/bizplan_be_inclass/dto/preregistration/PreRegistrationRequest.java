@@ -6,6 +6,7 @@ import lombok.*;
 /**
  * 사전 등록 요청 DTO
  * 
+ * PRE-SUB-FUNC-002 명세서 준수
  * Rule 304: Request DTO validation
  */
 @Getter
@@ -30,17 +31,13 @@ public class PreRegistrationRequest {
     private String phone;
 
     @NotNull(message = "요금제 선택은 필수입니다")
-    private PlanType selectedPlan;
+    private PlanType plan;
 
     @Size(max = 50, message = "사업 분야는 50자 이내여야 합니다")
     private String businessCategory;
 
-    @NotNull(message = "개인정보 수집 동의는 필수입니다")
-    @AssertTrue(message = "개인정보 수집에 동의해야 합니다")
-    private Boolean agreeTerms;
-
     @Builder.Default
-    private Boolean agreeMarketing = false;
+    private Boolean marketingConsent = false;
 
     /**
      * 요금제 유형
@@ -49,4 +46,3 @@ public class PreRegistrationRequest {
         plus, pro, premium
     }
 }
-

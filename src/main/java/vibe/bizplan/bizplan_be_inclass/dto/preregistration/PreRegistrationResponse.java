@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 /**
  * 사전 등록 응답 DTO
  * 
+ * PRE-SUB-FUNC-002 명세서 준수
  * Rule 304: Response DTO
  */
 @Getter
@@ -18,12 +19,17 @@ public class PreRegistrationResponse {
     /**
      * 등록 ID (UUID)
      */
-    private String id;
+    private String registrationId;
     
     /**
-     * 발급된 할인 코드
+     * 선택한 요금제
      */
-    private String discountCode;
+    private String plan;
+    
+    /**
+     * 적용된 프로모션 Phase ("A" or "B")
+     */
+    private String promotionPhase;
     
     /**
      * 적용된 할인율 (%)
@@ -31,9 +37,9 @@ public class PreRegistrationResponse {
     private Integer discountRate;
     
     /**
-     * 선택한 요금제
+     * 발급된 할인 코드
      */
-    private String selectedPlan;
+    private String discountCode;
     
     /**
      * 정가
@@ -48,16 +54,15 @@ public class PreRegistrationResponse {
     /**
      * 절약 금액
      */
-    private Integer savedAmount;
+    private Integer savings;
+    
+    /**
+     * 할인 코드 만료일
+     */
+    private LocalDateTime expiresAt;
     
     /**
      * 등록 일시
      */
-    private LocalDateTime registeredAt;
-    
-    /**
-     * 등록 상태
-     */
-    private String status;
+    private LocalDateTime createdAt;
 }
-

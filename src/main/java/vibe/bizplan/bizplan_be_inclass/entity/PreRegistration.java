@@ -10,6 +10,7 @@ import java.util.UUID;
 /**
  * 사전 등록 엔티티
  * 
+ * PRE-SUB-FUNC-002 명세서 준수
  * Rule 303: snake_case naming, UUID PK, Audit columns
  * Rule 306: Entity는 Repository Layer에서만 사용
  * 
@@ -47,14 +48,15 @@ public class PreRegistration {
     private String businessCategory;
 
     // 동의 항목
-    @Column(name = "agree_terms", nullable = false)
-    private Boolean agreeTerms;
+    @Column(name = "marketing_consent", nullable = false)
+    private Boolean marketingConsent;
 
-    @Column(name = "agree_marketing", nullable = false)
-    private Boolean agreeMarketing;
+    // 프로모션 정보
+    @Column(name = "promotion_phase", nullable = false, length = 5)
+    private String promotionPhase;
 
     // 할인 정보
-    @Column(name = "discount_code", nullable = false, unique = true, length = 20)
+    @Column(name = "discount_code", nullable = false, unique = true, length = 50)
     private String discountCode;
 
     @Column(name = "discount_rate", nullable = false)
@@ -66,14 +68,15 @@ public class PreRegistration {
     @Column(name = "discounted_price", nullable = false)
     private Integer discountedPrice;
 
+    // 만료일
+    @Column(name = "expires_at", nullable = false)
+    private LocalDateTime expiresAt;
+
     // 상태 관리
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     @Builder.Default
     private RegistrationStatus status = RegistrationStatus.CONFIRMED;
-
-    @Column(name = "registered_at", nullable = false)
-    private LocalDateTime registeredAt;
 
     // 감사 컬럼
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -87,7 +90,6 @@ public class PreRegistration {
         LocalDateTime now = LocalDateTime.now();
         this.createdAt = now;
         this.updatedAt = now;
-        this.registeredAt = now;
     }
 
     @PreUpdate
@@ -111,4 +113,3 @@ public class PreRegistration {
         PENDING, CONFIRMED, CANCELLED, CONVERTED
     }
 }
-
