@@ -59,9 +59,6 @@ public class SecurityConfig {
                 // Swagger UI
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
                 
-                // H2 Console (개발용)
-                .requestMatchers("/h2-console/**").permitAll()
-                
                 // 정적 리소스
                 .requestMatchers("/", "/error", "/favicon.ico").permitAll()
                 
@@ -71,9 +68,6 @@ public class SecurityConfig {
                 // 나머지는 인증 필요
                 .anyRequest().authenticated()
             )
-            
-            // H2 Console을 위한 프레임 옵션 설정
-            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
             
             // JWT 필터 추가
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
