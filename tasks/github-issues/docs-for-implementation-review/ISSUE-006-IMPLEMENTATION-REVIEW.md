@@ -16,14 +16,14 @@
 |------|------|
 | **API Endpoint** | `GET /api/v1/projects/templates`, `POST /api/v1/projects` |
 | **아키텍처** | 3-Tier (Controller → Service → Repository) |
-| **데이터베이스** | MySQL 8.x with Flyway Migration |
+| **데이터베이스** | SQLite with Flyway Migration |
 | **테스트** | JUnit 5 + Mockito + MockMvc |
 
 ### 1.2 기술 스택
 
 - Java 21 + Spring Boot 4.0.0
 - Spring Data JPA
-- MySQL 8.x (Production) / H2 (Test)
+- SQLite (로컬/운영/테스트 모두 사용)
 - Lombok
 - Jakarta Validation
 - Flyway
@@ -59,7 +59,7 @@ src/main/java/vibe/bizplan/bizplan_be_inclass/
 
 ```
 src/main/resources/
-├── application.properties              # MySQL, JPA, Flyway 설정
+├── application.properties              # SQLite, JPA, Flyway 설정
 └── db/migration/
     └── V1__create_projects_table.sql   # Flyway 마이그레이션
 ```
@@ -76,7 +76,7 @@ src/test/java/vibe/bizplan/bizplan_be_inclass/
     └── TemplateServiceTest.java           # Template 테스트
 
 src/test/resources/
-└── application.properties                 # H2 테스트 DB 설정
+└── application.properties                 # SQLite 테스트 DB 설정
 ```
 
 ---
@@ -308,7 +308,7 @@ CREATE TABLE projects (
 | 기준 | 상태 |
 |------|------|
 | ✅ 필요한 의존성이 `build.gradle`에 추가됨 | 완료 |
-| ⏳ MySQL DB가 실행 중이고 연결 설정 완료 | 설정 완료 (DB 실행 필요) |
+| ⏳ SQLite DB 파일이 생성 가능한지 확인 | 설정 완료 (자동 생성됨) |
 | ✅ `GET /api/v1/projects/templates` 호출 시 템플릿 목록 반환 | 완료 |
 | ✅ `POST /api/v1/projects` 호출 시 DB에 새 Project 레코드 생성 | 완료 |
 | ✅ API 호출 시 201 상태 코드와 함께 표준 응답 포맷 반환 | 완료 |
@@ -321,7 +321,7 @@ CREATE TABLE projects (
 
 ### 9.1 사전 조건
 
-1. MySQL 8.x 설치 및 실행
+1. SQLite는 별도 설치 불필요 (JDBC 드라이버만으로 동작)
 2. `bizplan` 데이터베이스 생성
    ```sql
    CREATE DATABASE bizplan CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

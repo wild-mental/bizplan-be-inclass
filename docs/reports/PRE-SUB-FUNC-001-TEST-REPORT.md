@@ -3,7 +3,7 @@
 > **문서 ID:** PRE-SUB-FUNC-001-TEST-REPORT  
 > **작성일:** 2025-12-28  
 > **테스트 실행일:** 2025-12-28 06:32:23 UTC  
-> **테스트 환경:** macOS, OpenJDK 21, Spring Boot 4.0.0, H2 In-Memory Database
+> **테스트 환경:** macOS, OpenJDK 21, Spring Boot 4.0.0, SQLite Database
 
 ---
 
@@ -93,7 +93,7 @@
 - Java: OpenJDK 21
 - Spring Boot: 4.0.0
 - Test Framework: JUnit 5, Mockito
-- Database: H2 In-Memory (테스트 전용)
+- Database: SQLite (In-Memory 또는 파일)
 - Build Tool: Gradle 9.2.1
 ```
 
@@ -101,7 +101,9 @@
 
 ```properties
 # src/test/resources/application.properties
-spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.url=jdbc:sqlite::memory:
+spring.datasource.driver-class-name=org.sqlite.JDBC
+spring.jpa.database-platform=org.hibernate.community.dialect.SQLiteDialect
 spring.jpa.hibernate.ddl-auto=create-drop
 spring.flyway.enabled=false
 spring.sql.init.mode=never

@@ -61,12 +61,20 @@ dependencies {
 	// OpenAPI / Swagger UI (SpringDoc)
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
 	
+	// Dotenv for .env file support
+	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
+	
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	
 	// Test - SQLite for integration tests
 	testRuntimeOnly 'org.xerial:sqlite-jdbc'
+}
+
+// Plain jar 생성 비활성화 (Spring Boot executable jar만 생성)
+tasks.named('jar') {
+	enabled = false
 }
 
 tasks.named('test') {

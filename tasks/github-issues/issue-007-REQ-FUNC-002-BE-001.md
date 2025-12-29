@@ -20,8 +20,8 @@ Wizard의 각 단계에서 사용자가 입력한 답변 데이터를 저장하�
 ## Technical Stack
 - Java 17 + Spring Boot 3.x
 - Spring Data JPA
-- MySQL 8.x JSON 타입
-- Hibernate Types (JSONB 매핑)
+- SQLite (JSON 지원)
+- Hibernate Types (JSON 매핑)
 
 ## API Specification
 

@@ -44,7 +44,7 @@ steps_hint:
   - "DB 저장 로직 구현"
 
 preconditions:
-  - "MySQL DB가 실행 중이어야 한다."
+  - "SQLite 데이터베이스가 사용 가능해야 한다. (자동 생성됨)"
 
 postconditions:
   - "DB에 새 Project 레코드가 생성된다."

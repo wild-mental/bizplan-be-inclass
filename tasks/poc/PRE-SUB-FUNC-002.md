@@ -1397,9 +1397,9 @@ Content-Length: 2621440
 
 ## 10. 데이터베이스 스키마
 
-> ⚠️ **현재 백엔드 구현**: SQLite 기반 (개발/테스트 환경)
+> ⚠️ **현재 백엔드 구현**: SQLite 기반 (로컬/운영/테스트 모든 환경)
 > 
-> 프로덕션 환경에서는 MySQL 8.x로 전환 예정. SQLite 스키마는 MySQL과 호환되도록 설계됨.
+> 모든 환경에서 SQLite를 사용하며, 운영 단순화 및 빠른 배포에 최적화되어 있습니다.
 > 
 > **SQLite 특성:**
 > - ENUM 미지원 → `TEXT + CHECK` 제약조건 사용
@@ -1696,13 +1696,15 @@ CREATE INDEX IF NOT EXISTS idx_exports_user_created ON exports(user_id, created_
 CREATE INDEX IF NOT EXISTS idx_exports_status ON exports(status);
 ```
 
-### 10.5 SQLite vs MySQL 마이그레이션 가이드
+### 10.5 SQLite 데이터베이스 가이드
 
 > 📖 **참고 문서:** [SQLITE_FLYWAY_GUIDE.md](/docs/SQLITE_FLYWAY_GUIDE.md)
 
-| SQLite (개발) | MySQL (프로덕션) | 변환 방법 |
-|--------------|-----------------|----------|
-| `TEXT` (UUID) | `CHAR(36)` | 자동 호환 |
+> **현재 상태**: 모든 환경에서 SQLite를 사용합니다.
+
+| SQLite 타입 | 설명 | 비고 |
+|------------|------|------|
+| `TEXT` (UUID) | UUID 저장 | `CHAR(36)`와 호환 가능 |
 | `INTEGER` (Boolean) | `BOOLEAN`/`TINYINT(1)` | 0/1 값 유지 |
 | `TEXT` (ENUM) | `ENUM(...)` | CHECK 제약조건 → ENUM으로 변환 |
 | `TEXT` (JSON) | `JSON` | JSON 문자열 그대로 사용 |
@@ -1713,13 +1715,11 @@ CREATE INDEX IF NOT EXISTS idx_exports_status ON exports(status);
 
 ```
 src/main/resources/db/migration/
-├── sqlite/           # 개발/테스트 환경
-│   ├── V1__create_projects_table.sql
-│   ├── V2__create_business_plans_table.sql
-│   ├── V3__create_pre_registrations_table.sql
-│   └── V4__create_promotions_table.sql
-└── mysql/            # 프로덕션 환경 (추후 추가)
-    └── ...
+└── sqlite/           # 모든 환경 (로컬/운영/테스트)
+    ├── V1__create_projects_table.sql
+    ├── V2__create_business_plans_table.sql
+    ├── V3__create_pre_registrations_table.sql
+    └── V4__create_promotions_table.sql
 ```
 
 ---

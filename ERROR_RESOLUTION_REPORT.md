@@ -8,20 +8,22 @@
 
 ## 🔴 발견된 문제들
 
-### 1. MySQL 연결 실패 (초기 에러)
-**에러 메시지**:
+### 1. MySQL 연결 실패 (초기 에러) - 해결됨
+> ⚠️ **역사적 기록**: 이 문제는 이미 해결되었으며, 현재 프로젝트는 모든 환경에서 SQLite를 사용합니다.
+
+**에러 메시지** (과거):
 ```
 Communications link failure
 Connection refused
 ```
 
-**원인**:
+**원인** (과거):
 - `application.properties`가 MySQL을 기본 데이터소스로 사용하도록 설정되어 있음
 - 로컬 개발 환경에서 MySQL 서버가 실행되지 않음
-- 프로파일이 `local`로 설정되어 있지만, SQLite용 설정 파일이 없음
 
-**해결 방법**:
-- `application-local.properties` 파일을 생성하여 SQLite를 사용하도록 설정
+**해결 방법** (완료):
+- 프로젝트를 SQLite로 전환하여 모든 환경에서 SQLite 사용
+- `application.properties`에 SQLite 설정 적용
 
 ---
 
@@ -81,7 +83,7 @@ mkdir -p data
 ## 📊 해결 결과
 
 ### ✅ 성공적으로 해결된 항목
-1. ✅ MySQL 연결 오류 해결 → SQLite로 전환
+1. ✅ MySQL 연결 오류 해결 → SQLite로 전환 (완료)
 2. ✅ Flyway 마이그레이션 실행 순서 문제 해결
 3. ✅ 애플리케이션 정상 시작 확인
 
@@ -114,8 +116,8 @@ sqlite3 data/bizplan.db ".tables"
 
 ### 3. 프로파일별 설정 분리
 - `local`: SQLite 사용 (개발 환경)
-- `dev`: MySQL 사용 (개발 서버)
-- `prod`: MySQL 사용 (운영 환경)
+- `dev`: SQLite 사용 (개발 서버)
+- `prod`: SQLite 사용 (운영 환경)
 
 ---
 
@@ -127,7 +129,7 @@ sqlite3 data/bizplan.db ".tables"
 
 2. **Flyway 마이그레이션**:
    - SQLite용 마이그레이션 파일은 `src/main/resources/db/migration/sqlite/` 디렉토리에 위치
-   - MySQL용 마이그레이션 파일은 `src/main/resources/db/migration/` 디렉토리에 위치
+   - SQLite용 마이그레이션 파일은 `src/main/resources/db/migration/sqlite/` 디렉토리에 위치
 
 3. **데이터베이스 파일**:
    - SQLite 데이터베이스 파일: `./data/bizplan.db`
@@ -137,7 +139,7 @@ sqlite3 data/bizplan.db ".tables"
 
 ## 🎯 결론
 
-프로젝트가 성공적으로 실행되도록 모든 문제를 해결했습니다. 로컬 개발 환경에서는 MySQL 서버 없이 SQLite를 사용하여 개발할 수 있습니다.
+프로젝트가 성공적으로 실행되도록 모든 문제를 해결했습니다. 현재 프로젝트는 모든 환경(로컬/운영/테스트)에서 SQLite를 사용하며, 별도의 데이터베이스 서버 설치 없이 개발할 수 있습니다.
 
 **실행 명령어**:
 ```bash

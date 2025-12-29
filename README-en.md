@@ -52,8 +52,8 @@ Reduce business failure rates by helping founders with minimal expertise create 
                                                     │
                                          ┌──────────▼───────────┐
                                          │                      │
-                                         │   MySQL Database     │
-                                         │   (InnoDB, utf8mb4)  │
+                                         │   SQLite Database    │
+                                         │   (Local/Prod/Test)  │
                                          │                      │
                                          └──────────────────────┘
                                                     
@@ -83,7 +83,7 @@ Reduce business failure rates by helping founders with minimal expertise create 
 - **Language**: Java 21 (LTS)
 - **Framework**: Spring Boot 4.0.0
 - **Build Tool**: Gradle (Kotlin DSL)
-- **Database**: MySQL 8.x (InnoDB, utf8mb4)
+- **Database**: SQLite (used for local/production/test environments)
 - **ORM**: Spring Data JPA (Hibernate)
 - **Testing**: JUnit 5, Mockito, AssertJ
 
@@ -108,7 +108,7 @@ Reduce business failure rates by helping founders with minimal expertise create 
 - Java 21 or higher
 - Gradle 8.x
 - Python 3.10+
-- MySQL 8.x
+- SQLite 3.x (included by default)
 - Docker & Docker Compose (optional)
 
 ### Installation
@@ -231,7 +231,7 @@ bizplan-be-inclass/
 └──────────────┬──────────────────────┘
                │
 ┌──────────────▼──────────────────────┐
-│          Database (MySQL)           │
+│          Database (SQLite)          │
 └─────────────────────────────────────┘
 ```
 
@@ -395,7 +395,7 @@ bizplan-be-inclass/
 
 | Variable | Description | Required |
 |----------|-------------|:--------:|
-| `DB_PASSWORD` | MySQL 데이터베이스 비밀번호 | ✅ |
+| `GEMINI_API_KEY` | Google Gemini API Key | ✅ |
 | `GEMINI_API_KEY` | Google Gemini API 키 | ✅ |
 | `JWT_SECRET` | JWT 토큰 서명 키 (32자 이상) | ✅ |
 | `ENCRYPTION_KEY` | AES-256 암호화 키 (32자) | ✅ |
@@ -883,7 +883,7 @@ open http://localhost:8080/swagger-ui.html
 **Database Health**:
 ```bash
 # Check database connection
-mysql -u root -p -e "SELECT 1" bizplan
+sqlite3 ./data/bizplan.db "SELECT 1"
 ```
 
 **Gemini API Health**:
@@ -919,7 +919,7 @@ find logs/ -name "gemini-usage.*.log" -mtime +30 -exec gzip {} \;
 ```
 
 **Database**:
-- Regular MySQL backups recommended
+- Regular SQLite database file backups recommended (./data/bizplan.db)
 - Use Flyway migrations for schema versioning
 
 **Configuration**:
@@ -941,8 +941,9 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 21)
 
 **Database connection error**
 ```bash
-# Verify MySQL is running
-mysql -u root -p
+# Verify SQLite database file exists
+ls -la ./data/bizplan.db
+sqlite3 ./data/bizplan.db ".tables"
 
 # Check credentials in .env file
 # Ensure database exists

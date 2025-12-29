@@ -56,7 +56,7 @@ Standard: ISO/IEC/IEEE 29148:2018
    - **기술 스택 제약(Technology Constraints, C-TEC)**
      - C-TEC-001: 모든 프론트엔드 서비스는 **Vite 기반 React.js**를 사용한다.
      - C-TEC-002: 모든 백엔드 코어 서비스는 **Java 17 + Spring Boot 3.x (JVM 기반)**을 사용한다.
-     - C-TEC-003: 데이터베이스는 **MySQL(InnoDB, 유니코드 확장 문자 인코딩 – utf8mb4, 버전 8.x 이상)**을 사용한다.
+     - C-TEC-003: 데이터베이스는 **SQLite**를 사용한다. (참고: 초기 요구사항은 MySQL이었으나, 현재는 SQLite로 구현됨)
      - C-TEC-004: 문서 자동생성 및 LLM 오케스트레이션 엔진은 **Python + FastAPI + LangChain** 기반 별도 서비스로 구현한다.
      - C-TEC-005: LLM 호출은 **사내 LLM Gateway**를 통해 이루어지며, 기본 Provider는 **Google Gemini**이고, 필요 시 OpenAI 등으로 교체 가능하도록 추상화한다.
      - C-TEC-006: 서비스 간 통신은 **REST(OpenAPI 3.x)**를 기본으로 하며, gRPC는 향후 고성능 내부 통신이 필요한 MSA 서비스에서 선택적으로 사용할 수 있다. (※ **MVP 단계에서는 REST만 사용**을 기본 가정으로 한다.)
@@ -64,7 +64,7 @@ Standard: ISO/IEC/IEEE 29148:2018
      - 타깃 사용자는 사업계획서 작성 시간 단축 및 합격률 향상을 위해 월 구독료(예: 29,000원)를 지불할 의사가 있다. (PRD §6.4)
      - 예비·초기 창업자는 웹 기반 SaaS 도구 사용에 큰 거부감이 없으며, 기본적인 온라인 서비스 사용 경험을 보유하고 있다.
      - 외부 LLM 공급자(예: Google Gemini, OpenAI)와 HWP/PDF 변환 솔루션은 상용 환경에서 SLA 수준의 안정성을 제공한다.
-     - 인프라는 **AWS** 상에서 운영되며, AWS 관리형 서비스(RDS for MySQL, S3, CloudWatch 등)를 활용한다.
+     - 인프라는 **AWS** 상에서 운영되며, AWS 관리형 서비스(S3, CloudWatch 등)를 활용한다. (참고: 초기 요구사항은 RDS for MySQL이었으나, 현재는 SQLite 파일 기반으로 구현됨)
 
    1.3 Definitions, Acronyms, Abbreviations
 
@@ -163,7 +163,7 @@ Standard: ISO/IEC/IEEE 29148:2018
        participant Web as Web App (Vite+React)
        participant API as Backend API (Spring Boot)
        participant LLM as LLM Gateway (Gemini)
-       participant Store as Document Store (MySQL)
+       participant Store as Document Store (SQLite)
 
        Founder->>Web: 1. 로그인 및 '새 프로젝트 생성' 선택
        Web->>API: 2. POST /projects (템플릿=예비창업패키지)

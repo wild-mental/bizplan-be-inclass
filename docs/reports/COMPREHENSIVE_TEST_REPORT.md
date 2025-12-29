@@ -3,7 +3,7 @@
 **작성일**: 2025-12-29  
 **최종 업데이트**: 2025-12-29 (Gemini API 통합 테스트 완료)  
 **테스트 실행 환경**: Java 21, Spring Boot 4.0.0, Gradle 9.2.1  
-**데이터베이스**: H2 (In-Memory) for Testing  
+**데이터베이스**: SQLite (In-Memory 또는 파일) for Testing  
 **Gemini API**: GEMINI_API_KEY 환경변수 설정 완료
 
 ## 📊 테스트 실행 요약
