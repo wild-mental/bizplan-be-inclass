@@ -19,8 +19,14 @@ public class TemplateService {
     /**
      * 지원되는 템플릿 목록 (하드코딩)
      * MVP 단계에서는 DB 대신 메모리에서 관리합니다.
+     * 
+     * @see PRE-SUB-FUNC-002.md Section 4.1 - 프로젝트 생성
      */
     private static final List<Template> TEMPLATES = List.of(
+        new Template("pre-startup", "예비창업패키지", "2단계 자금 구조 (1단계 2천만 + 2단계 4천만)"),
+        new Template("early-startup", "초기창업패키지", "매칭펀드 (정부 70% + 자부담 30%)"),
+        new Template("policy-fund", "정책자금지원", "대출형 정책자금"),
+        // 기존 호환성을 위한 템플릿
         new Template("KSTARTUP_2025", "예비창업패키지", "중소벤처기업부 예비창업패키지 양식"),
         new Template("BANK_LOAN_2025", "은행 대출용 사업계획서", "시중은행 창업대출 심사용 양식"),
         new Template("IR_PITCH_2025", "투자유치용 IR 자료", "시드/시리즈 A 투자유치용 양식")

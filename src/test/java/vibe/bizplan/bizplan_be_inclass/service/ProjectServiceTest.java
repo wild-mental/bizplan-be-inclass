@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import vibe.bizplan.bizplan_be_inclass.entity.Project;
 import vibe.bizplan.bizplan_be_inclass.exception.InvalidTemplateException;
+import vibe.bizplan.bizplan_be_inclass.exception.ResourceNotFoundException;
 import vibe.bizplan.bizplan_be_inclass.repository.ProjectRepository;
 
 import java.util.Optional;
@@ -22,8 +23,6 @@ import static org.mockito.Mockito.verify;
 
 /**
  * ProjectService 단위 테스트
- * 
- * Rule 301: Use JUnit 5 + Mockito
  */
 @ExtendWith(MockitoExtension.class)
 class ProjectServiceTest {
@@ -41,11 +40,11 @@ class ProjectServiceTest {
 
     @BeforeEach
     void setUp() {
-        // 저장된 프로젝트 모의 객체 생성
         savedProject = Project.builder()
                 .id(UUID.randomUUID())
-                .templateCode("KSTARTUP_2025")
-                .status("draft")
+                .templateCode("pre-startup")
+                .status(Project.ProjectStatus.draft)
+                .currentStep(1)
                 .build();
     }
 
@@ -53,7 +52,7 @@ class ProjectServiceTest {
     @DisplayName("createProject - 유효한 템플릿으로 프로젝트를 생성한다")
     void createProject_validTemplate_createsProject() {
         // given
-        String templateCode = "KSTARTUP_2025";
+        String templateCode = "pre-startup";
         given(templateService.isValidTemplate(templateCode)).willReturn(true);
         given(projectRepository.save(any(Project.class))).willReturn(savedProject);
 
@@ -63,7 +62,7 @@ class ProjectServiceTest {
         // then
         assertThat(result).isNotNull();
         assertThat(result.getTemplateCode()).isEqualTo(templateCode);
-        assertThat(result.getStatus()).isEqualTo("draft");
+        assertThat(result.getStatus()).isEqualTo(Project.ProjectStatus.draft);
         
         verify(templateService).isValidTemplate(templateCode);
         verify(projectRepository).save(any(Project.class));
@@ -106,7 +105,7 @@ class ProjectServiceTest {
 
         // when & then
         assertThatThrownBy(() -> projectService.getProject(nonExistingId))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("프로젝트를 찾을 수 없습니다");
     }
 }

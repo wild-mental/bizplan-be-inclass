@@ -29,10 +29,21 @@ dependencies {
 	// JPA & Database
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	runtimeOnly 'com.mysql:mysql-connector-j'
-	runtimeOnly 'com.h2database:h2'  // H2 for local development
+	runtimeOnly 'org.xerial:sqlite-jdbc'  // SQLite for local development
+	implementation 'org.hibernate.orm:hibernate-community-dialects'  // SQLite Dialect support
 	
 	// Validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	
+	// Security & JWT
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	// Spring Security 명시적 의존성 추가 (Spring Boot 4.0.0 호환성)
+	implementation 'org.springframework.security:spring-security-core'
+	implementation 'org.springframework.security:spring-security-web'
+	implementation 'org.springframework.security:spring-security-config'
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 	
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
@@ -41,11 +52,13 @@ dependencies {
 	// Flyway for DB Migration (Rule 303)
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'org.flywaydb:flyway-mysql'
+	// SQLite support (Flyway Community Edition supports SQLite)
+	// SQLite support is built into flyway-core, no additional dependency needed
 	
 	// Core
 	implementation 'org.springframework.boot:spring-boot-starter'
 	
-	// DevTools (for H2 console in local development)
+	// DevTools
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	
 	// OpenAPI / Swagger UI (SpringDoc)
@@ -53,11 +66,10 @@ dependencies {
 	
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.boot:spring-boot-test-autoconfigure'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	
-	// Test - H2 for integration tests
-	testRuntimeOnly 'com.h2database:h2'
+	// Test - SQLite for integration tests
+	testRuntimeOnly 'org.xerial:sqlite-jdbc'
 }
 
 tasks.named('test') {
