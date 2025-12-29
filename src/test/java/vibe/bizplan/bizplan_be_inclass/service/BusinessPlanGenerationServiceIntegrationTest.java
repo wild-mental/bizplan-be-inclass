@@ -242,6 +242,106 @@ class BusinessPlanGenerationServiceIntegrationTest {
         assertThat(response2.getMetadata().getCompletionTokens()).isGreaterThan(0);
     }
 
+    @Test
+    @DisplayName("generateBusinessPlan - 다양한 입력 크기에 대한 응답 시간 측정 (5회 호출)")
+    void generateBusinessPlan_withDifferentPayloadSizes_measuresResponseTime() {
+        // given: 서로 다른 크기의 요청 5개 준비 (아주 짧은 ~ 매우 긴 입력)
+        BusinessPlanGenerateRequest tinyRequest = createSizedRequest(
+                "아주 짧은 아이템",
+                50,   // 각 필드 당 약 50자
+                1
+        );
+
+        BusinessPlanGenerateRequest smallRequest = createSizedRequest(
+                "짧은 아이템",
+                200,  // 각 필드 당 약 200자
+                1
+        );
+
+        BusinessPlanGenerateRequest mediumRequest = createSizedRequest(
+                "중간 길이 아이템",
+                800,  // 각 필드 당 약 800자
+                2
+        );
+
+        BusinessPlanGenerateRequest largeRequest = createSizedRequest(
+                "긴 아이템",
+                2000, // 각 필드 당 약 2,000자
+                3
+        );
+
+        BusinessPlanGenerateRequest xLargeRequest = createSizedRequest(
+                "매우 긴 아이템",
+                4000, // 각 필드 당 약 4,000자
+                4
+        );
+
+        BusinessPlanGenerateRequest[] requests = {
+                tinyRequest,
+                smallRequest,
+                mediumRequest,
+                largeRequest,
+                xLargeRequest
+        };
+
+        String[] labels = {"XS", "S", "M", "L", "XL"};
+
+        System.out.println("\n=== 다양한 입력 크기별 사업계획서 생성 응답 시간 측정 ===");
+
+        for (int i = 0; i < requests.length; i++) {
+            String sizeLabel = labels[i];
+            BusinessPlanGenerateRequest req = requests[i];
+            String projectId = "proj-size-" + sizeLabel.toLowerCase();
+            String itemName = "Payload-" + sizeLabel;
+
+            long startWall = System.currentTimeMillis();
+
+            BusinessPlanGenerateResponse response;
+            try {
+                response = service.generateBusinessPlan(
+                        req,
+                        projectId,
+                        "pre-startup",
+                        itemName,
+                        startWall
+                );
+            } catch (Exception e) {
+                // Gemini API 할당량 또는 네트워크 이슈 시 전체 테스트를 스킵
+                Throwable cause = e;
+                while (cause != null) {
+                    if (cause instanceof com.google.genai.errors.ClientException) {
+                        assumeTrue(false,
+                                "Gemini API 호출 중 오류가 발생했습니다. 테스트를 건너뜁니다: " + cause.getMessage());
+                    }
+                    cause = cause.getCause();
+                }
+                throw e;
+            }
+
+            long endWall = System.currentTimeMillis();
+            long wallTimeMs = endWall - startWall;
+
+            BusinessPlanGenerateResponse.GenerationMetadata metadata = response.getMetadata();
+            long genTimeMs = metadata != null ? metadata.getGenerationTimeMs() : -1L;
+
+            System.out.println(String.format(
+                    "Size=%s | wallTime=%d ms | generationTime=%d ms | promptTokens=%d | completionTokens=%d | totalTokens=%d",
+                    sizeLabel,
+                    wallTimeMs,
+                    genTimeMs,
+                    metadata != null ? metadata.getPromptTokens() : -1,
+                    metadata != null ? metadata.getCompletionTokens() : -1,
+                    metadata != null ? metadata.getTotalTokens() : -1
+            ));
+
+            // 기본적인 성공 검증
+            assertThat(response).isNotNull();
+            assertThat(response.getBusinessPlanId()).isNotBlank();
+            assertThat(response.getSections()).isNotNull();
+            assertThat(response.getSections()).isNotEmpty();
+        }
+    }
+
     private BusinessPlanGenerateRequest createMockRequest() {
         BusinessPlanGenerateRequest.RequestInfo requestInfo = new BusinessPlanGenerateRequest.RequestInfo(
                 "pre-startup",
@@ -353,5 +453,133 @@ class BusinessPlanGenerationServiceIntegrationTest {
     private BusinessPlanGenerateRequest createLongRequest() {
         // createMockRequest()와 동일하지만 더 많은 섹션 포함
         return createMockRequest();
+    }
+
+    /**
+     * 주어진 길이와 반복 횟수에 맞춰 각 텍스트 필드를 생성하는 헬퍼
+     *
+     * @param baseItemName 아이템 이름
+     * @param approxFieldLength 각 필드당 대략적인 길이 (문자 수)
+     * @param repeatCount 동일 텍스트 반복 횟수
+     */
+    private BusinessPlanGenerateRequest createSizedRequest(
+            String baseItemName,
+            int approxFieldLength,
+            int repeatCount
+    ) {
+        String repeated = "내용 ".repeat(Math.max(1, approxFieldLength / 3));
+
+        String itemSummary = (baseItemName + " - 요약. ") + repeated.repeat(repeatCount);
+        String problem = "문제 정의: " + repeated.repeat(repeatCount);
+        String problemEvidence = "증거/데이터: " + repeated.repeat(repeatCount);
+        String targetCustomer = "타겟 고객: " + repeated.repeat(repeatCount);
+
+        String marketSize = "시장 규모: " + repeated.repeat(repeatCount);
+        String marketTrend = "시장 트렌드: " + repeated.repeat(repeatCount);
+        String competitors = "경쟁사: " + repeated.repeat(repeatCount);
+        String competitiveAdvantage = "경쟁 우위: " + repeated.repeat(repeatCount);
+
+        String solution = "솔루션: " + repeated.repeat(repeatCount);
+        String businessModel = "비즈니스 모델: " + repeated.repeat(repeatCount);
+        String revenueStreams = "수익 구조: " + repeated.repeat(repeatCount);
+        String techFeasibility = "기술 실현 가능성: " + repeated.repeat(repeatCount);
+
+        String goToMarket = "GTM 전략: " + repeated.repeat(repeatCount);
+        String marketingStrategy = "마케팅 전략: " + repeated.repeat(repeatCount);
+        String growthStrategy = "성장 전략: " + repeated.repeat(repeatCount);
+        String milestones = "마일스톤: " + repeated.repeat(repeatCount);
+
+        String teamComposition = "팀 구성: " + repeated.repeat(repeatCount);
+        String teamExpertise = "팀 전문성: " + repeated.repeat(repeatCount);
+        String teamTrackRecord = "팀 트랙 레코드: " + repeated.repeat(repeatCount);
+
+        BusinessPlanGenerateRequest.RequestInfo requestInfo =
+                new BusinessPlanGenerateRequest.RequestInfo(
+                        "pre-startup",
+                        "2025-12-19T12:00:00.000Z",
+                        "user-" + baseItemName,
+                        "proj-" + baseItemName
+                );
+
+        BusinessPlanGenerateRequest.Step1ProblemRecognition step1 =
+                new BusinessPlanGenerateRequest.Step1ProblemRecognition(
+                        baseItemName,
+                        itemSummary,
+                        problem,
+                        problemEvidence,
+                        targetCustomer
+                );
+
+        BusinessPlanGenerateRequest.Step2MarketAnalysis step2 =
+                new BusinessPlanGenerateRequest.Step2MarketAnalysis(
+                        marketSize,
+                        marketTrend,
+                        competitors,
+                        competitiveAdvantage
+                );
+
+        BusinessPlanGenerateRequest.Step3SolutionFeasibility step3 =
+                new BusinessPlanGenerateRequest.Step3SolutionFeasibility(
+                        solution,
+                        businessModel,
+                        revenueStreams,
+                        techFeasibility
+                );
+
+        BusinessPlanGenerateRequest.Step4CommercializationStrategy step4 =
+                new BusinessPlanGenerateRequest.Step4CommercializationStrategy(
+                        goToMarket,
+                        marketingStrategy,
+                        growthStrategy,
+                        milestones
+                );
+
+        BusinessPlanGenerateRequest.Step5TeamCapability step5 =
+                new BusinessPlanGenerateRequest.Step5TeamCapability(
+                        teamComposition,
+                        teamExpertise,
+                        teamTrackRecord
+                );
+
+        BusinessPlanGenerateRequest.Step6FinancialPlan step6 =
+                new BusinessPlanGenerateRequest.Step6FinancialPlan(
+                        new BusinessPlanGenerateRequest.FinancialInputs(
+                                100, 35000, 50000, 15000000, 0.1, 0.05
+                        ),
+                        new BusinessPlanGenerateRequest.CalculatedMetrics(
+                                3500000, 42000000, 420000, 8.4, 500, 18, 0.9
+                        )
+                );
+
+        BusinessPlanGenerateRequest.BusinessPlanData businessPlanData =
+                new BusinessPlanGenerateRequest.BusinessPlanData(
+                        step1, step2, step3, step4, step5, step6
+                );
+
+        BusinessPlanGenerateRequest.GenerationOptions generationOptions =
+                new BusinessPlanGenerateRequest.GenerationOptions(
+                        "professional",
+                        "detailed",
+                        "markdown",
+                        "ko",
+                        List.of(
+                                "executive_summary",
+                                "problem_analysis",
+                                "market_analysis",
+                                "solution_overview",
+                                "business_model",
+                                "go_to_market",
+                                "team_introduction",
+                                "financial_projection",
+                                "risk_analysis",
+                                "conclusion"
+                        )
+                );
+
+        return new BusinessPlanGenerateRequest(
+                requestInfo,
+                businessPlanData,
+                generationOptions
+        );
     }
 }
