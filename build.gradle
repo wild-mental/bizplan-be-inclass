@@ -28,8 +28,7 @@ dependencies {
 	
 	// JPA & Database
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	runtimeOnly 'com.mysql:mysql-connector-j'
-	runtimeOnly 'org.xerial:sqlite-jdbc'  // SQLite for local development
+	runtimeOnly 'org.xerial:sqlite-jdbc'  // SQLite database
 	implementation 'org.hibernate.orm:hibernate-community-dialects'  // SQLite Dialect support
 	
 	// Validation
@@ -49,10 +48,8 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	
-	// Flyway for DB Migration (Rule 303)
+	// Flyway for DB Migration
 	implementation 'org.flywaydb:flyway-core'
-	implementation 'org.flywaydb:flyway-mysql'
-	// SQLite support (Flyway Community Edition supports SQLite)
 	// SQLite support is built into flyway-core, no additional dependency needed
 	
 	// Core

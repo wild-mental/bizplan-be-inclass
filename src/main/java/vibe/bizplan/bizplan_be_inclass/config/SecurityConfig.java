@@ -56,6 +56,10 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/promotions/**").permitAll()
                 .requestMatchers("/api/v1/pre-registrations/**").permitAll()
                 
+                // 헬스체크 엔드포인트 (배포 후 상태 확인용)
+                .requestMatchers("/api/v1/health/**").permitAll()
+                .requestMatchers("/health", "/health/**").permitAll()
+                
                 // Swagger UI
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
                 
