@@ -4,9 +4,9 @@
 
 | 항목 | 현재 설정 |
 |------|----------|
-| **운영 DB** | MySQL 8.x |
-| **개발 DB** | H2 (인메모리) |
-| **테스트 DB** | H2 (인메모리) |
+| **운영 DB** | SQLite |
+| **개발 DB** | SQLite |
+| **테스트 DB** | SQLite (In-Memory 또는 파일) |
 | **마이그레이션** | Flyway |
 | **ORM** | Spring Data JPA / Hibernate |
 
@@ -173,25 +173,22 @@
 단점: 운영 복잡도, 비용
 ```
 
-### Option C: 하이브리드 (권장) ⭐
+### Option C: SQLite 통일 (현재 적용) ⭐
 
-**개발/테스트:** SQLite  
-**스테이징/운영:** MySQL
+**개발/테스트/운영:** SQLite (모두 동일)
 
 ```java
 // application.properties
 spring.profiles.active=${SPRING_PROFILES_ACTIVE:local}
 
-// application-local.properties (SQLite)
+// 모든 환경에서 SQLite 사용
 spring.datasource.url=jdbc:sqlite:./data/bizplan.db
-
-// application-prod.properties (MySQL)
-spring.datasource.url=jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+spring.datasource.driver-class-name=org.sqlite.JDBC
 ```
 
 ```
-장점: 개발 편의성 + 운영 안정성
-단점: 환경별 설정 관리 필요
+장점: 환경 간 일관성, 운영 단순화, 배포 용이성
+단점: 동시성 제한 (소규모 서비스에는 충분)
 ```
 
 ---
@@ -270,10 +267,11 @@ bizplan-be-inclass/
 > **MySQL 권장** - 확장성, 안정성, 도구 지원
 
 ### BizPlan 프로젝트
-> **현재: MySQL 유지 권장**
-> - 이미 MySQL 기반 구현 완료
-> - Flyway 마이그레이션 작성됨
-> - 추후 확장성 고려 시 유리
+> **현재: SQLite 사용 중**
+> - SQLite 기반 구현 완료
+> - Flyway 마이그레이션 작성됨 (SQLite용)
+> - 로컬/운영/테스트 환경 모두 SQLite 사용
+> - 운영 단순화 및 빠른 배포에 최적화
 
 ---
 

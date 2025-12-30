@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * BusinessPlanRepository 테스트
  * 
  * Rule 306: Repository Layer 테스트는 실제 DB 사용
- * Rule 303: 실제 DB (H2) 사용하여 Query Methods 검증
+ * Rule 303: 실제 DB (SQLite) 사용하여 Query Methods 검증
  */
 @SpringBootTest
 @ActiveProfiles("test")

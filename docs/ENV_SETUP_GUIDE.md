@@ -16,15 +16,16 @@ bizplan-be-inclass/
 
 ## 🔧 필수 환경변수
 
-### 1. 데이터베이스 (MySQL)
+### 1. 데이터베이스 (SQLite)
 
-| 변수명 | 설명 | 기본값 | 예시 |
-|--------|------|--------|------|
-| `DB_HOST` | DB 호스트 | `localhost` | `db.example.com` |
-| `DB_PORT` | DB 포트 | `3306` | `3306` |
-| `DB_NAME` | DB 이름 | `bizplan` | `bizplan_prod` |
-| `DB_USERNAME` | DB 사용자 | `root` | `bizplan_user` |
-| `DB_PASSWORD` | DB 비밀번호 | (빈값) | `SecureP@ss123!` |
+SQLite는 파일 기반 데이터베이스이므로 별도의 호스트/포트/사용자명/비밀번호 설정이 필요하지 않습니다.
+
+| 항목 | 설명 |
+|------|------|
+| **데이터베이스 파일** | `./data/bizplan.db` (자동 생성) |
+| **설정** | `application.properties`에 이미 설정됨 |
+
+> 💡 **참고**: SQLite는 별도 설치 없이 JDBC 드라이버만으로 동작합니다.
 
 ### 2. Spring Boot 서버
 
@@ -61,11 +62,8 @@ bizplan-be-inclass/
 
 ```bash
 # ============ Database ============
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=bizplan
-DB_USERNAME=root
-DB_PASSWORD=your_secure_password
+# SQLite는 파일 기반이므로 별도 설정 불필요
+# 데이터베이스 파일은 ./data/bizplan.db에 자동 생성됨
 
 # ============ Spring Boot ============
 SPRING_PROFILES_ACTIVE=local
@@ -87,23 +85,21 @@ ENCRYPTION_KEY=your-aes256-key-exactly-32chars
 ### Local (개발)
 ```bash
 SPRING_PROFILES_ACTIVE=local
-# H2 인메모리 DB 사용 (MySQL 불필요)
-# application-local.properties 자동 적용
+# SQLite 파일: ./data/bizplan.db (자동 생성)
 ```
 
 ### Dev (개발 서버)
 ```bash
 SPRING_PROFILES_ACTIVE=dev
-DB_HOST=dev-db.internal
-DB_NAME=bizplan_dev
+# SQLite 파일: ./data/bizplan.db (동일)
 ```
 
 ### Prod (운영)
 ```bash
 SPRING_PROFILES_ACTIVE=prod
-DB_HOST=prod-db.internal
-DB_NAME=bizplan_prod
+# SQLite 파일: ./data/bizplan.db (동일)
 # 보안 키는 반드시 운영용으로 변경!
+# 데이터베이스 파일은 정기적으로 백업 필요
 ```
 
 ---

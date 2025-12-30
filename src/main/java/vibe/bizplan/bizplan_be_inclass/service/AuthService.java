@@ -11,7 +11,9 @@ import vibe.bizplan.bizplan_be_inclass.exception.*;
 import vibe.bizplan.bizplan_be_inclass.repository.*;
 import vibe.bizplan.bizplan_be_inclass.security.JwtTokenProvider;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
 
@@ -31,8 +33,11 @@ public class AuthService {
     private final SubscriptionRepository subscriptionRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PreRegistrationRepository preRegistrationRepository;
+    private final EmailVerificationTokenRepository emailVerificationTokenRepository;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final EmailService emailService;
 
     // 요금제별 가격 정보
     private static final Map<String, Integer> PLAN_PRICES = Map.of(
@@ -111,7 +116,10 @@ public class AuthService {
 
         subscriptionRepository.save(subscription);
 
-        // 5. 토큰 생성
+        // 5. 이메일 인증 토큰 생성 및 발송
+        createAndSendVerificationToken(user);
+
+        // 6. 토큰 생성
         String accessToken = jwtTokenProvider.createAccessToken(user.getId(), user.getEmail());
         String refreshToken = createAndSaveRefreshToken(user);
 
@@ -329,6 +337,144 @@ public class AuthService {
 
         refreshTokenRepository.save(refreshToken);
         return token;
+    }
+
+    /**
+     * 이메일 인증 토큰 생성 및 발송
+     * 
+     * @param user 사용자
+     */
+    @Transactional
+    public void createAndSendVerificationToken(User user) {
+        // 기존 미사용 토큰 무효화
+        emailVerificationTokenRepository.invalidateAllByUser(user);
+
+        // 새 토큰 생성
+        String token = generateSecureToken();
+        LocalDateTime expiresAt = LocalDateTime.now().plusHours(24); // 24시간 유효
+
+        EmailVerificationToken verificationToken = EmailVerificationToken.builder()
+                .user(user)
+                .token(token)
+                .expiresAt(expiresAt)
+                .used(false)
+                .build();
+
+        emailVerificationTokenRepository.save(verificationToken);
+
+        // 이메일 발송
+        emailService.sendVerificationEmail(user.getEmail(), token, user.getName());
+    }
+
+    /**
+     * 이메일 인증 확인
+     * 
+     * @param request 이메일 인증 요청
+     */
+    @Transactional
+    public void verifyEmail(EmailVerificationRequest request) {
+        EmailVerificationToken token = emailVerificationTokenRepository.findByToken(request.getToken())
+                .orElseThrow(() -> new InvalidTokenException("유효하지 않은 인증 토큰입니다"));
+
+        if (!token.isValid()) {
+            throw new InvalidTokenException("만료되었거나 이미 사용된 토큰입니다");
+        }
+
+        // 토큰 사용 처리
+        token.markAsUsed();
+        emailVerificationTokenRepository.save(token);
+
+        // 사용자 이메일 인증 상태 업데이트
+        User user = token.getUser();
+        user.verifyEmail();
+        userRepository.save(user);
+
+        log.info("이메일 인증 완료: {}", user.getEmail());
+    }
+
+    /**
+     * 이메일 인증 재발송
+     * 
+     * @param email 사용자 이메일
+     */
+    @Transactional
+    public void resendVerificationEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다"));
+
+        if (user.getEmailVerified()) {
+            throw new BadRequestException("이미 인증된 이메일입니다");
+        }
+
+        createAndSendVerificationToken(user);
+    }
+
+    /**
+     * 비밀번호 재설정 요청
+     * 
+     * @param request 비밀번호 재설정 요청
+     */
+    @Transactional
+    public void requestPasswordReset(PasswordResetRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("해당 이메일로 등록된 사용자를 찾을 수 없습니다"));
+
+        // 기존 미사용 토큰 무효화
+        passwordResetTokenRepository.invalidateAllByUser(user);
+
+        // 새 토큰 생성
+        String token = generateSecureToken();
+        LocalDateTime expiresAt = LocalDateTime.now().plusHours(1); // 1시간 유효
+
+        PasswordResetToken resetToken = PasswordResetToken.builder()
+                .user(user)
+                .token(token)
+                .expiresAt(expiresAt)
+                .used(false)
+                .build();
+
+        passwordResetTokenRepository.save(resetToken);
+
+        // 이메일 발송
+        emailService.sendPasswordResetEmail(user.getEmail(), token, user.getName());
+
+        log.info("비밀번호 재설정 요청: {}", user.getEmail());
+    }
+
+    /**
+     * 비밀번호 재설정 확인
+     * 
+     * @param request 비밀번호 재설정 확인 요청
+     */
+    @Transactional
+    public void confirmPasswordReset(PasswordResetConfirmRequest request) {
+        PasswordResetToken token = passwordResetTokenRepository.findByToken(request.getToken())
+                .orElseThrow(() -> new InvalidTokenException("유효하지 않은 재설정 토큰입니다"));
+
+        if (!token.isValid()) {
+            throw new InvalidTokenException("만료되었거나 이미 사용된 토큰입니다");
+        }
+
+        // 토큰 사용 처리
+        token.markAsUsed();
+        passwordResetTokenRepository.save(token);
+
+        // 비밀번호 업데이트
+        User user = token.getUser();
+        user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        log.info("비밀번호 재설정 완료: {}", user.getEmail());
+    }
+
+    /**
+     * 보안 토큰 생성
+     */
+    private String generateSecureToken() {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[32];
+        random.nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 }
 

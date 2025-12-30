@@ -52,9 +52,8 @@
                                                     │
                                          ┌──────────▼───────────┐
                                          │                      │
-                                         │   SQLite (로컬)      │
-                                         │   MySQL (운영)       │
-                                         │   H2 (테스트)        │
+                                         │   SQLite             │
+                                         │   (로컬/운영/테스트)  │
                                          │                      │
                                          └──────────────────────┘
                                                     
@@ -84,10 +83,7 @@
 - **언어**: Java 21 (LTS)
 - **프레임워크**: Spring Boot 4.0.0
 - **빌드 도구**: Gradle (Kotlin DSL)
-- **DB**: 
-  - 로컬 개발: SQLite (Flyway 마이그레이션)
-  - 테스트: H2 (In-Memory)
-  - 운영/스테이징: MySQL 8.x (InnoDB, utf8mb4)
+- **DB**: SQLite (로컬/운영/테스트 모두 동일, Flyway 마이그레이션)
 - **ORM**: Spring Data JPA (Hibernate)
 - **테스트**: JUnit 5, Mockito, AssertJ
 
@@ -112,8 +108,7 @@
 - Java 21 이상
 - Gradle 8.x 이상
 - Python 3.10+ (AI 엔진용, 선택사항)
-- SQLite 3.x (로컬 개발용, 기본 포함)
-- MySQL 8.x (운영 환경용, 선택사항)
+- SQLite 3.x (기본 포함, 로컬/운영/테스트 모두 사용)
 - Docker & Docker Compose (선택사항)
 
 ### 설치 절차
@@ -139,11 +134,8 @@ vim .env  # 또는 원하는 에디터 사용
 
 ```bash
 # ============ DB 설정 ============
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=bizplan
-DB_USERNAME=root
-DB_PASSWORD=your_password           # ⚠️ 필수
+# SQLite는 파일 기반이므로 별도의 호스트/포트/사용자명/비밀번호 불필요
+# 데이터베이스 파일은 ./data/bizplan.db에 자동 생성됨
 
 # ============ Spring Boot 설정 ============
 SPRING_PROFILES_ACTIVE=local        # local | dev | prod
@@ -236,7 +228,7 @@ bizplan-be-inclass/
 └──────────────┬──────────────────────┘
                │
 ┌──────────────▼──────────────────────┐
-│          데이터베이스 (MySQL)        │
+│          데이터베이스 (SQLite)        │
 └─────────────────────────────────────┘
 ```
 
@@ -389,35 +381,35 @@ export GEMINI_API_KEY="your-api-key"
 
 **테스트 리포트**: 자세한 결과 및 커버리지는 [GEMINI_TEST_REPORT.md](./docs/GEMINI_TEST_REPORT.md) 참고
 
-## 📊 데이터베이스 확인 (H2 콘솔)
+## 📊 데이터베이스 확인 (SQLite)
 
-### H2 콘솔 접속
+### SQLite 데이터베이스 파일 위치
 
-로컬 개발 환경(`local` 프로필 사용)에서는 H2 임시 메모리 데이터베이스에 저장된 내용을 직접 확인할 수 있습니다.
+로컬 개발 환경에서는 SQLite 데이터베이스 파일(`./data/bizplan.db`)을 직접 확인할 수 있습니다.
 
-#### 1. 애플리케이션 실행
+#### 1. 데이터베이스 파일 위치
 
+```
+bizplan-be-inclass/
+└── data/
+    └── bizplan.db    # SQLite 데이터베이스 파일
+```
+
+#### 2. SQLite CLI로 접속
+
+터미널에서 다음 명령어로 접속:
 ```bash
-./gradlew bootRun
-```
-애플리케이션은 `http://localhost:8080`에서 실행됩니다.
-
-#### 2. H2 콘솔 접속
-
-브라우저에서 다음 주소 진입:
-```
-http://localhost:8080/h2-console
+sqlite3 ./data/bizplan.db
 ```
 
-#### 3. 접속 정보 입력
+#### 3. SQLite GUI 도구 사용 (권장)
 
-| 항목      | 값                       |
-|-----------|--------------------------|
-| **JDBC URL**  | `jdbc:h2:mem:testdb`      |
-| **사용자명**  | `sa`                      |
-| **비밀번호**  | (공란)                    |
+다음 도구들을 사용하여 시각적으로 데이터를 확인할 수 있습니다:
+- **DB Browser for SQLite** (https://sqlitebrowser.org/)
+- **DBeaver** (https://dbeaver.io/)
+- **VS Code 확장**: SQLite Viewer
 
-> ⚠️ **주의**: H2 인메모리 DB는 애플리케이션이 종료되면 데이터가 모두 사라집니다.
+> ⚠️ **주의**: SQLite 파일은 애플리케이션이 실행 중일 때도 읽기 가능하지만, 쓰기 작업은 애플리케이션 종료 후에 안전합니다.
 
 #### 4. 주요 데이터 조회 예시
 
@@ -511,14 +503,14 @@ SHOW INDEX FROM business_plans;
 
 ### 유의 사항
 
-1. **데이터 지속성**: 인메모리 DB이므로 재기동시 데이터 소멸
-2. **운영 환경**: 운영 환경(`prod` 프로필)에서는 MySQL만 사용, H2 콘솔 비활성화
-3. **보안**: H2 콘솔은 로컬 개발환경에서만 활성화, 운영환경에서는 차단
+1. **데이터 지속성**: SQLite 파일 기반이므로 애플리케이션 재기동 후에도 데이터가 유지됩니다
+2. **백업**: `./data/bizplan.db` 파일을 정기적으로 백업하는 것을 권장합니다
+3. **동시 접근**: SQLite는 단일 쓰기 락을 사용하므로 동시 쓰기 작업이 제한될 수 있습니다
 
 ### 참고 문서
 
-- [H2 공식문서](https://www.h2database.com/html/main.html)
-- [MYSQL_TO_H2_MIGRATION.md](./docs/MYSQL_TO_H2_MIGRATION.md)
+- [SQLite 공식문서](https://www.sqlite.org/docs.html)
+- [SQLLITE_FLYWAY_GUIDE.md](./docs/SQLLITE_FLYWAY_GUIDE.md)
 
 ---
 
@@ -581,9 +573,7 @@ SHOW INDEX FROM business_plans;
 
 #### 데이터베이스
 
-- **로컬 개발**: SQLite (Flyway 마이그레이션)
-- **테스트**: H2 (In-Memory)
-- **운영**: MySQL 8.x
+- **로컬/운영/테스트**: SQLite (Flyway 마이그레이션)
 
 #### API 문서화
 
@@ -668,7 +658,6 @@ bizplan-be-inclass/
 
 | 변수명 | 설명 | 필수여부 |
 |--------|------|:--------:|
-| `DB_PASSWORD` | MySQL 비밀번호 | ✅ |
 | `GEMINI_API_KEY` | Google Gemini API키 | ✅ |
 | `JWT_SECRET` | JWT 서명키(32자 이상) | ✅ |
 | `ENCRYPTION_KEY` | AES-256 암호키(32자) | ✅ |
@@ -959,7 +948,7 @@ grep -i "error\|exception\|failed" logs/gemini-usage.log
 ```bash
 find logs/ -name "gemini-usage.*.log" -mtime +30 -exec gzip {} \;
 ```
-- **DB**: MySQL 정기 백업 권장, Flyway 마이그레이션으로 스키마 관리
+- **DB**: SQLite 파일(`./data/bizplan.db`) 정기 백업 권장, Flyway 마이그레이션으로 스키마 관리
 - **설정**: `.env` 파일은 Git 제외, `.env.example`은 템플릿 관리
 
 ## 🐛 문제 해결
@@ -974,9 +963,14 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 21)
 
 **DB 연결 오류**
 ```bash
-mysql -u root -p
-# .env 내 인증정보 재확인
-CREATE DATABASE IF NOT EXISTS bizplan CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+# SQLite 데이터베이스 파일 확인
+ls -la ./data/bizplan.db
+
+# SQLite 파일 권한 확인 및 수정 (필요시)
+chmod 644 ./data/bizplan.db
+
+# data 디렉토리가 없는 경우 생성
+mkdir -p ./data
 ```
 
 **포트 충돌(8080 사용중)**

@@ -22,7 +22,7 @@
 
 - **Content-Type**: `application/json`
 - **인코딩**: UTF-8
-- **인증**: 현재 미구현 (향후 JWT 기반 인증 예정)
+- **인증**: Bearer Token (JWT) - `Authorization: Bearer {accessToken}` 헤더 필요
 
 ### 응답 형식
 
@@ -104,17 +104,20 @@
 
 | 필드 | 타입 | 설명 |
 |------|------|------|
-| `data[].code` | `string` | 템플릿 고유 코드 |
+| `data[].code` | `string` | 템플릿 고유 코드 (템플릿 ID) |
 | `data[].name` | `string` | 템플릿 이름 |
 | `data[].description` | `string` | 템플릿 설명 |
 
-**지원되는 템플릿 코드**
+**지원되는 템플릿 코드 (템플릿 ID)**
 
-| 코드 | 이름 | 설명 |
-|------|------|------|
-| `KSTARTUP_2025` | 예비창업패키지 | 중소벤처기업부 예비창업패키지 양식 |
-| `BANK_LOAN_2025` | 은행 대출용 사업계획서 | 시중은행 창업대출 심사용 양식 |
-| `IR_PITCH_2025` | 투자유치용 IR 자료 | 시드/시리즈 A 투자유치용 양식 |
+| 코드 (ID) | 이름 | 설명 |
+|-----------|------|------|
+| `pre-startup` | 예비창업패키지 | 2단계 자금 구조 (1단계 2천만 + 2단계 4천만) |
+| `early-startup` | 초기창업패키지 | 매칭펀드 (정부 70% + 자부담 30%) |
+| `policy-fund` | 정책자금지원 | 대출형 정책자금 |
+| `KSTARTUP_2025` | 예비창업패키지 | 중소벤처기업부 예비창업패키지 양식 (기존 호환성) |
+| `BANK_LOAN_2025` | 은행 대출용 사업계획서 | 시중은행 창업대출 심사용 양식 (기존 호환성) |
+| `IR_PITCH_2025` | 투자유치용 IR 자료 | 시드/시리즈 A 투자유치용 양식 (기존 호환성) |
 
 **에러 응답**
 
@@ -142,7 +145,10 @@ Content-Type: application/json
 **요청 본문**
 ```json
 {
-  "templateCode": "KSTARTUP_2025"
+  "name": "LearnAI",
+  "templateId": "pre-startup",
+  "supportProgram": "2026-1",
+  "description": "AI 기반 맞춤형 학습 플랫폼"
 }
 ```
 
@@ -150,7 +156,10 @@ Content-Type: application/json
 
 | 필드 | 타입 | 필수 | 설명 |
 |------|------|------|------|
-| `templateCode` | `string` | ✅ | 사용할 템플릿 코드 (NotBlank) |
+| `name` | `string` | ✅ | 프로젝트 이름 (최대 100자) |
+| `templateId` | `string` | ✅ | 사용할 템플릿 ID (NotBlank) |
+| `supportProgram` | `string` | ❌ | 지원 프로그램 (예: "2026-1") |
+| `description` | `string` | ❌ | 프로젝트 설명 (최대 500자) |
 
 **응답**
 
@@ -159,10 +168,21 @@ Content-Type: application/json
 {
   "success": true,
   "data": {
-    "projectId": "550e8400-e29b-41d4-a716-446655440000",
-    "templateCode": "KSTARTUP_2025",
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "name": "LearnAI",
+    "templateId": "pre-startup",
+    "templateName": "예비창업패키지",
+    "supportProgram": "2026-1",
+    "description": "AI 기반 맞춤형 학습 플랫폼",
     "status": "draft",
-    "createdAt": "2025-12-17T11:00:00"
+    "progress": {
+      "currentStep": 1,
+      "totalSteps": 8,
+      "completedSteps": [],
+      "percentComplete": 0.0
+    },
+    "createdAt": "2025-12-17T11:00:00",
+    "updatedAt": "2025-12-17T11:00:00"
   },
   "error": null
 }
@@ -172,10 +192,20 @@ Content-Type: application/json
 
 | 필드 | 타입 | 설명 |
 |------|------|------|
-| `data.projectId` | `string` | 프로젝트 고유 식별자 (UUID) |
-| `data.templateCode` | `string` | 사용된 템플릿 코드 |
+| `data.id` | `string` | 프로젝트 고유 식별자 (UUID) |
+| `data.name` | `string` | 프로젝트 이름 |
+| `data.templateId` | `string` | 사용된 템플릿 ID |
+| `data.templateName` | `string` | 템플릿 이름 |
+| `data.supportProgram` | `string` | 지원 프로그램 |
+| `data.description` | `string` | 프로젝트 설명 |
 | `data.status` | `string` | 프로젝트 상태 (기본값: "draft") |
+| `data.progress` | `object` | 진행 상황 정보 |
+| `data.progress.currentStep` | `number` | 현재 단계 |
+| `data.progress.totalSteps` | `number` | 전체 단계 수 |
+| `data.progress.completedSteps` | `array` | 완료된 단계 목록 |
+| `data.progress.percentComplete` | `number` | 완료율 (%) |
 | `data.createdAt` | `string` | 프로젝트 생성 시각 (ISO 8601 형식) |
+| `data.updatedAt` | `string` | 프로젝트 수정 시각 (ISO 8601 형식) |
 
 **에러 응답**
 
@@ -191,7 +221,7 @@ Content-Type: application/json
 }
 ```
 
-**400 Bad Request - 유효하지 않은 템플릿 코드**
+**400 Bad Request - 유효하지 않은 템플릿 ID**
 ```json
 {
   "success": false,
@@ -257,8 +287,12 @@ curl -X GET http://localhost:8080/api/v1/projects/templates \
 ```bash
 curl -X POST http://localhost:8080/api/v1/projects \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -d '{
-    "templateCode": "KSTARTUP_2025"
+    "name": "LearnAI",
+    "templateId": "pre-startup",
+    "supportProgram": "2026-1",
+    "description": "AI 기반 맞춤형 학습 플랫폼"
   }'
 ```
 
@@ -283,9 +317,13 @@ fetch('http://localhost:8080/api/v1/projects', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
+    'Authorization': 'Bearer YOUR_ACCESS_TOKEN',
   },
   body: JSON.stringify({
-    templateCode: 'KSTARTUP_2025'
+    name: 'LearnAI',
+    templateId: 'pre-startup',
+    supportProgram: '2026-1',
+    description: 'AI 기반 맞춤형 학습 플랫폼'
   })
 })
   .then(response => response.json())
@@ -319,8 +357,16 @@ import requests
 
 response = requests.post(
     'http://localhost:8080/api/v1/projects',
-    json={'templateCode': 'KSTARTUP_2025'},
-    headers={'Content-Type': 'application/json'}
+    json={
+        'name': 'LearnAI',
+        'templateId': 'pre-startup',
+        'supportProgram': '2026-1',
+        'description': 'AI 기반 맞춤형 학습 플랫폼'
+    },
+    headers={
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer YOUR_ACCESS_TOKEN'
+    }
 )
 data = response.json()
 

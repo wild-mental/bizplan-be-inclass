@@ -20,7 +20,7 @@
 ## Technical Stack
 - Java 21 + Spring Boot 4.0.0
 - Spring Data JPA
-- MySQL 8.x
+- SQLite (로컬/운영/테스트 모두 사용)
 - Lombok (Boilerplate 감소)
 - Jakarta Validation (입력 검증)
 
@@ -175,7 +175,7 @@ sequenceDiagram
     participant Service as ProjectService
     participant Template as TemplateService
     participant Repo as ProjectRepository
-    participant DB as MySQL
+    participant DB as SQLite
     
     %% POST /api/v1/projects Flow
     rect rgb(240, 248, 255)
@@ -823,7 +823,7 @@ public class GlobalExceptionHandler {
 
 ### Phase 1: Data Layer (Repository)
 1. **의존성 추가**: `build.gradle`에 필요한 라이브러리 추가
-2. **DB 설정**: `application.properties`에 MySQL 연결 정보 설정
+2. **DB 설정**: `application.properties`에 SQLite 연결 정보 설정 (이미 설정됨)
 3. **Project Entity**: JPA 엔티티 클래스 구현
 4. **ProjectRepository**: Spring Data JPA Repository 인터페이스 생성
 
@@ -882,7 +882,7 @@ src/main/java/vibe/bizplan/
 
 ## Acceptance Criteria
 - [ ] 필요한 의존성이 `build.gradle`에 추가됨
-- [ ] MySQL DB가 실행 중이고 연결 설정 완료
+- [ ] SQLite 데이터베이스 파일이 생성 가능한지 확인 (자동 생성됨)
 - [ ] `GET /api/v1/projects/templates` 호출 시 템플릿 목록 반환
 - [ ] `POST /api/v1/projects` 호출 시 DB에 새 Project 레코드 생성
 - [ ] API 호출 시 201 상태 코드와 함께 표준 응답 포맷으로 프로젝트 정보 반환
