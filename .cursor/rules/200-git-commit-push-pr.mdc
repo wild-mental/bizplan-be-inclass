@@ -40,6 +40,7 @@ alwaysApply: false
   - Summary of changes: **Analyze the full git diff between branches** and summarize the *semantic meaning* of all changes.
   - Ensure the summary covers all key modifications but remains concise (avoid verbose file listings).
   - Link to related issues
+- **PR 메시지는 반드시 한글로 작성해야 합니다** (제목 및 본문 모두)
 - Request reviews before merging; never self-merge without approval
 
 ## Examples

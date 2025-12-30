@@ -112,6 +112,22 @@ public class User {
     }
 
     /**
+     * 이메일 인증 완료 처리
+     */
+    public void verifyEmail() {
+        this.emailVerified = true;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 비밀번호 업데이트
+     */
+    public void updatePassword(String passwordHash) {
+        this.passwordHash = passwordHash;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
      * 인증 제공자 Enum
      */
     public enum AuthProvider {

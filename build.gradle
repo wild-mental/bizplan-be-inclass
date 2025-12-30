@@ -26,6 +26,9 @@ dependencies {
 	// Web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	
+	// Mail
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	
 	// JPA & Database
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	runtimeOnly 'org.xerial:sqlite-jdbc'  // SQLite database

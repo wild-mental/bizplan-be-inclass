@@ -188,5 +188,125 @@ public class AuthController {
         authService.logout(user.getId().toString());
         return ResponseEntity.ok(ApiResponse.success(null));
     }
+
+    /**
+     * 이메일 인증 확인
+     * 
+     * GET /api/v1/auth/verify-email
+     */
+    @Operation(
+            summary = "이메일 인증 확인",
+            description = "이메일 인증 토큰으로 이메일 인증을 완료합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "이메일 인증 성공"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "유효하지 않은 토큰"
+            )
+    })
+    @GetMapping("/verify-email")
+    public ResponseEntity<ApiResponse<Void>> verifyEmail(
+            @Parameter(description = "인증 토큰", required = true)
+            @RequestParam String token) {
+        
+        EmailVerificationRequest request = EmailVerificationRequest.builder()
+                .token(token)
+                .build();
+        authService.verifyEmail(request);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    /**
+     * 이메일 인증 재발송
+     * 
+     * POST /api/v1/auth/verify-email/resend
+     */
+    @Operation(
+            summary = "이메일 인증 재발송",
+            description = "이메일 인증 메일을 재발송합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "재발송 성공"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "사용자를 찾을 수 없음"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "이미 인증된 이메일"
+            )
+    })
+    @PostMapping("/verify-email/resend")
+    public ResponseEntity<ApiResponse<Void>> resendVerificationEmail(
+            @Parameter(description = "이메일 주소", required = true)
+            @RequestParam String email) {
+        
+        authService.resendVerificationEmail(email);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    /**
+     * 비밀번호 재설정 요청
+     * 
+     * POST /api/v1/auth/password/reset-request
+     */
+    @Operation(
+            summary = "비밀번호 재설정 요청",
+            description = "비밀번호 재설정 링크를 이메일로 발송합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "재설정 요청 성공 (보안을 위해 항상 성공 응답)"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "유효성 검증 실패"
+            )
+    })
+    @PostMapping("/password/reset-request")
+    public ResponseEntity<ApiResponse<Void>> requestPasswordReset(
+            @Parameter(description = "비밀번호 재설정 요청 정보", required = true)
+            @Valid @RequestBody PasswordResetRequest request) {
+        
+        authService.requestPasswordReset(request);
+        // 보안을 위해 항상 성공 응답 (실제 사용자 존재 여부와 관계없이)
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    /**
+     * 비밀번호 재설정 확인
+     * 
+     * POST /api/v1/auth/password/reset
+     */
+    @Operation(
+            summary = "비밀번호 재설정 확인",
+            description = "재설정 토큰으로 새 비밀번호를 설정합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "비밀번호 재설정 성공"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "유효하지 않은 토큰 또는 유효성 검증 실패"
+            )
+    })
+    @PostMapping("/password/reset")
+    public ResponseEntity<ApiResponse<Void>> confirmPasswordReset(
+            @Parameter(description = "비밀번호 재설정 확인 정보", required = true)
+            @Valid @RequestBody PasswordResetConfirmRequest request) {
+        
+        authService.confirmPasswordReset(request);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
 }
 
