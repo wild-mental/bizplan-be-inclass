@@ -1,6 +1,7 @@
 package vibe.bizplan.bizplan_be_inclass.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,6 +21,7 @@ import vibe.bizplan.bizplan_be_inclass.security.JwtAuthenticationFilter;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Spring Security 설정
@@ -32,6 +34,9 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @Value("${app.cors.allowed-origins:http://localhost:3000,http://localhost:5173}")
+    private String allowedOrigins;
 
     /**
      * 보안 필터 체인 설정
@@ -81,15 +86,42 @@ public class SecurityConfig {
 
     /**
      * CORS 설정
+     * 환경 변수 CORS_ALLOWED_ORIGINS로 허용할 Origin을 설정할 수 있습니다.
+     * 여러 Origin은 쉼표로 구분합니다.
+     * 예: CORS_ALLOWED_ORIGINS=http://localhost:5173,https://app.example.com
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
+        
+        // 환경 변수에서 허용할 Origin 목록 읽기 (기본값: localhost)
+        List<String> origins = Stream.of(allowedOrigins.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
+        configuration.setAllowedOrigins(origins);
+        
+        // 허용할 HTTP 메서드
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
-        configuration.setExposedHeaders(List.of("Authorization"));
+        
+        // 허용할 헤더
+        configuration.setAllowedHeaders(Arrays.asList(
+                "Authorization", 
+                "Content-Type", 
+                "X-Requested-With",
+                "Accept",
+                "Origin",
+                "Access-Control-Request-Method",
+                "Access-Control-Request-Headers"
+        ));
+        
+        // 클라이언트에 노출할 헤더
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        
+        // Credentials 허용 (쿠키, 인증 정보 등)
         configuration.setAllowCredentials(true);
+        
+        // Preflight 요청 캐시 시간 (1시간)
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
