@@ -13,6 +13,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import vibe.bizplan.bizplan_be_inclass.dto.auth.*;
 import vibe.bizplan.bizplan_be_inclass.entity.*;
 import vibe.bizplan.bizplan_be_inclass.exception.AuthenticationException;
+import vibe.bizplan.bizplan_be_inclass.service.EmailService;
 import vibe.bizplan.bizplan_be_inclass.exception.DuplicateEmailException;
 import vibe.bizplan.bizplan_be_inclass.exception.InvalidTokenException;
 import vibe.bizplan.bizplan_be_inclass.repository.*;
@@ -44,6 +45,15 @@ class AuthServiceTest {
 
     @Mock
     private PreRegistrationRepository preRegistrationRepository;
+
+    @Mock
+    private EmailVerificationTokenRepository emailVerificationTokenRepository;
+
+    @Mock
+    private PasswordResetTokenRepository passwordResetTokenRepository;
+
+    @Mock
+    private EmailService emailService;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -103,6 +113,9 @@ class AuthServiceTest {
         when(jwtTokenProvider.getAccessTokenValidityInSeconds()).thenReturn(3600L);
         when(subscriptionRepository.save(any(Subscription.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(refreshTokenRepository.save(any(RefreshToken.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(emailVerificationTokenRepository.invalidateAllByUser(any(User.class))).thenReturn(0);
+        when(emailVerificationTokenRepository.save(any(EmailVerificationToken.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        doNothing().when(emailService).sendVerificationEmail(anyString(), anyString(), anyString());
 
         // when
         SignupResponse response = authService.signup(signupRequest);
