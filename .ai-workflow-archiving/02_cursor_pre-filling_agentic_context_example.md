@@ -59,7 +59,7 @@ _Exported on 2025. 11. 29. at 13시 15분 40초 GMT+9 from Cursor (2.1.39)_
 | **예상 기간** | 3일 (2025-11-27 ~ 2025-11-29) |
 | **우선순위** | Must |
 | **난이도** | M (Medium) |
-| **기술 스택** | Java 17 + Spring Boot 3.x + Spring Data JPA + MySQL 8.x |
+| **기술 스택** | Java 21 + Spring Boot 4.0.0 + Spring Data JPA + SQLite |
 
 ### 구현 범위
 
@@ -74,7 +74,7 @@ _Exported on 2025. 11. 29. at 13시 15분 40초 GMT+9 from Cursor (2.1.39)_
 4. DB 저장 로직 구현
 
 ### Acceptance Criteria
-- ✅ MySQL DB가 실행 중
+- ✅ SQLite DB 파일 존재
 - ✅ DB에 새 Project 레코드가 생성됨
 - ✅ API 호출 시 201 상태 코드와 함께 프로젝트 정보 반환
 
@@ -122,15 +122,15 @@ _Exported on 2025. 11. 29. at 13시 15분 40초 GMT+9 from Cursor (2.1.39)_
 
 | 항목 | Issue #006 명세 | 실제 프로젝트 (build.gradle) | 상태 |
 |------|-----------------|------------------------------|------|
-| **Java 버전** | Java 17 | **Java 21** | ⚠️ 불일치 |
-| **Spring Boot** | 3.x | **4.0.0** | ⚠️ 불일치 |
-| **Spring Data JPA** | 명시됨 | **미설정** (의존성 없음) | ❌ 추가 필요 |
-| **MySQL** | MySQL 8.x | **미설정** (의존성 없음) | ❌ 추가 필요 |
+| **Java 버전** | Java 21 | **Java 21** | ✅ 일치 |
+| **Spring Boot** | 4.0.0 | **4.0.0** | ✅ 일치 |
+| **Spring Data JPA** | 명시됨 | **설정됨** | ✅ 일치 |
+| **Database** | SQLite | **SQLite** | ✅ 일치 |
 
 ### 🔴 주요 이슈
 
 1. **Java/Spring Boot 버전 불일치**
-   - 이슈는 Java 17 + Spring Boot 3.x 기준으로 작성됨
+   - 이슈는 Java 21 + Spring Boot 4.0.0 기준으로 작성됨
    - 실제 프로젝트는 **Java 21 + Spring Boot 4.0.0** (최신 스택)
    - 이슈 문서 또는 프로젝트 규칙 문서 업데이트 필요
 
@@ -398,7 +398,7 @@ _Exported on 2025. 11. 29. at 13시 15분 40초 GMT+9 from Cursor (2.1.39)_
 ## Technical Stack
 - Java 21 + Spring Boot 4.0.0
 - Spring Data JPA
-- MySQL 8.x
+- SQLite
 - Lombok (Boilerplate 감소)
 - Jakarta Validation (입력 검증)
 
@@ -572,7 +572,7 @@ GitHub Issue #2를 업데이트된 내용으로 동기화합니다.
 **Before:**
 - `GET /projects/templates`
 - `POST /projects`
-- Java 17 + Spring Boot 3.x
+- Java 21 + Spring Boot 4.0.0
 - 단순 JSON 응답
 
 **After:**
@@ -629,7 +629,7 @@ GitHub Issue #2를 업데이트된 내용으로 동기화합니다.
 ## Technical Stack
 - Java 21 + Spring Boot 4.0.0
 - Spring Data JPA
-- MySQL 8.x
+- SQLite
 - Lombok (Boilerplate 감소)
 - Jakarta Validation (입력 검증)
 
@@ -784,7 +784,7 @@ sequenceDiagram
     participant Service as ProjectService
     participant Template as TemplateService
     participant Repo as ProjectRepository
-    participant DB as MySQL
+    participant DB as SQLite
     
     %% POST /api/v1/projects Flow
     rect rgb(240, 248, 255)
@@ -1781,7 +1781,7 @@ gh pr create --draft --title "docs: enhance issue-006 with architecture diagrams
 | **200-git-commit-push-pr** | Conventional Commits 형식, 브랜치 네이밍 |
 | **201-code-commenting** | 모든 클래스/메서드에 의미있는 주석 |
 | **301-spring-boot-java-rules** | 3-tier 아키텍처, DTO 패턴, Constructor Injection |
-| **303-database-mysql-jpa-rules** | snake_case 테이블, UUID PK, Audit 컬럼, Flyway |
+| **303-database-sqlite-jpa-rules** | snake_case 테이블, UUID PK, Audit 컬럼, Flyway, SQLite |
 | **304-api-rest-design-rules** | /api/v1/ 접두사, 표준 Envelope, camelCase JSON |
 | **100-error-fixing-process** | 에러 발생 시 7단계 프로세스 따름 |
 
@@ -4012,14 +4012,14 @@ src/test/java/.../
 |------|------|
 | **API Endpoint** | `GET /api/v1/projects/templates`, `POST /api/v1/projects` |
 | **아키텍처** | 3-Tier (Controller → Service → Repository) |
-| **데이터베이스** | MySQL 8.x with Flyway Migration |
+| **데이터베이스** | SQLite with Flyway Migration |
 | **테스트** | JUnit 5 + Mockito + MockMvc |
 
 ### 1.2 기술 스택
 
 - Java 21 + Spring Boot 4.0.0
 - Spring Data JPA
-- MySQL 8.x (Production) / H2 (Test)
+- SQLite (개발/운영/테스트 모두 동일)
 - Lombok
 - Jakarta Validation
 - Flyway

@@ -56,6 +56,9 @@ public class SecurityConfig {
             
             // 권한 설정
             .authorizeHttpRequests(auth -> auth
+                // CORS preflight 요청 (OPTIONS) 허용
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                
                 // 공개 엔드포인트
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers("/api/v1/promotions/**").permitAll()
@@ -99,12 +102,15 @@ public class SecurityConfig {
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .toList();
+        
+        // setAllowCredentials(true)와 함께 사용할 때는 setAllowedOrigins() 사용
+        // 와일드카드(*)는 사용할 수 없으므로 정확한 origin을 지정해야 함
         configuration.setAllowedOrigins(origins);
         
-        // 허용할 HTTP 메서드
+        // 허용할 HTTP 메서드 (OPTIONS는 preflight 요청에 필요)
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         
-        // 허용할 헤더
+        // 허용할 헤더 (preflight 요청에 필요한 헤더 포함)
         configuration.setAllowedHeaders(Arrays.asList(
                 "Authorization", 
                 "Content-Type", 
@@ -112,11 +118,15 @@ public class SecurityConfig {
                 "Accept",
                 "Origin",
                 "Access-Control-Request-Method",
-                "Access-Control-Request-Headers"
+                "Access-Control-Request-Headers",
+                "Access-Control-Allow-Origin",
+                "Access-Control-Allow-Methods",
+                "Access-Control-Allow-Headers",
+                "Access-Control-Allow-Credentials"
         ));
         
         // 클라이언트에 노출할 헤더
-        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
         
         // Credentials 허용 (쿠키, 인증 정보 등)
         configuration.setAllowCredentials(true);

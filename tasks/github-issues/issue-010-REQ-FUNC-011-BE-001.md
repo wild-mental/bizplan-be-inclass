@@ -20,7 +20,7 @@
 - **PDF 생성**: HTML 템플릿 렌더링 후 PDF로 변환하거나, HWP를 PDF로 변환
 
 ## Technical Stack
-- Java 17 + Spring Boot 3.x
+- Java 21 + Spring Boot 4.0.0
 - kr.dogfoot.hwplib (HWP 라이브러리)
 - Apache PDFBox 또는 wkhtmltopdf
 

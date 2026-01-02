@@ -1,5 +1,5 @@
 ---
-description: Standards for Java 17 and Spring Boot 3.x backend development
+description: Standards for Java 21 and Spring Boot 4.0.0 backend development
 globs: ["**/*.java"]
 alwaysApply: false
 ---
@@ -28,5 +28,5 @@ alwaysApply: false
 
 ## 4. Testing
 - **Unit Tests:** JUnit 5 + Mockito. Test Services in isolation.
-- **Integration Tests:** `@SpringBootTest` with H2 or Testcontainers for Controller/Repository tests.
+- **Integration Tests:** `@SpringBootTest` with SQLite (파일 기반 또는 인메모리) for Controller/Repository tests.
 - **Naming:** `TargetClassTest` / `methodName_scenario_expectedBehavior`.

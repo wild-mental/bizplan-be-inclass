@@ -16,7 +16,7 @@ Referenced in: [001-project-overview.mdc](001-project-overview.mdc), [002-tech-s
 - **Frontend:** Vite + React + TypeScript (SPA).
 - **Backend Core:** Java 21 + Spring Boot 4.0.0 (REST API).
 - **AI/Doc Engine:** Python + FastAPI + LangChain.
-- **Database:** MySQL 8.x (InnoDB, utf8mb4).
+- **Database:** SQLite (파일 기반, 개발/운영/테스트 모두 동일).
 - **LLM Provider:** Google Gemini (via Internal Gateway).
 
 ## Architecture Principles

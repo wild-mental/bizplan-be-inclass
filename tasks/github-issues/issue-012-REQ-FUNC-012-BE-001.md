@@ -24,7 +24,7 @@
   - 이익 = 매출 - (변동비 + 고정비)
 
 ## Technical Stack
-- Java 17 + Spring Boot 3.x
+- Java 21 + Spring Boot 4.0.0
 - Pure Java Logic (비즈니스 로직 중심)
 
 ## API Specification

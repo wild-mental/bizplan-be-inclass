@@ -277,7 +277,7 @@ REQ-FUNC-008, REQ-FUNC-010
 - **프로젝트 생성**: UUID 생성, `created_at` 설정, `status='draft'` 설정
 
 ## Technical Stack
-- Java 17 + Spring Boot 3.x
+- Java 21 + Spring Boot 4.0.0
 - Spring Data JPA
 - MySQL 8.x
 
@@ -356,7 +356,7 @@ Wizard의 각 단계에서 사용자가 입력한 답변 데이터를 저장하�
 - **부분 업데이트**: 기존 답변을 유지하면서 새로운 답변만 병합(Merge)하거나 덮어쓰기
 
 ## Technical Stack
-- Java 17 + Spring Boot 3.x
+- Java 21 + Spring Boot 4.0.0
 - Spring Data JPA
 - MySQL 8.x JSON 타입
 - Hibernate Types (JSONB 매핑)
@@ -527,7 +527,7 @@ REQ-FUNC-003, REQ-FUNC-004
 - **저장**: 생성된 섹션별 텍스트를 `BusinessPlanDocument` 테이블에 저장
 
 ## Technical Stack
-- Java 17 + Spring Boot 3.x
+- Java 21 + Spring Boot 4.0.0
 - WebClient (비동기 HTTP 클라이언트)
 - Spring Data JPA
 
@@ -604,7 +604,7 @@ REQ-FUNC-003, REQ-FUNC-004
 - **PDF 생성**: HTML 템플릿 렌더링 후 PDF로 변환하거나, HWP를 PDF로 변환
 
 ## Technical Stack
-- Java 17 + Spring Boot 3.x
+- Java 21 + Spring Boot 4.0.0
 - kr.dogfoot.hwplib (HWP 라이브러리)
 - Apache PDFBox 또는 wkhtmltopdf
 
@@ -766,7 +766,7 @@ REQ-FUNC-008, REQ-FUNC-010
   - 이익 = 매출 - (변동비 + 고정비)
 
 ## Technical Stack
-- Java 17 + Spring Boot 3.x
+- Java 21 + Spring Boot 4.0.0
 - Pure Java Logic (비즈니스 로직 중심)
 
 ## API Specification
