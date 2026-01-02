@@ -5,7 +5,7 @@ alwaysApply: false
 ---
 # Three-Tier Architecture Rules
 
-Referenced in: [301-spring-boot-java-rules.mdc](301-spring-boot-java-rules.mdc), [303-database-mysql-jpa-rules.mdc](303-database-mysql-jpa-rules.mdc)
+Referenced in: [301-spring-boot-java-rules.mdc](301-spring-boot-java-rules.mdc), [303-database-sqlite-jpa-rules.mdc](303-database-sqlite-jpa-rules.mdc)
 
 ## 1. Architecture Overview
 
@@ -44,7 +44,7 @@ Referenced in: [301-spring-boot-java-rules.mdc](301-spring-boot-java-rules.mdc),
                │ SQL/JPQL
                │
 ┌──────────────▼──────────────────────┐
-│          Database (MySQL)           │
+│          Database (SQLite)           │
 └─────────────────────────────────────┘
 ```
 
@@ -329,7 +329,7 @@ public class BusinessPlanService {
 
 **Repository Test**:
 - `@DataJpaTest` 사용
-- 실제 DB (H2) 사용
+- 실제 DB (SQLite) 사용
 - Query 메서드 테스트
 
 ## 8. Common Patterns

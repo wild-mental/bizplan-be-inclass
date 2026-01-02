@@ -1,17 +1,24 @@
 ---
-description: Rules for MySQL Database design and JPA/Hibernate usage
+description: Rules for SQLite Database design and JPA/Hibernate usage
 globs: ["**/*.java", "**/*.sql"]
 alwaysApply: false
 ---
 # Database & JPA Rules
 
-## 1. Database Design (MySQL)
+## 1. Database Design (SQLite)
+- **Database:** SQLite (파일 기반, 개발/운영/테스트 모두 동일)
+- **Dialect:** `org.hibernate.community.dialect.SQLiteDialect`
 - **Naming Convention:**
   - Tables: `snake_case` (plural nouns, e.g., `users`, `projects`).
   - Columns: `snake_case` (e.g., `user_id`, `created_at`).
-- **Primary Keys:** Use UUIDs (Char(36) or Binary(16)) for distributed ID safety, or BigInt Auto_Increment if strictly internal. (SRS implies UUIDs).
-- **Audit Columns:** All tables should have `created_at` and `updated_at`.
+- **Primary Keys:** Use UUIDs (TEXT or BLOB) for distributed ID safety. SQLite는 AUTOINCREMENT 대신 INTEGER PRIMARY KEY 사용 가능하지만, UUID 권장.
+- **Audit Columns:** All tables should have `created_at` and `updated_at` (TIMESTAMP 타입).
 - **Indexes:** Always index Foreign Keys and columns used in `WHERE` or `ORDER BY` clauses.
+- **Data Types:** 
+  - Use `TEXT` for strings (VARCHAR 대신)
+  - Use `INTEGER` for numbers
+  - Use `TIMESTAMP` for dates (DATETIME 대신)
+  - Use `BLOB` for binary data
 
 ## 2. JPA / Hibernate Best Practices
 - **Fetch Strategy:**

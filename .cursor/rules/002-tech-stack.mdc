@@ -9,8 +9,9 @@ Referenced in: [001-project-overview.mdc](001-project-overview.mdc)
 - Language: Java 21 (LTS)
 - Framework: Spring Boot 4.0.0
 - Build Tool: Gradle (Kotlin DSL recommended)
-- Database: MySQL 8.x (InnoDB, utf8mb4)
-- ORM: Spring Data JPA (Hibernate)
+- Database: SQLite (개발/운영/테스트 모두 동일, 파일 기반)
+- ORM: Spring Data JPA (Hibernate) + SQLite Dialect
+- Migration: Flyway (SQLite 지원)
 - Testing: JUnit 5, Mockito, AssertJ
 
 ## AI & Document Engine (Python)
@@ -29,5 +30,5 @@ Referenced in: [001-project-overview.mdc](001-project-overview.mdc)
 - [003-development-guidelines.mdc](003-development-guidelines.mdc) for usage guidelines
 - [301-spring-boot-java-rules.mdc](301-spring-boot-java-rules.mdc) for Java/Spring rules
 - [302-python-fastapi-rules.mdc](302-python-fastapi-rules.mdc) for Python/FastAPI rules
-- [303-database-mysql-jpa-rules.mdc](303-database-mysql-jpa-rules.mdc) for Database rules
+- [303-database-sqlite-jpa-rules.mdc](303-database-sqlite-jpa-rules.mdc) for Database rules
 - [304-api-rest-design-rules.mdc](304-api-rest-design-rules.mdc) for API standards
