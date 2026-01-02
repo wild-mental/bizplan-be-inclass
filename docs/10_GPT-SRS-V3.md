@@ -55,7 +55,7 @@ Standard: ISO/IEC/IEEE 29148:2018
      - LLM API, HWP/PDF 변환 솔루션 등 외부 상용 서비스의 가용성·가격 정책에 따라 시스템 운영 비용과 품질이 영향을 받을 수 있다. (PRD §6.4)
    - **기술 스택 제약(Technology Constraints, C-TEC)**
      - C-TEC-001: 모든 프론트엔드 서비스는 **Vite 기반 React.js**를 사용한다.
-     - C-TEC-002: 모든 백엔드 코어 서비스는 **Java 17 + Spring Boot 3.x (JVM 기반)**을 사용한다.
+     - C-TEC-002: 모든 백엔드 코어 서비스는 **Java 21 + Spring Boot 4.0.0 (JVM 기반)**을 사용한다.
      - C-TEC-003: 데이터베이스는 **SQLite**를 사용한다. (참고: 초기 요구사항은 MySQL이었으나, 현재는 SQLite로 구현됨)
      - C-TEC-004: 문서 자동생성 및 LLM 오케스트레이션 엔진은 **Python + FastAPI + LangChain** 기반 별도 서비스로 구현한다.
      - C-TEC-005: LLM 호출은 **사내 LLM Gateway**를 통해 이루어지며, 기본 Provider는 **Google Gemini**이고, 필요 시 OpenAI 등으로 교체 가능하도록 추상화한다.
@@ -140,7 +140,7 @@ Standard: ISO/IEC/IEEE 29148:2018
 
    3.3 API Overview
 
-   - 백엔드 코어는 **Java 17 + Spring Boot 3.x** 기반 REST API 서버로 구현되며, 웹 클라이언트는 HTTPS를 통해 JSON 형식으로 통신한다.
+   - 백엔드 코어는 **Java 21 + Spring Boot 4.0.0** 기반 REST API 서버로 구현되며, 웹 클라이언트는 HTTPS를 통해 JSON 형식으로 통신한다.
    - LLM/문서 자동생성 기능은 별도의 **Python + FastAPI 기반 “Document Generation / PMF Engine” 서비스**로 구현되며, 코어 백엔드는 이 서비스와 REST(내부 네트워크)로 통신한다. (gRPC는 향후 고성능 필요 시 도입 가능.)
    - 주요 외부/내부 API 유형:
      - **프로젝트 관리 (Spring Boot)**:  
