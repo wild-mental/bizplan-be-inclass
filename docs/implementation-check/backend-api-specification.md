@@ -1,6 +1,7 @@
 # 백엔드 API 명세서
 
 > **작성일**: 2025년 1월 21일  
+> **최종 업데이트**: 2025년 12월 30일 (로그인 기능 확인 및 문서화)  
 > **프로젝트**: Makers Round - M.A.K.E.R.S AI 심사위원단  
 > **목적**: 현재 구현된 백엔드 API 엔드포인트 현황 분석 및 호출 흐름도 정리
 
@@ -94,11 +95,18 @@
 
 **로그인 (`POST /login`)**
 - 이메일/비밀번호 인증
-- 응답: 액세스 토큰 + 리프레시 토큰
+- 요청: `{ email: string, password: string }`
+- 응답: 사용자 정보 + 액세스 토큰 + 리프레시 토큰
+- 인증 실패 시 401 에러 반환
+- 프론트엔드 `/login` 페이지와 연동
 
 **소셜 로그인 (`POST /social/{provider}`)**
 - 지원 제공자: `google`, `kakao`, `naver`
 - OAuth 토큰 기반 인증
+- 요청: `{ accessToken: string, plan: string, termsAgreed: boolean, privacyAgreed: boolean, marketingConsent: boolean }`
+- 신규 사용자 자동 회원가입 처리
+- 응답: 사용자 정보 + 토큰 + `isNewUser` 플래그
+- 프론트엔드 `/login`, `/signup` 페이지와 연동
 
 **토큰 갱신 (`POST /refresh`)**
 - 리프레시 토큰으로 새 액세스 토큰 발급
