@@ -20,7 +20,7 @@
 - **저장**: 생성된 섹션별 텍스트를 `BusinessPlanDocument` 테이블에 저장
 
 ## Technical Stack
-- Java 17 + Spring Boot 3.x
+- Java 21 + Spring Boot 4.0.0
 - WebClient (비동기 HTTP 클라이언트)
 - Spring Data JPA
 

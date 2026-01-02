@@ -18,7 +18,7 @@ Wizard의 각 단계에서 사용자가 입력한 답변 데이터를 저장하�
 - **부분 업데이트**: 기존 답변을 유지하면서 새로운 답변만 병합(Merge)하거나 덮어쓰기
 
 ## Technical Stack
-- Java 17 + Spring Boot 3.x
+- Java 21 + Spring Boot 4.0.0
 - Spring Data JPA
 - SQLite (JSON 지원)
 - Hibernate Types (JSON 매핑)
