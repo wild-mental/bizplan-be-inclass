@@ -57,18 +57,16 @@
                                          │                      │
                                          └──────────────────────┘
                                                     
-┌─────────────────┐      REST API       ┌──────────────────────┐
-│  Spring Boot    │◄────────────────────►│  Python FastAPI      │
-│  Core           │                      │  AI/문서 엔진        │
-│                 │                      │  (LangChain)         │
-└─────────────────┘                      └──────────────────────┘
+┌─────────────────┐
+│  Spring Boot    │──────► Google Gemini API (외부)
+│  Core           │
+└─────────────────┘
 ```
 
 ### 설계 원칙
 
-- **마이크로서비스 준비**: 코어 API와 AI 엔진은 REST 통신
 - **관심사 분리**: 
-  - AI 초안(LLM 기반, 창의적)
+  - AI 초안(LLM 기반, 창의적) - Google Gemini API 직접 호출
   - 재무 엔진(룰 기반, 결정적 - 환각 없음)
 - **보안 우선**:
   - 모든 전송 구간 TLS 1.2+
@@ -87,13 +85,10 @@
 - **ORM**: Spring Data JPA (Hibernate)
 - **테스트**: JUnit 5, Mockito, AssertJ
 
-### AI & 문서 엔진 (Python)
+### AI & 문서 생성
 
-- **언어**: Python 3.10+
-- **프레임워크**: FastAPI
-- **AI 오케스트레이션**: LangChain
-- **LLM 공급자**: Google Gemini (내부 게이트웨이 사용)
-- **테스트**: Pytest
+- **LLM 공급자**: Google Gemini API (외부 API 직접 호출)
+- **통합 방식**: Spring AI를 통한 Gemini API 직접 호출
 
 ### 인프라 & 도구
 
@@ -107,7 +102,6 @@
 
 - Java 21 이상
 - Gradle 8.x 이상
-- Python 3.10+ (AI 엔진용, 선택사항)
 - SQLite 3.x (기본 포함, 로컬/운영/테스트 모두 사용)
 - Docker & Docker Compose (선택사항)
 
@@ -141,9 +135,8 @@ vim .env  # 또는 원하는 에디터 사용
 SPRING_PROFILES_ACTIVE=local        # local | dev | prod
 SERVER_PORT=8080
 
-# ============ AI 엔진 설정 ============
+# ============ Google Gemini API 설정 ============
 GEMINI_API_KEY=your_gemini_api_key  # ⚠️ 필수
-AI_ENGINE_URL=http://localhost:8001
 
 # ============ 보안 설정 ============
 JWT_SECRET=your_jwt_secret_min_32_chars      # ⚠️ 필수 (32자 이상)
@@ -649,9 +642,6 @@ bizplan-be-inclass/
 ├── src/main/resources/
 │   ├── application.properties      # ✅ 환경변수 참조
 │   └── application-local.properties # ❌ Git 제외
-└── ai-engine/
-    ├── .env.example                # ✅ Git 포함
-    └── .env                        # ❌ Git 제외
 ```
 
 #### 필수 환경변수

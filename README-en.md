@@ -57,18 +57,16 @@ Reduce business failure rates by helping founders with minimal expertise create 
                                          │                      │
                                          └──────────────────────┘
                                                     
-┌─────────────────┐      REST API       ┌──────────────────────┐
-│  Spring Boot    │◄────────────────────►│  Python FastAPI      │
-│  Core           │                      │  AI/Doc Engine       │
-│                 │                      │  (LangChain)         │
-└─────────────────┘                      └──────────────────────┘
+┌─────────────────┐
+│  Spring Boot    │──────► Google Gemini API (External)
+│  Core           │
+└─────────────────┘
 ```
 
 ### Architecture Principles
 
-- **Micro-Service Ready**: Core API and AI Engine communicate via REST
 - **Separation of Concerns**: 
-  - AI Drafting (LLM-based, creative)
+  - AI Drafting (LLM-based, creative) - Direct Google Gemini API calls
   - Financial Engine (Rule-based, deterministic - NO hallucinations)
 - **Security First**:
   - TLS 1.2+ for all transit
@@ -87,13 +85,10 @@ Reduce business failure rates by helping founders with minimal expertise create 
 - **ORM**: Spring Data JPA (Hibernate)
 - **Testing**: JUnit 5, Mockito, AssertJ
 
-### AI & Document Engine (Python)
+### AI & Document Generation
 
-- **Language**: Python 3.10+
-- **Framework**: FastAPI
-- **AI Orchestration**: LangChain
-- **LLM Provider**: Google Gemini (via Internal Gateway)
-- **Testing**: Pytest
+- **LLM Provider**: Google Gemini API (Direct external API calls)
+- **Integration**: Spring AI for direct Gemini API integration
 
 ### Infrastructure & Tools
 
@@ -107,7 +102,6 @@ Reduce business failure rates by helping founders with minimal expertise create 
 
 - Java 21 or higher
 - Gradle 8.x
-- Python 3.10+
 - SQLite 3.x (included by default)
 - Docker & Docker Compose (optional)
 
@@ -144,9 +138,8 @@ DB_PASSWORD=your_password           # ⚠️ Required
 SPRING_PROFILES_ACTIVE=local        # local | dev | prod
 SERVER_PORT=8080
 
-# ============ AI Engine Configuration ============
+# ============ Google Gemini API Configuration ============
 GEMINI_API_KEY=your_gemini_api_key  # ⚠️ Required
-AI_ENGINE_URL=http://localhost:8001
 
 # ============ Security Configuration ============
 JWT_SECRET=your_jwt_secret_min_32_chars      # ⚠️ Required (min 32 chars)
@@ -386,9 +379,6 @@ bizplan-be-inclass/
 ├── src/main/resources/
 │   ├── application.properties      # ✅ 환경변수 참조
 │   └── application-local.properties # ❌ Git 제외 (로컬 설정)
-└── ai-engine/
-    ├── .env.example                # ✅ Git 포함 (템플릿)
-    └── .env                        # ❌ Git 제외 (실제 값)
 ```
 
 #### 필수 환경변수
