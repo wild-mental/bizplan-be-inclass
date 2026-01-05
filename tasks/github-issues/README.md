@@ -27,7 +27,7 @@ github-issues/
 │   ├── issue-004-EPIC0-FE-004.md
 │   ├── issue-005-EPIC0-FE-005.md
 │   ├── issue-006-REQ-FUNC-001-BE-001.md # Backend 완료 (GitHub #2, PR #13)
-│   └── issue-008-REQ-FUNC-003-AI-001.md # AI Engine 완료 (GitHub #4, PR #14)
+│   └── issue-008-REQ-FUNC-003-AI-001.md # Gemini API 통합 완료 (GitHub #4, PR #14)
 ├── issue-007-REQ-FUNC-002-BE-001.md # 🔄 진행 중 (GitHub #3)
 ├── issue-009-REQ-FUNC-003-BE-001.md # ✅ (GitHub #5)
 ├── issue-010-REQ-FUNC-011-BE-001.md # ✅ (GitHub #6)
@@ -232,7 +232,7 @@ REQ-FUNC-XXX
 ### Component Labels
 - `component:api` - REST API 개발
 - `component:core` - 비즈니스 로직
-- `component:ai-engine` - AI/LLM 엔진
+- `component:backend` - 백엔드 (Gemini API 통합 포함)
 - `component:security` - 보안 컴포넌트
 - `component:monitoring` - 모니터링/로깅
 - `component:test` - 테스트 인프라

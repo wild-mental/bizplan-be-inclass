@@ -4,10 +4,8 @@
 
 ```
 bizplan-be-inclass/
-├── .env                    # ⭐ 프로젝트 루트 (Spring Boot + AI Engine 공용)
+├── .env                    # ⭐ 프로젝트 루트 (Spring Boot 설정)
 ├── .env.example            # 템플릿 파일 (Git 추적됨)
-└── ai-engine/
-    └── .env                # (선택) AI Engine 전용 설정 시
 ```
 
 > ⚠️ `.env` 파일은 `.gitignore`에 등록되어 Git에 커밋되지 않습니다.
@@ -43,11 +41,6 @@ SQLite는 파일 기반 데이터베이스이므로 별도의 호스트/포트/�
 
 > 🔑 API 키 발급: https://makersuite.google.com/app/apikey
 
-### 4. AI Engine (FastAPI)
-
-| 변수명 | 설명 | 기본값 | 예시 |
-|--------|------|--------|------|
-| `AI_ENGINE_URL` | AI 엔진 URL | `http://localhost:8001` | `http://ai:8001` |
 
 ### 5. 보안 설정
 
@@ -69,9 +62,8 @@ SQLite는 파일 기반 데이터베이스이므로 별도의 호스트/포트/�
 SPRING_PROFILES_ACTIVE=local
 SERVER_PORT=8080
 
-# ============ AI / Gemini ============
+# ============ Google Gemini API ============
 GEMINI_API_KEY=AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-AI_ENGINE_URL=http://localhost:8001
 
 # ============ Security ============
 JWT_SECRET=your-jwt-secret-minimum-32-characters-long

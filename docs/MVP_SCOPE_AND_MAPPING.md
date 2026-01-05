@@ -19,12 +19,12 @@ This document maps the SRS requirements to the MVP scope, providing the basis fo
 | :--- | :--- | :--- | :--- | :--- |
 | **REQ-FUNC-001** | Template List | FE, BE | `POST /projects` (selection) | Project |
 | **REQ-FUNC-002** | Wizard Logic | FE, BE | `POST /projects/{id}/wizard/steps` | Project |
-| **REQ-FUNC-003** | Draft Generation | FE, BE, AI-Engine | `POST /.../business-plan:generate` | BusinessPlanDocument |
-| **REQ-FUNC-004** | Section AI Help | FE, BE, AI-Engine | `POST /.../business-plan:generate` (partial) | BusinessPlanDocument |
-| **REQ-FUNC-005** | Checklist | FE, BE, AI-Engine | `POST /.../business-plan:checklist` | BusinessPlanDocument |
+| **REQ-FUNC-003** | Draft Generation | FE, BE | `POST /.../business-plan:generate` | BusinessPlanDocument |
+| **REQ-FUNC-004** | Section AI Help | FE, BE | `POST /.../business-plan:generate` (partial) | BusinessPlanDocument |
+| **REQ-FUNC-005** | Checklist | FE, BE | `POST /.../business-plan:checklist` | BusinessPlanDocument |
 | **REQ-FUNC-006** | Consistency Check | FE, BE, Logic-Engine | `POST /.../consistency-check` | FinancialModel, PMFReport |
 | **REQ-FUNC-007** | Mandatory Check | FE, BE | (Validation Logic) | Project |
-| **REQ-FUNC-008** | PMF Report | FE, BE, AI-Engine | `POST /.../pmf-report:generate` | PMFReport |
+| **REQ-FUNC-008** | PMF Report | FE, BE | `POST /.../pmf-report:generate` | PMFReport |
 | **REQ-FUNC-009** | Unit Economics | FE, BE | `GET /.../unit-economics` | FinancialModel |
 | **REQ-FUNC-010** | PMF Data Validation | FE, BE | (Validation Logic) | PMFReport |
 | **REQ-FUNC-011** | Export (HWP/PDF) | FE, BE, Converter | `GET /.../export` | BusinessPlanDocument |

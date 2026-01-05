@@ -152,7 +152,7 @@ gantt
     #009 BE-003           :b003, after b002, 4d
     #010 BE-011           :b004, after b003, 5d
     
-    section AI Engine
+    section Gemini API Integration
     #008 AI-001           :a001, 2025-11-27, 5d
     #011 AI-008           :a002, after a001, 4d
     
@@ -168,7 +168,7 @@ gantt
 **인력 배치 (최대 4-5명 병렬):**
 - **Week 1 (Day 1-3):**
   - Developer 1: #006 (Backend Core)
-  - Developer 2: #008 (AI Engine)
+  - Developer 2: #008 (Gemini API Integration)
   - Developer 3: #012 (Financial)
 
 - **Week 1 (Day 4-7):**
@@ -190,7 +190,7 @@ Week 1:
   Day 4-7: #007 (Wizard API)
 
 Week 2:
-  Day 1-3: #008 (AI Engine)
+  Day 1-3: #008 (Gemini API Integration)
   Day 4-7: #012 (Financial, 병렬 가능 시)
 
 Week 3:
@@ -277,7 +277,7 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 ### For Backend-Focused Team (Recommended)
 1. **Phase 1**: #006 → #007 (Core Backend Setup)
-2. **Phase 2**: #008 (AI Engine, 병렬 시작 가능)
+2. **Phase 2**: #008 (Gemini API Integration, 병렬 시작 가능)
 3. **Phase 3**: #009 → #010 (Document Pipeline)
 4. **Phase 4**: #012 (Financial, 병렬 가능)
 5. **Phase 5**: #013, #014 (Security & Monitoring, 병렬)
@@ -285,7 +285,7 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 ### For Small Backend Team (2-3명)
 1. **Sprint 1**: #006 → #007 (Core Backend Setup)
-2. **Sprint 2**: #008 (AI Engine) + #012 (Financial, 병렬)
+2. **Sprint 2**: #008 (Gemini API Integration) + #012 (Financial, 병렬)
 3. **Sprint 3**: #009 → #010 (Document Pipeline)
 4. **Sprint 4**: #011 (PMF) + #013, #014 (NFR, 병렬)
 5. **Sprint 5**: #015 (Performance Test) + Frontend 통합 테스트
@@ -299,7 +299,7 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
   - 통합 테스트는 각 Wave 완료 후 수행
 
 - **리스크 관리**:
-  - #008 (AI Engine): LLM 연동 시 예상치 못한 이슈 가능 → 버퍼 2일 추가 권장
+  - #008 (Gemini API Integration): LLM 연동 시 예상치 못한 이슈 가능 → 버퍼 2일 추가 권장
   - #010 (HWP Export): 라이브러리 호환성 이슈 → PoC 선행 권장
   - #012 (Financial): 복잡한 비즈니스 로직 → 단위 테스트 철저히
 
