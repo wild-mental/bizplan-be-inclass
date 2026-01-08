@@ -34,6 +34,9 @@ dependencies {
 	runtimeOnly 'org.xerial:sqlite-jdbc'  // SQLite database
 	implementation 'org.hibernate.orm:hibernate-community-dialects'  // SQLite Dialect support
 	
+	// ULID 생성기 (시간 정렬 가능한 Request ID 용도)
+	implementation 'com.github.f4b6a3:ulid-creator:5.2.2'
+	
 	// Validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	
@@ -51,9 +54,10 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	
-	// Flyway for DB Migration
-	implementation 'org.flywaydb:flyway-core'
-	// SQLite support is built into flyway-core, no additional dependency needed
+	// Flyway for DB Migration - 최신 안정 버전 명시
+	implementation 'org.flywaydb:flyway-core:11.17.0'
+	// SQLite support - Flyway 11+ includes SQLite support in flyway-core
+	// If SQLite support is not working, try adding: implementation 'org.flywaydb:flyway-database-sqlite'
 	
 	// Core
 	implementation 'org.springframework.boot:spring-boot-starter'
@@ -66,6 +70,10 @@ dependencies {
 	
 	// Dotenv for .env file support
 	implementation 'io.github.cdimascio:dotenv-java:3.0.0'
+	
+	// Caching (Caffeine)
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+	implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
 	
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

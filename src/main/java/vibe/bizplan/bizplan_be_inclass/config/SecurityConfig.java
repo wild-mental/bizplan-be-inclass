@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final LoggingFilter loggingFilter;
 
     @Value("${app.cors.allowed-origins:http://localhost:3000,http://localhost:5173}")
     private String allowedOrigins;
@@ -63,6 +64,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers("/api/v1/promotions/**").permitAll()
                 .requestMatchers("/api/v1/pre-registrations/**").permitAll()
+                .requestMatchers("/api/v1/public/**").permitAll()  // 공개 분석 API
                 
                 // 헬스체크 엔드포인트 (배포 후 상태 확인용)
                 .requestMatchers("/api/v1/health/**").permitAll()
@@ -81,7 +83,10 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             
-            // JWT 필터 추가
+            // 로깅 필터 추가 (가장 먼저 실행되어 요청 본문을 읽을 수 있도록)
+            .addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class)
+            
+            // JWT 필터 추가 (로깅 필터 다음에 실행)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

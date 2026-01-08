@@ -362,8 +362,16 @@ public class AuthService {
 
         emailVerificationTokenRepository.save(verificationToken);
 
-        // 이메일 발송
-        emailService.sendVerificationEmail(user.getEmail(), token, user.getName());
+        // 이메일 발송 (실패해도 회원가입은 성공 처리)
+        try {
+            emailService.sendVerificationEmail(user.getEmail(), token, user.getName());
+            log.info("이메일 인증 토큰 생성 및 발송 완료: {}", user.getEmail());
+        } catch (Exception e) {
+            // 이메일 발송 실패는 회원가입을 막지 않음
+            // 사용자는 나중에 이메일 인증 재발송 기능을 사용할 수 있음
+            log.error("이메일 인증 메일 발송 실패 (회원가입은 계속 진행): email={}, error={}", 
+                    user.getEmail(), e.getMessage(), e);
+        }
     }
 
     /**
