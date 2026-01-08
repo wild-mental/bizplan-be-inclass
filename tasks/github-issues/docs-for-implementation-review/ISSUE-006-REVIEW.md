@@ -1,6 +1,6 @@
 # Issue #006 구현 리뷰 - 템플릿 API
 
-**PR**: [#13](https://github.com/wild-mental/bizplan-be-inclass/pull/13) | **브랜치**: `feat/006-project-api`
+**PR**: [#13](https://github.com/wild-mental/makersround-backend/pull/13) | **브랜치**: `feat/006-project-api`
 
 ## 템플릿 콘텐츠
 

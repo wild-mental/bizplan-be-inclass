@@ -134,7 +134,7 @@ done
 
 ### GitHub Project 정보
 
-- **Project Name**: BizPlan-Backend-Project
+- **Project Name**: MakersRound-Backend-Project
 - **Project ID**: `PVT_kwHOBWaOeM4BJJCo` (Node ID)
 - **Number**: 10
 - **Roadmap View**: https://github.com/users/wild-mental/projects/10/views/4

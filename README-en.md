@@ -1,4 +1,4 @@
-# BizPlan Backend - AI Co-Pilot for First-time Founders
+# MakersRound Backend - AI Co-Pilot for First-time Founders
 
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.java.net/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
@@ -8,7 +8,7 @@
 
 ## 📖 Overview
 
-**BizPlan Backend** is an intelligent backend system that transforms the complex business planning process into a data-driven decision-making journey. This project acts as an intelligent partner to help first-time founders quickly pass funding gates (government grants, loans) and focus on sustainable growth.
+**MakersRound Backend** is an intelligent backend system that transforms the complex business planning process into a data-driven decision-making journey. This project acts as an intelligent partner to help first-time founders quickly pass funding gates (government grants, loans) and focus on sustainable growth.
 
 ### Vision
 
@@ -111,7 +111,7 @@ Reduce business failure rates by helping founders with minimal expertise create 
 
 ```bash
 git clone <repository-url>
-cd bizplan-be-inclass
+cd makersround-backend
 ```
 
 2. **Set up environment variables**
@@ -130,7 +130,7 @@ The `.env` file should contain:
 # ============ Database Configuration ============
 DB_HOST=localhost
 DB_PORT=3306
-DB_NAME=bizplan
+DB_NAME=makersround
 DB_USERNAME=root
 DB_PASSWORD=your_password           # ⚠️ Required
 
@@ -171,7 +171,7 @@ docker-compose up -d
 ## 📁 Project Structure
 
 ```
-bizplan-be-inclass/
+makersround-backend/
 ├── .cursor/              # Cursor IDE rules and configurations
 │   └── rules/           # Development guidelines and standards
 ├── docs/                # Project documentation
@@ -182,7 +182,7 @@ bizplan-be-inclass/
 ├── src/
 │   ├── main/
 │   │   ├── java/
-│   │   │   └── vibe/bizplan/bizplan_be_inclass/
+│   │   │   └── vibe/makersround/makersround_be_inclass/
 │   │   │       ├── controller/      # REST API Controllers
 │   │   │       ├── service/         # Business Logic Layer
 │   │   │       ├── repository/      # Data Access Layer
@@ -373,7 +373,7 @@ export GEMINI_API_KEY="your-api-key"
 #### 파일 구조
 
 ```
-bizplan-be-inclass/
+makersround-backend/
 ├── .env.example                    # ✅ Git 포함 (템플릿)
 ├── .env                            # ❌ Git 제외 (실제 값)
 ├── src/main/resources/
@@ -873,7 +873,7 @@ open http://localhost:8080/swagger-ui.html
 **Database Health**:
 ```bash
 # Check database connection
-sqlite3 ./data/bizplan.db "SELECT 1"
+sqlite3 ./data/makersround.db "SELECT 1"
 ```
 
 **Gemini API Health**:
@@ -909,7 +909,7 @@ find logs/ -name "gemini-usage.*.log" -mtime +30 -exec gzip {} \;
 ```
 
 **Database**:
-- Regular SQLite database file backups recommended (./data/bizplan.db)
+- Regular SQLite database file backups recommended (./data/makersround.db)
 - Use Flyway migrations for schema versioning
 
 **Configuration**:
@@ -932,12 +932,12 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 21)
 **Database connection error**
 ```bash
 # Verify SQLite database file exists
-ls -la ./data/bizplan.db
-sqlite3 ./data/bizplan.db ".tables"
+ls -la ./data/makersround.db
+sqlite3 ./data/makersround.db ".tables"
 
 # Check credentials in .env file
 # Ensure database exists
-CREATE DATABASE IF NOT EXISTS bizplan CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS makersround CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
 **Port already in use**

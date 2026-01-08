@@ -3,8 +3,8 @@
 
 **작성일**: 2025-11-27  
 **브랜치**: `feat/006-project-api`  
-**PR**: [#13](https://github.com/wild-mental/bizplan-be-inclass/pull/13)  
-**관련 이슈**: [#2](https://github.com/wild-mental/bizplan-be-inclass/issues/2)
+**PR**: [#13](https://github.com/wild-mental/makersround-backend/pull/13)  
+**관련 이슈**: [#2](https://github.com/wild-mental/makersround-backend/issues/2)
 
 ---
 
@@ -35,7 +35,7 @@
 ### 2.1 Production Code (10개 파일)
 
 ```
-src/main/java/vibe/bizplan/bizplan_be_inclass/
+src/main/java/vibe/makersround/makersround_be_inclass/
 ├── controller/
 │   └── ProjectController.java          # REST API 엔드포인트
 ├── service/
@@ -67,7 +67,7 @@ src/main/resources/
 ### 2.3 Test Code (4개 파일)
 
 ```
-src/test/java/vibe/bizplan/bizplan_be_inclass/
+src/test/java/vibe/makersround/makersround_be_inclass/
 ├── BizplanBeInclassApplicationTests.java  # Spring Boot 기본 테스트
 ├── controller/
 │   └── ProjectControllerTest.java         # Controller 테스트
@@ -322,9 +322,9 @@ CREATE TABLE projects (
 ### 9.1 사전 조건
 
 1. SQLite는 별도 설치 불필요 (JDBC 드라이버만으로 동작)
-2. `bizplan` 데이터베이스 생성
+2. `makersround` 데이터베이스 생성
    ```sql
-   CREATE DATABASE bizplan CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   CREATE DATABASE makersround CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
    ```
 
 ### 9.2 환경 변수 설정

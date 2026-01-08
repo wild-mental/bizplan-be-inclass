@@ -62,7 +62,7 @@
 ### Phase 1: 요청 DTO 구현
 
 #### 1.1 메인 요청 DTO
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/dto/businessplan/BusinessPlanGenerateRequest.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/dto/businessplan/BusinessPlanGenerateRequest.java`
 
 ```java
 @Getter
@@ -90,7 +90,7 @@ public class BusinessPlanGenerateRequest {
 ---
 
 #### 1.2 RequestInfo DTO
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/dto/businessplan/RequestInfo.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/dto/businessplan/RequestInfo.java`
 
 ```java
 @Getter
@@ -119,7 +119,7 @@ public class RequestInfo {
 ---
 
 #### 1.3 BusinessPlanData DTO (6단계 전체)
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/dto/businessplan/BusinessPlanData.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/dto/businessplan/BusinessPlanData.java`
 
 ```java
 @Getter
@@ -153,7 +153,7 @@ public class BusinessPlanData {
 ---
 
 #### 1.4 Step1 ~ Step6 DTO
-**파일들**: `src/main/java/vibe/bizplan/bizplan_be_inclass/dto/businessplan/steps/`
+**파일들**: `src/main/java/vibe/makersround/makersround_be_inclass/dto/businessplan/steps/`
 
 | 파일명 | 필수 필드 |
 |--------|----------|
@@ -169,7 +169,7 @@ public class BusinessPlanData {
 ---
 
 #### 1.5 GenerationOptions DTO
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/dto/businessplan/GenerationOptions.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/dto/businessplan/GenerationOptions.java`
 
 ```java
 @Getter
@@ -206,7 +206,7 @@ public class GenerationOptions {
 ### Phase 2: 엔티티 구현
 
 #### 2.1 BusinessPlanSubmission 엔티티
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/entity/BusinessPlanSubmission.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/entity/BusinessPlanSubmission.java`
 
 ```java
 @Entity
@@ -267,7 +267,7 @@ public class BusinessPlanSubmission {
 ---
 
 #### 2.2 SubmissionStatus Enum
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/entity/SubmissionStatus.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/entity/SubmissionStatus.java`
 
 ```java
 public enum SubmissionStatus {
@@ -283,7 +283,7 @@ public enum SubmissionStatus {
 ---
 
 #### 2.3 Repository 인터페이스
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/repository/BusinessPlanSubmissionRepository.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/repository/BusinessPlanSubmissionRepository.java`
 
 ```java
 public interface BusinessPlanSubmissionRepository 
@@ -302,7 +302,7 @@ public interface BusinessPlanSubmissionRepository
 ### Phase 3: 응답 DTO 구현
 
 #### 3.1 성공 응답 DTO (AI_GENERATION_BE_API_SUBMIT.md Section 4 준수)
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/dto/businessplan/BusinessPlanGenerateResponse.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/dto/businessplan/BusinessPlanGenerateResponse.java`
 
 ```java
 @Getter
@@ -377,7 +377,7 @@ public class ExportOptions {
 ---
 
 #### 3.2 공통 API 응답 래퍼
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/dto/ApiResponse.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/dto/ApiResponse.java`
 
 ```java
 @Getter
@@ -440,7 +440,7 @@ public class ApiResponse<T> {
 ### Phase 4: Service 구현
 
 #### 4.1 BusinessPlanSubmissionService
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/service/BusinessPlanSubmissionService.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/service/BusinessPlanSubmissionService.java`
 
 ```java
 @Service
@@ -514,7 +514,7 @@ public class BusinessPlanSubmissionService {
 ### Phase 5: Controller 구현
 
 #### 5.1 BusinessPlanController (AI_GENERATION_BE_API_SUBMIT.md 스펙 준수)
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/controller/BusinessPlanController.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/controller/BusinessPlanController.java`
 
 ```java
 @RestController
@@ -571,7 +571,7 @@ public class BusinessPlanController {
 ### Phase 6: 예외 처리
 
 #### 6.1 GlobalExceptionHandler 업데이트
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/exception/GlobalExceptionHandler.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/exception/GlobalExceptionHandler.java`
 
 ```java
 // 기존 핸들러에 추가

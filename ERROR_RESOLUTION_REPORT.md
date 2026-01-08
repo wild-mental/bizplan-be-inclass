@@ -1,7 +1,7 @@
 # 프로젝트 실행 에러 해결 리포트
 
 **날짜**: 2025-12-29  
-**프로젝트**: bizplan-be-inclass  
+**프로젝트**: makersround-backend  
 **문제**: Spring Boot 애플리케이션 실행 시 데이터베이스 연결 오류
 
 ---
@@ -53,7 +53,7 @@ Unable to build Hibernate SessionFactory
 **주요 설정**:
 ```properties
 # SQLite 데이터베이스 설정
-spring.datasource.url=jdbc:sqlite:./data/bizplan.db
+spring.datasource.url=jdbc:sqlite:./data/makersround.db
 spring.datasource.driver-class-name=org.sqlite.JDBC
 
 # SQLite용 Hibernate Dialect
@@ -111,7 +111,7 @@ ENCRYPTION_KEY=local-dev-encryption-key-32-chars
 ### 2. Flyway 마이그레이션 확인
 데이터베이스가 제대로 생성되었는지 확인:
 ```bash
-sqlite3 data/bizplan.db ".tables"
+sqlite3 data/makersround.db ".tables"
 ```
 
 ### 3. 프로파일별 설정 분리
@@ -132,7 +132,7 @@ sqlite3 data/bizplan.db ".tables"
    - SQLite용 마이그레이션 파일은 `src/main/resources/db/migration/sqlite/` 디렉토리에 위치
 
 3. **데이터베이스 파일**:
-   - SQLite 데이터베이스 파일: `./data/bizplan.db`
+   - SQLite 데이터베이스 파일: `./data/makersround.db`
    - `.gitignore`에 포함되어 버전 관리에서 제외됨
 
 ---

@@ -3,7 +3,7 @@
 ## 📁 파일 위치
 
 ```
-bizplan-be-inclass/
+makersround-backend/
 ├── .env                    # ⭐ 프로젝트 루트 (Spring Boot 설정)
 ├── .env.example            # 템플릿 파일 (Git 추적됨)
 ```
@@ -20,7 +20,7 @@ SQLite는 파일 기반 데이터베이스이므로 별도의 호스트/포트/�
 
 | 항목 | 설명 |
 |------|------|
-| **데이터베이스 파일** | `./data/bizplan.db` (자동 생성) |
+| **데이터베이스 파일** | `./data/makersround.db` (자동 생성) |
 | **설정** | `application.properties`에 이미 설정됨 |
 
 > 💡 **참고**: SQLite는 별도 설치 없이 JDBC 드라이버만으로 동작합니다.
@@ -56,7 +56,7 @@ SQLite는 파일 기반 데이터베이스이므로 별도의 호스트/포트/�
 ```bash
 # ============ Database ============
 # SQLite는 파일 기반이므로 별도 설정 불필요
-# 데이터베이스 파일은 ./data/bizplan.db에 자동 생성됨
+# 데이터베이스 파일은 ./data/makersround.db에 자동 생성됨
 
 # ============ Spring Boot ============
 SPRING_PROFILES_ACTIVE=local
@@ -77,19 +77,19 @@ ENCRYPTION_KEY=your-aes256-key-exactly-32chars
 ### Local (개발)
 ```bash
 SPRING_PROFILES_ACTIVE=local
-# SQLite 파일: ./data/bizplan.db (자동 생성)
+# SQLite 파일: ./data/makersround.db (자동 생성)
 ```
 
 ### Dev (개발 서버)
 ```bash
 SPRING_PROFILES_ACTIVE=dev
-# SQLite 파일: ./data/bizplan.db (동일)
+# SQLite 파일: ./data/makersround.db (동일)
 ```
 
 ### Prod (운영)
 ```bash
 SPRING_PROFILES_ACTIVE=prod
-# SQLite 파일: ./data/bizplan.db (동일)
+# SQLite 파일: ./data/makersround.db (동일)
 # 보안 키는 반드시 운영용으로 변경!
 # 데이터베이스 파일은 정기적으로 백업 필요
 ```

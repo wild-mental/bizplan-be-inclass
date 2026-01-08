@@ -367,7 +367,7 @@ class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
     
     # Application
-    app_name: str = "BizPlan AI Engine"
+    app_name: str = "MakersRound AI Engine"
     app_env: str = "development"
     log_level: str = "INFO"
     
@@ -722,7 +722,7 @@ async def lifespan(app: FastAPI):
 
 # FastAPI 앱 생성
 app = FastAPI(
-    title="BizPlan AI Engine",
+    title="MakersRound AI Engine",
     description="사업계획서 생성 LLM 엔진 - Issue #008",
     version="0.1.0",
     lifespan=lifespan,
@@ -1291,7 +1291,7 @@ async def lifespan(app: FastAPI):
 
 # FastAPI 앱 생성
 app = FastAPI(
-    title="BizPlan AI Engine",
+    title="MakersRound AI Engine",
     description="사업계획서 생성 LLM 엔진 - Issue #008",
     version="0.1.0",
     lifespan=lifespan,
@@ -1454,7 +1454,7 @@ async def lifespan(app: FastAPI):
 
 # FastAPI 앱 생성
 app = FastAPI(
-    title="BizPlan AI Engine",
+    title="MakersRound AI Engine",
     description="사업계획서 생성 LLM 엔진 - Issue #008",
     version="0.1.0",
     lifespan=lifespan,
@@ -1766,7 +1766,7 @@ htmlcov/
 | 브랜치 생성 | ✅ | `feat/008-ai-engine` |
 | 커밋 | ✅ | `feat(ai-engine): implement business plan generation LLM engine` |
 | 원격 푸시 | ✅ | `origin/feat/008-ai-engine` |
-| Draft PR | ✅ | **[#14](https://github.com/wild-mental/bizplan-be-inclass/pull/14)** |
+| Draft PR | ✅ | **[#14](https://github.com/wild-mental/makersround-backend/pull/14)** |
 
 ---
 
@@ -1792,7 +1792,7 @@ Refs #4
 **PR #14**: `[#008] 사업계획서 생성 LLM 엔진 및 프롬프트 구현`
 - **Status**: Draft
 - **Branch**: `feat/008-ai-engine` → `main`
-- **Link**: https://github.com/wild-mental/bizplan-be-inclass/pull/14
+- **Link**: https://github.com/wild-mental/makersround-backend/pull/14
 - **Related Issue**: Closes #4
 
 ---
@@ -1834,8 +1834,8 @@ tasks/github-issues/docs-for-implementation-review 경로 내에 현재 구현�
 
 **작성일**: 2025-11-28  
 **브랜치**: `feat/008-ai-engine`  
-**PR**: [#14](https://github.com/wild-mental/bizplan-be-inclass/pull/14)  
-**관련 이슈**: [#4](https://github.com/wild-mental/bizplan-be-inclass/issues/4)
+**PR**: [#14](https://github.com/wild-mental/makersround-backend/pull/14)  
+**관련 이슈**: [#4](https://github.com/wild-mental/makersround-backend/issues/4)
 
 ---
 
@@ -2364,7 +2364,7 @@ curl -X POST http://localhost:8001/generate \
 - **의존성 관계 그래프** 추가
 - **Implementation Review 문서 링크** 추가
 
-**PR 링크**: https://github.com/wild-mental/bizplan-be-inclass/pull/14
+**PR 링크**: https://github.com/wild-mental/makersround-backend/pull/14
 
 ---
 
@@ -2757,8 +2757,8 @@ if __name__ == "__main__":
 
 **작성일**: 2025-11-28  
 **브랜치**: `feat/008-ai-engine`  
-**PR**: [#14](https://github.com/wild-mental/bizplan-be-inclass/pull/14)  
-**관련 이슈**: [#4](https://github.com/wild-mental/bizplan-be-inclass/issues/4)
+**PR**: [#14](https://github.com/wild-mental/makersround-backend/pull/14)  
+**관련 이슈**: [#4](https://github.com/wild-mental/makersround-backend/issues/4)
 
 ---
 
@@ -3254,8 +3254,8 @@ curl -X POST http://localhost:8001/generate \
 
 **작성일**: 2025-11-28  
 **브랜치**: `feat/008-ai-engine`  
-**PR**: [#14](https://github.com/wild-mental/bizplan-be-inclass/pull/14)  
-**관련 이슈**: [#4](https://github.com/wild-mental/bizplan-be-inclass/issues/4)
+**PR**: [#14](https://github.com/wild-mental/makersround-backend/pull/14)  
+**관련 이슈**: [#4](https://github.com/wild-mental/makersround-backend/issues/4)
 
 ---
 
@@ -3753,8 +3753,8 @@ curl -X POST http://localhost:8001/generate \
 
 **작성일**: 2025-11-28  
 **브랜치**: `feat/008-ai-engine`  
-**PR**: [#14](https://github.com/wild-mental/bizplan-be-inclass/pull/14)  
-**관련 이슈**: [#4](https://github.com/wild-mental/bizplan-be-inclass/issues/4)
+**PR**: [#14](https://github.com/wild-mental/makersround-backend/pull/14)  
+**관련 이슈**: [#4](https://github.com/wild-mental/makersround-backend/issues/4)
 
 ---
 
@@ -4253,8 +4253,8 @@ curl -X POST http://localhost:8001/generate \
 
 **작성일**: 2025-11-28  
 **브랜치**: `feat/008-ai-engine`  
-**PR**: [#14](https://github.com/wild-mental/bizplan-be-inclass/pull/14)  
-**관련 이슈**: [#4](https://github.com/wild-mental/bizplan-be-inclass/issues/4)
+**PR**: [#14](https://github.com/wild-mental/makersround-backend/pull/14)  
+**관련 이슈**: [#4](https://github.com/wild-mental/makersround-backend/issues/4)
 
 ---
 
@@ -4855,7 +4855,7 @@ async def test_generate_response_time_within_threshold():
 ed2c818 test(perf): add response time monitoring test for REQ-NF-002
 ```
 
-**PR**: https://github.com/wild-mental/bizplan-be-inclass/pull/14
+**PR**: https://github.com/wild-mental/makersround-backend/pull/14
 
 ```python
 @pytest.mark.anyio

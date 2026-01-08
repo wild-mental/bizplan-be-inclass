@@ -364,7 +364,7 @@ Issues 관련 질문이 있으면:
 - 🔄 **Issue #5-#11**: 나머지 Backend 이슈들 진행 중
 
 ### GitHub Resources
-- **Issues**: https://github.com/wild-mental/bizplan-be-inclass/issues
+- **Issues**: https://github.com/wild-mental/makersround-backend/issues
 - **Project Board**: https://github.com/users/wild-mental/projects/10
 - **Roadmap View**: https://github.com/users/wild-mental/projects/10/views/4
 

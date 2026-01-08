@@ -7763,7 +7763,7 @@ Push가 완료되었습니다! 이제 룰에 따라 Draft PR을 생성하겠습�
    - 브랜치 push 완료: `origin/docs/github-issues-backend-scope`
 
 4. **Draft PR 생성**
-   - PR #1 생성: https://github.com/wild-mental/bizplan-be-inclass/pull/1
+   - PR #1 생성: https://github.com/wild-mental/makersround-backend/pull/1
    - 상세한 변경사항 설명 포함
    - 다음 단계 안내 포함
 
@@ -8888,21 +8888,21 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 ### Wave 2.1 (시작점: 2025-11-27)
 **병렬 개발 가능한 작업들:**
 - **#2 (006)** - 프로젝트 생성 및 템플릿 목록 API
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/2
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/2
   - 일정: 2025-11-27 ~ 2025-11-29 (3일)
   - 의존성: TASK-BE-INIT (프로젝트 초기 설정 완료 가정)
   - 병렬 가능: #4 (008), #8 (012)
   - 활성화: #3 (007), #9 (013), #10 (014)
 
 - **#4 (008)** - 사업계획서 생성 LLM 엔진 구현
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/4
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/4
   - 일정: 2025-11-27 ~ 2025-12-01 (5일)
   - 의존성: 없음
   - 병렬 가능: #2 (006), #8 (012)
   - 활성화: #5 (009), #7 (011)
 
 - **#8 (012)** - 재무 추정 및 유닛 이코노믹스 계산 엔진
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/8
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/8
   - 일정: 2025-11-27 ~ 2025-12-01 (5일)
   - 의존성: 없음 (Pure Logic)
   - 병렬 가능: #2 (006), #4 (008) (모든 작업과 병렬 가능)
@@ -9180,28 +9180,28 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 ### Wave 2.1 (시작점: 2025-11-27)
 **병렬 개발 가능한 작업들:**
 - **#2 (006)** - 프로젝트 생성 및 템플릿 목록 API
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/2
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/2
   - 일정: 2025-11-27 ~ 2025-11-29 (3일)
   - 의존성: TASK-BE-INIT (프로젝트 초기 설정 완료 가정)
   - 병렬 가능: #4 (008), #8 (012)
   - 활성화: #3 (007), #9 (013), #10 (014)
 
 - **#4 (008)** - 사업계획서 생성 LLM 엔진 구현
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/4
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/4
   - 일정: 2025-11-27 ~ 2025-12-01 (5일)
   - 의존성: 없음
   - 병렬 가능: #2 (006), #8 (012)
   - 활성화: #5 (009), #7 (011)
 
 - **#8 (012)** - 재무 추정 및 유닛 이코노믹스 계산 엔진
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/8
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/8
   - 일정: 2025-11-27 ~ 2025-12-01 (5일)
   - 의존성: 없음 (Pure Logic)
   - 병렬 가능: #2 (006), #4 (008) (모든 작업과 병렬 가능)
 
 ### Wave 2.2 (Wave 2.1의 #2 완료 후: 2025-11-30)
 - **#3 (007)** - Wizard 단계별 답변 저장/조회 API
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/3
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/3
   - 일정: 2025-11-30 ~ 2025-12-02 (3일)
   - 의존성: #2 (006)
   - 병렬 가능: #4 (008), #8 (012) (진행 중인 작업)
@@ -9209,20 +9209,20 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 **병렬 작업 (NFR):**
 - **#9 (013)** - 데이터 저장/전송 암호화 및 보안 구성
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/9
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/9
   - 일정: 2025-11-30 ~ 2025-12-02 (3일)
   - 의존성: #2 (006)
   - 병렬 가능: #10 (014)
 
 - **#10 (014)** - 구조화된 로깅 및 Prometheus/Grafana 모니터링
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/10
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/10
   - 일정: 2025-11-30 ~ 2025-12-02 (3일)
   - 의존성: #2 (006)
   - 병렬 가능: #9 (013)
 
 ### Wave 2.3 (Wave 2.2의 #3 + Wave 2.1의 #4 완료 후: 2025-12-03)
 - **#5 (009)** - 사업계획서 생성 오케스트레이션 API
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/5
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/5
   - 일정: 2025-12-03 ~ 2025-12-06 (4일)
   - 의존성: #3 (007), #4 (008)
   - 병렬 가능: #8 (012) (진행 중일 경우)
@@ -9230,7 +9230,7 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 ### Wave 2.4 (Wave 2.3의 #5 완료 후: 2025-12-07)
 - **#6 (010)** - HWP/PDF 내보내기 기능
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/6
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/6
   - 일정: 2025-12-07 ~ 2025-12-11 (5일)
   - 의존성: #5 (009)
   - 병렬 가능: #7 (011) (AI 작업), #8 (012) (진행 중일 경우)
@@ -9491,28 +9491,28 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 ### Wave 2.1 (시작점: 2025-11-27)
 **병렬 개발 가능한 작업들:**
 - **#2 (006)** - 프로젝트 생성 및 템플릿 목록 API
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/2
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/2
   - 일정: 2025-11-27 ~ 2025-11-29 (3일)
   - 의존성: TASK-BE-INIT (프로젝트 초기 설정 완료 가정)
   - 병렬 가능: #4 (008), #8 (012)
   - 활성화: #3 (007), #9 (013), #10 (014)
 
 - **#4 (008)** - 사업계획서 생성 LLM 엔진 구현
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/4
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/4
   - 일정: 2025-11-27 ~ 2025-12-01 (5일)
   - 의존성: 없음
   - 병렬 가능: #2 (006), #8 (012)
   - 활성화: #5 (009), #7 (011)
 
 - **#8 (012)** - 재무 추정 및 유닛 이코노믹스 계산 엔진
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/8
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/8
   - 일정: 2025-11-27 ~ 2025-12-01 (5일)
   - 의존성: 없음 (Pure Logic)
   - 병렬 가능: #2 (006), #4 (008) (모든 작업과 병렬 가능)
 
 ### Wave 2.2 (Wave 2.1의 #2 완료 후: 2025-11-30)
 - **#3 (007)** - Wizard 단계별 답변 저장/조회 API
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/3
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/3
   - 일정: 2025-11-30 ~ 2025-12-02 (3일)
   - 의존성: #2 (006)
   - 병렬 가능: #4 (008), #8 (012) (진행 중인 작업)
@@ -9520,20 +9520,20 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 **병렬 작업 (NFR):**
 - **#9 (013)** - 데이터 저장/전송 암호화 및 보안 구성
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/9
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/9
   - 일정: 2025-11-30 ~ 2025-12-02 (3일)
   - 의존성: #2 (006)
   - 병렬 가능: #10 (014)
 
 - **#10 (014)** - 구조화된 로깅 및 Prometheus/Grafana 모니터링
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/10
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/10
   - 일정: 2025-11-30 ~ 2025-12-02 (3일)
   - 의존성: #2 (006)
   - 병렬 가능: #9 (013)
 
 ### Wave 2.3 (Wave 2.2의 #3 + Wave 2.1의 #4 완료 후: 2025-12-03)
 - **#5 (009)** - 사업계획서 생성 오케스트레이션 API
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/5
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/5
   - 일정: 2025-12-03 ~ 2025-12-06 (4일)
   - 의존성: #3 (007), #4 (008)
   - 병렬 가능: #8 (012) (진행 중일 경우)
@@ -9541,7 +9541,7 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 ### Wave 2.4 (Wave 2.3의 #5 완료 후: 2025-12-07)
 - **#6 (010)** - HWP/PDF 내보내기 기능
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/6
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/6
   - 일정: 2025-12-07 ~ 2025-12-11 (5일)
   - 의존성: #5 (009)
   - 병렬 가능: #7 (011) (AI 작업), #8 (012) (진행 중일 경우)
@@ -9553,7 +9553,7 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 ### Wave 3.1 (Wave 2.1의 #4 완료 후: 2025-12-02)
 - **#7 (011)** - PMF 진단 및 리포트 생성 LLM 엔진
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/7
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/7
   - 일정: 2025-12-02 ~ 2025-12-05 (4일)
   - 의존성: #4 (008) (FastAPI 환경 공유)
   - 병렬 가능: #5 (009), #6 (010), #8 (012)
@@ -9570,7 +9570,7 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 ### Wave 4.2 (Wave 2.3의 #5 완료 후: 2025-12-07)
 - **#11 (015)** - API 성능 목표 검증을 위한 k6 부하 테스트
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/11
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/11
   - 일정: 2025-12-07 ~ 2025-12-09 (3일)
   - 의존성: #5 (009) (주요 API 구현 완료 필요)
   - 병렬 가능: #6 (010), #7 (011), #8 (012)
@@ -9801,28 +9801,28 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 ### Wave 2.1 (시작점: 2025-11-27)
 **병렬 개발 가능한 작업들:**
 - **#2 (006)** - 프로젝트 생성 및 템플릿 목록 API
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/2
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/2
   - 일정: 2025-11-27 ~ 2025-11-29 (3일)
   - 의존성: TASK-BE-INIT (프로젝트 초기 설정 완료 가정)
   - 병렬 가능: #4 (008), #8 (012)
   - 활성화: #3 (007), #9 (013), #10 (014)
 
 - **#4 (008)** - 사업계획서 생성 LLM 엔진 구현
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/4
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/4
   - 일정: 2025-11-27 ~ 2025-12-01 (5일)
   - 의존성: 없음
   - 병렬 가능: #2 (006), #8 (012)
   - 활성화: #5 (009), #7 (011)
 
 - **#8 (012)** - 재무 추정 및 유닛 이코노믹스 계산 엔진
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/8
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/8
   - 일정: 2025-11-27 ~ 2025-12-01 (5일)
   - 의존성: 없음 (Pure Logic)
   - 병렬 가능: #2 (006), #4 (008) (모든 작업과 병렬 가능)
 
 ### Wave 2.2 (Wave 2.1의 #2 완료 후: 2025-11-30)
 - **#3 (007)** - Wizard 단계별 답변 저장/조회 API
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/3
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/3
   - 일정: 2025-11-30 ~ 2025-12-02 (3일)
   - 의존성: #2 (006)
   - 병렬 가능: #4 (008), #8 (012) (진행 중인 작업)
@@ -9830,20 +9830,20 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 **병렬 작업 (NFR):**
 - **#9 (013)** - 데이터 저장/전송 암호화 및 보안 구성
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/9
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/9
   - 일정: 2025-11-30 ~ 2025-12-02 (3일)
   - 의존성: #2 (006)
   - 병렬 가능: #10 (014)
 
 - **#10 (014)** - 구조화된 로깅 및 Prometheus/Grafana 모니터링
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/10
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/10
   - 일정: 2025-11-30 ~ 2025-12-02 (3일)
   - 의존성: #2 (006)
   - 병렬 가능: #9 (013)
 
 ### Wave 2.3 (Wave 2.2의 #3 + Wave 2.1의 #4 완료 후: 2025-12-03)
 - **#5 (009)** - 사업계획서 생성 오케스트레이션 API
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/5
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/5
   - 일정: 2025-12-03 ~ 2025-12-06 (4일)
   - 의존성: #3 (007), #4 (008)
   - 병렬 가능: #8 (012) (진행 중일 경우)
@@ -9851,7 +9851,7 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 ### Wave 2.4 (Wave 2.3의 #5 완료 후: 2025-12-07)
 - **#6 (010)** - HWP/PDF 내보내기 기능
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/6
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/6
   - 일정: 2025-12-07 ~ 2025-12-11 (5일)
   - 의존성: #5 (009)
   - 병렬 가능: #7 (011) (AI 작업), #8 (012) (진행 중일 경우)
@@ -9863,7 +9863,7 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 ### Wave 3.1 (Wave 2.1의 #4 완료 후: 2025-12-02)
 - **#7 (011)** - PMF 진단 및 리포트 생성 LLM 엔진
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/7
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/7
   - 일정: 2025-12-02 ~ 2025-12-05 (4일)
   - 의존성: #4 (008) (FastAPI 환경 공유)
   - 병렬 가능: #5 (009), #6 (010), #8 (012)
@@ -9880,7 +9880,7 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 ### Wave 4.2 (Wave 2.3의 #5 완료 후: 2025-12-07)
 - **#11 (015)** - API 성능 목표 검증을 위한 k6 부하 테스트
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/11
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/11
   - 일정: 2025-12-07 ~ 2025-12-09 (3일)
   - 의존성: #5 (009) (주요 API 구현 완료 필요)
   - 병렬 가능: #6 (010), #7 (011), #8 (012)
@@ -10115,28 +10115,28 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 ### Wave 2.1 (시작점: 2025-11-27)
 **병렬 개발 가능한 작업들:**
 - **#2 (006)** - 프로젝트 생성 및 템플릿 목록 API
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/2
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/2
   - 일정: 2025-11-27 ~ 2025-11-29 (3일)
   - 의존성: TASK-BE-INIT (프로젝트 초기 설정 완료 가정)
   - 병렬 가능: #4 (008), #8 (012)
   - 활성화: #3 (007), #9 (013), #10 (014)
 
 - **#4 (008)** - 사업계획서 생성 LLM 엔진 구현
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/4
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/4
   - 일정: 2025-11-27 ~ 2025-12-01 (5일)
   - 의존성: 없음
   - 병렬 가능: #2 (006), #8 (012)
   - 활성화: #5 (009), #7 (011)
 
 - **#8 (012)** - 재무 추정 및 유닛 이코노믹스 계산 엔진
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/8
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/8
   - 일정: 2025-11-27 ~ 2025-12-01 (5일)
   - 의존성: 없음 (Pure Logic)
   - 병렬 가능: #2 (006), #4 (008) (모든 작업과 병렬 가능)
 
 ### Wave 2.2 (Wave 2.1의 #2 완료 후: 2025-11-30)
 - **#3 (007)** - Wizard 단계별 답변 저장/조회 API
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/3
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/3
   - 일정: 2025-11-30 ~ 2025-12-02 (3일)
   - 의존성: #2 (006)
   - 병렬 가능: #4 (008), #8 (012) (진행 중인 작업)
@@ -10144,20 +10144,20 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 **병렬 작업 (NFR):**
 - **#9 (013)** - 데이터 저장/전송 암호화 및 보안 구성
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/9
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/9
   - 일정: 2025-11-30 ~ 2025-12-02 (3일)
   - 의존성: #2 (006)
   - 병렬 가능: #10 (014)
 
 - **#10 (014)** - 구조화된 로깅 및 Prometheus/Grafana 모니터링
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/10
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/10
   - 일정: 2025-11-30 ~ 2025-12-02 (3일)
   - 의존성: #2 (006)
   - 병렬 가능: #9 (013)
 
 ### Wave 2.3 (Wave 2.2의 #3 + Wave 2.1의 #4 완료 후: 2025-12-03)
 - **#5 (009)** - 사업계획서 생성 오케스트레이션 API
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/5
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/5
   - 일정: 2025-12-03 ~ 2025-12-06 (4일)
   - 의존성: #3 (007), #4 (008)
   - 병렬 가능: #8 (012) (진행 중일 경우)
@@ -10165,7 +10165,7 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 ### Wave 2.4 (Wave 2.3의 #5 완료 후: 2025-12-07)
 - **#6 (010)** - HWP/PDF 내보내기 기능
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/6
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/6
   - 일정: 2025-12-07 ~ 2025-12-11 (5일)
   - 의존성: #5 (009)
   - 병렬 가능: #7 (011) (AI 작업), #8 (012) (진행 중일 경우)
@@ -10177,7 +10177,7 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 ### Wave 3.1 (Wave 2.1의 #4 완료 후: 2025-12-02)
 - **#7 (011)** - PMF 진단 및 리포트 생성 LLM 엔진
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/7
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/7
   - 일정: 2025-12-02 ~ 2025-12-05 (4일)
   - 의존성: #4 (008) (FastAPI 환경 공유)
   - 병렬 가능: #5 (009), #6 (010), #8 (012)
@@ -10194,7 +10194,7 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 ### Wave 4.2 (Wave 2.3의 #5 완료 후: 2025-12-07)
 - **#11 (015)** - API 성능 목표 검증을 위한 k6 부하 테스트
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/11
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/11
   - 일정: 2025-12-07 ~ 2025-12-09 (3일)
   - 의존성: #5 (009) (주요 API 구현 완료 필요)
   - 병렬 가능: #6 (010), #7 (011), #8 (012)
@@ -10435,28 +10435,28 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 ### Wave 2.1 (시작점: 2025-11-27)
 **병렬 개발 가능한 작업들:**
 - **#2 (006)** - 프로젝트 생성 및 템플릿 목록 API
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/2
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/2
   - 일정: 2025-11-27 ~ 2025-11-29 (3일)
   - 의존성: TASK-BE-INIT (프로젝트 초기 설정 완료 가정)
   - 병렬 가능: #4 (008), #8 (012)
   - 활성화: #3 (007), #9 (013), #10 (014)
 
 - **#4 (008)** - 사업계획서 생성 LLM 엔진 구현
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/4
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/4
   - 일정: 2025-11-27 ~ 2025-12-01 (5일)
   - 의존성: 없음
   - 병렬 가능: #2 (006), #8 (012)
   - 활성화: #5 (009), #7 (011)
 
 - **#8 (012)** - 재무 추정 및 유닛 이코노믹스 계산 엔진
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/8
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/8
   - 일정: 2025-11-27 ~ 2025-12-01 (5일)
   - 의존성: 없음 (Pure Logic)
   - 병렬 가능: #2 (006), #4 (008) (모든 작업과 병렬 가능)
 
 ### Wave 2.2 (Wave 2.1의 #2 완료 후: 2025-11-30)
 - **#3 (007)** - Wizard 단계별 답변 저장/조회 API
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/3
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/3
   - 일정: 2025-11-30 ~ 2025-12-02 (3일)
   - 의존성: #2 (006)
   - 병렬 가능: #4 (008), #8 (012) (진행 중인 작업)
@@ -10464,20 +10464,20 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 **병렬 작업 (NFR):**
 - **#9 (013)** - 데이터 저장/전송 암호화 및 보안 구성
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/9
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/9
   - 일정: 2025-11-30 ~ 2025-12-02 (3일)
   - 의존성: #2 (006)
   - 병렬 가능: #10 (014)
 
 - **#10 (014)** - 구조화된 로깅 및 Prometheus/Grafana 모니터링
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/10
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/10
   - 일정: 2025-11-30 ~ 2025-12-02 (3일)
   - 의존성: #2 (006)
   - 병렬 가능: #9 (013)
 
 ### Wave 2.3 (Wave 2.2의 #3 + Wave 2.1의 #4 완료 후: 2025-12-03)
 - **#5 (009)** - 사업계획서 생성 오케스트레이션 API
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/5
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/5
   - 일정: 2025-12-03 ~ 2025-12-06 (4일)
   - 의존성: #3 (007), #4 (008)
   - 병렬 가능: #8 (012) (진행 중일 경우)
@@ -10485,7 +10485,7 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 ### Wave 2.4 (Wave 2.3의 #5 완료 후: 2025-12-07)
 - **#6 (010)** - HWP/PDF 내보내기 기능
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/6
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/6
   - 일정: 2025-12-07 ~ 2025-12-11 (5일)
   - 의존성: #5 (009)
   - 병렬 가능: #7 (011) (AI 작업), #8 (012) (진행 중일 경우)
@@ -10497,7 +10497,7 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 ### Wave 3.1 (Wave 2.1의 #4 완료 후: 2025-12-02)
 - **#7 (011)** - PMF 진단 및 리포트 생성 LLM 엔진
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/7
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/7
   - 일정: 2025-12-02 ~ 2025-12-05 (4일)
   - 의존성: #4 (008) (FastAPI 환경 공유)
   - 병렬 가능: #5 (009), #6 (010), #8 (012)
@@ -10514,7 +10514,7 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 
 ### Wave 4.2 (Wave 2.3의 #5 완료 후: 2025-12-07)
 - **#11 (015)** - API 성능 목표 검증을 위한 k6 부하 테스트
-  - GitHub Issue: https://github.com/wild-mental/bizplan-be-inclass/issues/11
+  - GitHub Issue: https://github.com/wild-mental/makersround-backend/issues/11
   - 일정: 2025-12-07 ~ 2025-12-09 (3일)
   - 의존성: #5 (009) (주요 API 구현 완료 필요)
   - 병렬 가능: #6 (010), #7 (011), #8 (012)
@@ -10700,7 +10700,7 @@ Frontend PoC (#001-#005) 완료됨 → Backend 개발 즉시 시작 가능
 ## GitHub Project Integration
 
 ### Project Information
-- **Project Name**: BizPlan-Backend-Project
+- **Project Name**: MakersRound-Backend-Project
 - **Project ID**: `PVT_kwHOBWaOeM4BJJCo`
 - **Roadmap View**: https://github.com/users/wild-mental/projects/10/views/4
 
@@ -12262,7 +12262,7 @@ Issues 관련 질문이 있으면:
 - ✅ Project timeline: 2025-11-27 ~ 2025-12-11
 
 ### GitHub Resources
-- **Issues**: https://github.com/wild-mental/bizplan-be-inclass/issues
+- **Issues**: https://github.com/wild-mental/makersround-backend/issues
 - **Project Board**: https://github.com/users/wild-mental/projects/10
 - **Roadmap View**: https://github.com/users/wild-mental/projects/10/views/4
 
@@ -12354,7 +12354,7 @@ done
 
 ### GitHub Project 정보
 
-- **Project Name**: BizPlan-Backend-Project
+- **Project Name**: MakersRound-Backend-Project
 - **Project ID**: `PVT_kwHOBWaOeM4BJJCo` (Node ID)
 - **Number**: 10
 - **Roadmap View**: https://github.com/users/wild-mental/projects/10/views/4
@@ -12593,7 +12593,7 @@ Version: v1.2
 ```
 
 **Pull Request**:
-- PR #12: https://github.com/wild-mental/bizplan-be-inclass/pull/12
+- PR #12: https://github.com/wild-mental/makersround-backend/pull/12
 - Draft PR 생성 완료
 - 5 files changed, 398 insertions(+), 206 deletions(-)
 

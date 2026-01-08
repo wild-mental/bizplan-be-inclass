@@ -550,7 +550,7 @@ Issues 관련 질문이 있으면:
 - ✅ Project timeline: 2025-11-27 ~ 2025-12-11
 
 ### GitHub Resources
-- **Issues**: https://github.com/wild-mental/bizplan-be-inclass/issues
+- **Issues**: https://github.com/wild-mental/makersround-backend/issues
 - **Project Board**: https://github.com/users/wild-mental/projects/10
 - **Roadmap View**: https://github.com/users/wild-mental/projects/10/views/4
 
@@ -923,7 +923,7 @@ Issues 관련 질문이 있으면:
 - ✅ Project timeline: 2025-11-27 ~ 2025-12-11
 
 ### GitHub Resources
-- **Issues**: https://github.com/wild-mental/bizplan-be-inclass/issues
+- **Issues**: https://github.com/wild-mental/makersround-backend/issues
 - **Project Board**: https://github.com/users/wild-mental/projects/10
 - **Roadmap View**: https://github.com/users/wild-mental/projects/10/views/4
 
@@ -1296,7 +1296,7 @@ Issues 관련 질문이 있으면:
 - ✅ Project timeline: 2025-11-27 ~ 2025-12-11
 
 ### GitHub Resources
-- **Issues**: https://github.com/wild-mental/bizplan-be-inclass/issues
+- **Issues**: https://github.com/wild-mental/makersround-backend/issues
 - **Project Board**: https://github.com/users/wild-mental/projects/10
 - **Roadmap View**: https://github.com/users/wild-mental/projects/10/views/4
 
@@ -1675,7 +1675,7 @@ Issues 관련 질문이 있으면:
 - 🔄 **Issue #5-#11**: 나머지 Backend 이슈들 진행 중
 
 ### GitHub Resources
-- **Issues**: https://github.com/wild-mental/bizplan-be-inclass/issues
+- **Issues**: https://github.com/wild-mental/makersround-backend/issues
 - **Project Board**: https://github.com/users/wild-mental/projects/10
 - **Roadmap View**: https://github.com/users/wild-mental/projects/10/views/4
 
@@ -1827,7 +1827,7 @@ done
 
 ### GitHub Project 정보
 
-- **Project Name**: BizPlan-Backend-Project
+- **Project Name**: MakersRound-Backend-Project
 - **Project ID**: `PVT_kwHOBWaOeM4BJJCo` (Node ID)
 - **Number**: 10
 - **Roadmap View**: https://github.com/users/wild-mental/projects/10/views/4
@@ -3397,7 +3397,7 @@ async def lifespan(app: FastAPI):
 
 # FastAPI 앱 생성
 app = FastAPI(
-    title="BizPlan AI Engine",
+    title="MakersRound AI Engine",
     description="사업계획서 생성 LLM 엔진 - Issue #008",
     version="0.1.0",
     lifespan=lifespan,
@@ -3566,7 +3566,7 @@ async def lifespan(app: FastAPI):
 
 # FastAPI 앱 생성
 app = FastAPI(
-    title="BizPlan AI Engine",
+    title="MakersRound AI Engine",
     description="사업계획서 생성 LLM 엔진 - Issue #008",
     version="0.1.0",
     lifespan=lifespan,
@@ -4011,8 +4011,8 @@ env:
 ## Issue 문서 참조
 
 - **Issue 문서**: `tasks/github-issues/completed/issue-008-REQ-FUNC-003-AI-001.md`
-- **GitHub Issue**: [#4](https://github.com/wild-mental/bizplan-be-inclass/issues/4)
-- **Pull Request**: [#14](https://github.com/wild-mental/bizplan-be-inclass/pull/14)
+- **GitHub Issue**: [#4](https://github.com/wild-mental/makersround-backend/issues/4)
+- **Pull Request**: [#14](https://github.com/wild-mental/makersround-backend/pull/14)
 
 ---
 
@@ -4152,7 +4152,7 @@ Git 작업 규칙에 맞게 커밋, 푸시, PR을 완료했습니다.
 - PR 번호: #16
 - 상태: DRAFT (OPEN)
 - 제목: `test(008): Add traceability links to SRS requirements`
-- URL: https://github.com/wild-mental/bizplan-be-inclass/pull/16
+- URL: https://github.com/wild-mental/makersround-backend/pull/16
 
 ## PR 내용 요약
 

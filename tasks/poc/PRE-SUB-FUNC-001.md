@@ -63,7 +63,7 @@ dependencies {
 ```yaml
 spring:
   datasource:
-    url: jdbc:sqlite:./data/bizplan.db
+    url: jdbc:sqlite:./data/makersround.db
     driver-class-name: org.sqlite.JDBC
   jpa:
     database-platform: org.hibernate.community.dialect.SQLiteDialect
@@ -256,12 +256,12 @@ ALTER TABLE pre_registrations_new RENAME TO pre_registrations;
 **우선순위:** 🔴 Critical
 **예상 소요:** 2-3시간
 
-**파일:** `src/main/java/vibe/bizplan/bizplan_be_inclass/entity/PreRegistration.java`
+**파일:** `src/main/java/vibe/makersround/makersround_be_inclass/entity/PreRegistration.java`
 
 > 💡 **SQLite 호환:** `columnDefinition = "TEXT"`로 UUID 저장, Boolean은 Integer 매핑
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.entity;
+package vibe.makersround.makersround_be_inclass.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -382,12 +382,12 @@ public class PreRegistration {
 **우선순위:** 🟡 High
 **예상 소요:** 1-2시간
 
-**파일:** `src/main/java/vibe/bizplan/bizplan_be_inclass/entity/Promotion.java`
+**파일:** `src/main/java/vibe/makersround/makersround_be_inclass/entity/Promotion.java`
 
 > 💡 **SQLite 호환:** UUID는 TEXT, Boolean은 Integer (0/1)로 자동 매핑
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.entity;
+package vibe.makersround.makersround_be_inclass.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -498,18 +498,18 @@ public class Promotion {
 **우선순위:** 🔴 Critical
 **예상 소요:** 1시간
 
-**파일:** `src/main/java/vibe/bizplan/bizplan_be_inclass/repository/PreRegistrationRepository.java`
+**파일:** `src/main/java/vibe/makersround/makersround_be_inclass/repository/PreRegistrationRepository.java`
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.repository;
+package vibe.makersround.makersround_be_inclass.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import vibe.bizplan.bizplan_be_inclass.entity.PreRegistration;
-import vibe.bizplan.bizplan_be_inclass.entity.PreRegistration.PlanType;
-import vibe.bizplan.bizplan_be_inclass.entity.PreRegistration.RegistrationStatus;
+import vibe.makersround.makersround_be_inclass.entity.PreRegistration;
+import vibe.makersround.makersround_be_inclass.entity.PreRegistration.PlanType;
+import vibe.makersround.makersround_be_inclass.entity.PreRegistration.RegistrationStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -552,14 +552,14 @@ public interface PreRegistrationRepository extends JpaRepository<PreRegistration
 }
 ```
 
-**파일:** `src/main/java/vibe/bizplan/bizplan_be_inclass/repository/PromotionRepository.java`
+**파일:** `src/main/java/vibe/makersround/makersround_be_inclass/repository/PromotionRepository.java`
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.repository;
+package vibe.makersround.makersround_be_inclass.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import vibe.bizplan.bizplan_be_inclass.entity.Promotion;
+import vibe.makersround.makersround_be_inclass.entity.Promotion;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -582,10 +582,10 @@ public interface PromotionRepository extends JpaRepository<Promotion, UUID> {
 **우선순위:** 🔴 Critical
 **예상 소요:** 2시간
 
-**파일:** `src/main/java/vibe/bizplan/bizplan_be_inclass/dto/preregistration/PreRegistrationRequest.java`
+**파일:** `src/main/java/vibe/makersround/makersround_be_inclass/dto/preregistration/PreRegistrationRequest.java`
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.dto.preregistration;
+package vibe.makersround.makersround_be_inclass.dto.preregistration;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -637,10 +637,10 @@ public class PreRegistrationRequest {
 
 ### 3.2 Response DTOs
 
-**파일:** `src/main/java/vibe/bizplan/bizplan_be_inclass/dto/preregistration/PreRegistrationResponse.java`
+**파일:** `src/main/java/vibe/makersround/makersround_be_inclass/dto/preregistration/PreRegistrationResponse.java`
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.dto.preregistration;
+package vibe.makersround.makersround_be_inclass.dto.preregistration;
 
 import lombok.*;
 import java.time.LocalDateTime;
@@ -710,10 +710,10 @@ public class PreRegistrationResponse {
 }
 ```
 
-**파일:** `src/main/java/vibe/bizplan/bizplan_be_inclass/dto/preregistration/PromotionInfoResponse.java`
+**파일:** `src/main/java/vibe/makersround/makersround_be_inclass/dto/preregistration/PromotionInfoResponse.java`
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.dto.preregistration;
+package vibe.makersround.makersround_be_inclass.dto.preregistration;
 
 import lombok.*;
 import java.time.LocalDateTime;
@@ -807,10 +807,10 @@ public class PromotionInfoResponse {
 }
 ```
 
-**파일:** `src/main/java/vibe/bizplan/bizplan_be_inclass/dto/preregistration/EmailCheckResponse.java`
+**파일:** `src/main/java/vibe/makersround/makersround_be_inclass/dto/preregistration/EmailCheckResponse.java`
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.dto.preregistration;
+package vibe.makersround.makersround_be_inclass.dto.preregistration;
 
 import lombok.*;
 
@@ -838,24 +838,24 @@ public class EmailCheckResponse {
 **우선순위:** 🔴 Critical
 **예상 소요:** 4-5시간
 
-**파일:** `src/main/java/vibe/bizplan/bizplan_be_inclass/service/PreRegistrationService.java`
+**파일:** `src/main/java/vibe/makersround/makersround_be_inclass/service/PreRegistrationService.java`
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.service;
+package vibe.makersround.makersround_be_inclass.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vibe.bizplan.bizplan_be_inclass.dto.preregistration.*;
-import vibe.bizplan.bizplan_be_inclass.entity.PreRegistration;
-import vibe.bizplan.bizplan_be_inclass.entity.PreRegistration.PlanType;
-import vibe.bizplan.bizplan_be_inclass.entity.Promotion;
-import vibe.bizplan.bizplan_be_inclass.exception.DuplicateEmailException;
-import vibe.bizplan.bizplan_be_inclass.exception.PromotionEndedException;
-import vibe.bizplan.bizplan_be_inclass.exception.ResourceNotFoundException;
-import vibe.bizplan.bizplan_be_inclass.repository.PreRegistrationRepository;
-import vibe.bizplan.bizplan_be_inclass.repository.PromotionRepository;
+import vibe.makersround.makersround_be_inclass.dto.preregistration.*;
+import vibe.makersround.makersround_be_inclass.entity.PreRegistration;
+import vibe.makersround.makersround_be_inclass.entity.PreRegistration.PlanType;
+import vibe.makersround.makersround_be_inclass.entity.Promotion;
+import vibe.makersround.makersround_be_inclass.exception.DuplicateEmailException;
+import vibe.makersround.makersround_be_inclass.exception.PromotionEndedException;
+import vibe.makersround.makersround_be_inclass.exception.ResourceNotFoundException;
+import vibe.makersround.makersround_be_inclass.repository.PreRegistrationRepository;
+import vibe.makersround.makersround_be_inclass.repository.PromotionRepository;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -1108,10 +1108,10 @@ public class PreRegistrationService {
 **우선순위:** 🔴 Critical
 **예상 소요:** 2-3시간
 
-**파일:** `src/main/java/vibe/bizplan/bizplan_be_inclass/controller/PreRegistrationController.java`
+**파일:** `src/main/java/vibe/makersround/makersround_be_inclass/controller/PreRegistrationController.java`
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.controller;
+package vibe.makersround.makersround_be_inclass.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -1124,9 +1124,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vibe.bizplan.bizplan_be_inclass.dto.ApiResponse as ApiResp;
-import vibe.bizplan.bizplan_be_inclass.dto.preregistration.*;
-import vibe.bizplan.bizplan_be_inclass.service.PreRegistrationService;
+import vibe.makersround.makersround_be_inclass.dto.ApiResponse as ApiResp;
+import vibe.makersround.makersround_be_inclass.dto.preregistration.*;
+import vibe.makersround.makersround_be_inclass.service.PreRegistrationService;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -1225,10 +1225,10 @@ public class PreRegistrationController {
 **우선순위:** 🔴 Critical
 **예상 소요:** 1시간
 
-**파일:** `src/main/java/vibe/bizplan/bizplan_be_inclass/exception/DuplicateEmailException.java`
+**파일:** `src/main/java/vibe/makersround/makersround_be_inclass/exception/DuplicateEmailException.java`
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.exception;
+package vibe.makersround.makersround_be_inclass.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -1241,10 +1241,10 @@ public class DuplicateEmailException extends RuntimeException {
 }
 ```
 
-**파일:** `src/main/java/vibe/bizplan/bizplan_be_inclass/exception/PromotionEndedException.java`
+**파일:** `src/main/java/vibe/makersround/makersround_be_inclass/exception/PromotionEndedException.java`
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.exception;
+package vibe.makersround.makersround_be_inclass.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -1288,7 +1288,7 @@ public ResponseEntity<ApiResponse<Void>> handlePromotionEnded(PromotionEndedExce
 **우선순위:** 🔴 Critical
 **예상 소요:** 2-3시간
 
-**파일:** `src/test/java/vibe/bizplan/bizplan_be_inclass/repository/PreRegistrationRepositoryTest.java`
+**파일:** `src/test/java/vibe/makersround/makersround_be_inclass/repository/PreRegistrationRepositoryTest.java`
 
 ```java
 @SpringBootTest
@@ -1359,7 +1359,7 @@ class PreRegistrationRepositoryTest {
 
 ### 7.2 Service 테스트
 
-**파일:** `src/test/java/vibe/bizplan/bizplan_be_inclass/service/PreRegistrationServiceTest.java`
+**파일:** `src/test/java/vibe/makersround/makersround_be_inclass/service/PreRegistrationServiceTest.java`
 
 ```java
 @ExtendWith(MockitoExtension.class)
@@ -1429,7 +1429,7 @@ class PreRegistrationServiceTest {
 
 ### 7.3 Controller 테스트 (MockMvc)
 
-**파일:** `src/test/java/vibe/bizplan/bizplan_be_inclass/controller/PreRegistrationControllerTest.java`
+**파일:** `src/test/java/vibe/makersround/makersround_be_inclass/controller/PreRegistrationControllerTest.java`
 
 ```java
 @WebMvcTest(PreRegistrationController.class)
@@ -1502,7 +1502,7 @@ class PreRegistrationControllerTest {
 **우선순위:** 🟢 Medium
 **예상 소요:** 3-4시간
 
-**파일:** `src/main/java/vibe/bizplan/bizplan_be_inclass/controller/AdminPreRegistrationController.java`
+**파일:** `src/main/java/vibe/makersround/makersround_be_inclass/controller/AdminPreRegistrationController.java`
 
 ```java
 @RestController
@@ -1647,7 +1647,7 @@ public class AdminPreRegistrationController {
 | **컬럼 추가** | "pre_registrations 테이블에 `referral_code` 컬럼을 추가하는 새 버전 마이그레이션 파일을 만들어줘." |
 | **컬럼 삭제** | "SQLite에서 컬럼 삭제는 직접 안 되니까 임시 테이블 방식으로 `business_category` 컬럼을 삭제하는 마이그레이션을 작성해줘." |
 | **에러 수정** | "[에러 로그] 이 에러가 났어. SQLite 문법에 맞게 마이그레이션 파일을 수정해줘." |
-| **데이터 확인** | "@bizplan.db 파일에서 등록된 사용자 중 pro 요금제를 선택한 사람을 조회해줘." |
+| **데이터 확인** | "@makersround.db 파일에서 등록된 사용자 중 pro 요금제를 선택한 사람을 조회해줘." |
 
 ---
 

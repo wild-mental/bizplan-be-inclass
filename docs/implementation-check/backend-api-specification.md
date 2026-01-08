@@ -689,7 +689,7 @@ graph TD
 ### 데이터베이스 설정
 
 **SQLite 사용** (`application.properties`):
-- 데이터베이스 파일: `./data/bizplan.db`
+- 데이터베이스 파일: `./data/makersround.db`
 - Dialect: `org.hibernate.community.dialect.SQLiteDialect`
 - Hibernate DDL: `none` (Flyway가 스키마 관리)
 - Connection Pool: HikariCP (최대 1개, SQLite 단일 쓰기 락 특성)
