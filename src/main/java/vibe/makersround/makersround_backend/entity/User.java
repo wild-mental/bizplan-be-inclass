@@ -126,6 +126,16 @@ public class User {
         this.passwordHash = passwordHash;
         this.updatedAt = LocalDateTime.now();
     }
+    
+    /**
+     * 소셜 계정 연동
+     */
+    public void linkSocialAccount(AuthProvider provider, String providerId) {
+        this.provider = provider;
+        this.providerId = providerId;
+        this.emailVerified = true; // 소셜 연동 시 이메일 인증됨
+        this.updatedAt = LocalDateTime.now();
+    }
 
     /**
      * 인증 제공자 Enum
