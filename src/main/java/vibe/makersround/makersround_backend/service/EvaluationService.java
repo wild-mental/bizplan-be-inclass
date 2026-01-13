@@ -11,13 +11,23 @@ import vibe.makersround.makersround_backend.entity.*;
 import vibe.makersround.makersround_backend.exception.ResourceNotFoundException;
 import vibe.makersround.makersround_backend.repository.*;
 
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.messages.SystemMessage;
+import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.beans.factory.annotation.Value;
+
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * AI 평가 서비스
  * 사업계획서 6대 영역 평가를 수행합니다.
+ * Gemini AI를 사용하여 실제 평가를 수행합니다.
  * 
  * @see PRE-SUB-FUNC-002.md Section 6 - AI 평가 API
  */
@@ -32,6 +42,10 @@ public class EvaluationService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
+    private final ChatModel chatModel;
+    
+    @Value("${spring.ai.google.genai.chat.options.model:gemini-2.5-flash-lite}")
+    private String geminiModelName;
 
     // 영역별 정보
     private static final Map<String, AreaInfo> AREA_INFO = Map.of(
@@ -53,8 +67,13 @@ public class EvaluationService {
     public EvaluationStatusResponse createEvaluation(EvaluationRequest request) {
         log.info("AI 평가 요청: projectId={}", request.getProjectId());
 
-        Project project = projectRepository.findById(UUID.fromString(request.getProjectId()))
-                .orElseThrow(() -> new ResourceNotFoundException("프로젝트를 찾을 수 없습니다: " + request.getProjectId()));
+        Project project;
+        if ("demo".equals(request.getProjectId())) {
+            project = getOrCreateDemoProject();
+        } else {
+            project = projectRepository.findById(UUID.fromString(request.getProjectId()))
+                    .orElseThrow(() -> new ResourceNotFoundException("프로젝트를 찾을 수 없습니다: " + request.getProjectId()));
+        }
 
         // 평가 엔티티 생성
         Evaluation evaluation = Evaluation.builder()
@@ -167,59 +186,40 @@ public class EvaluationService {
                 evaluation.getTotalScore() >= 70 ? "C" :
                 evaluation.getTotalScore() >= 60 ? "D" : "F";
 
-        // 강점/약점 생성 (데모에서는 일부 블러 처리)
-        List<EvaluationResultResponse.FeedbackItem> strengths = List.of(
-                EvaluationResultResponse.FeedbackItem.builder()
-                        .area("ability")
-                        .title("팀 구성 우수")
-                        .description("전문 경력을 갖춘 팀 구성이 돋보입니다.")
-                        .isBlurred(false)
-                        .build(),
-                EvaluationResultResponse.FeedbackItem.builder()
-                        .area("market")
-                        .title("명확한 타깃 시장")
-                        .description("명확한 타깃 설정이 좋습니다.")
-                        .isBlurred(false)
-                        .build(),
-                EvaluationResultResponse.FeedbackItem.builder()
-                        .area("technology")
-                        .title("기술 차별화")
-                        .description("기존 서비스와의 차별화 포인트입니다.")
+        List<EvaluationResultResponse.FeedbackItem> strengths = new ArrayList<>();
+        List<EvaluationResultResponse.FeedbackItem> weaknesses = new ArrayList<>();
+        List<EvaluationResultResponse.Recommendation> recommendations = new ArrayList<>();
+        
+        int recPriority = 1;
+        for (EvaluationScore score : scores) {
+            String areaCode = score.getAreaCode().name();
+            AreaInfo areaInfo = AREA_INFO.get(areaCode);
+            String areaLabel = areaInfo != null ? areaInfo.label() : areaCode;
+            
+            if (score.getScore() >= 75) {
+                strengths.add(EvaluationResultResponse.FeedbackItem.builder()
+                        .area(areaCode)
+                        .title(areaLabel + " 영역 우수")
+                        .description(score.getFeedback() != null ? score.getFeedback() : "해당 영역이 우수합니다.")
+                        .isBlurred(isDemo && strengths.size() >= 2)
+                        .build());
+            } else {
+                weaknesses.add(EvaluationResultResponse.FeedbackItem.builder()
+                        .area(areaCode)
+                        .title(areaLabel + " 영역 보완 필요")
+                        .description(score.getFeedback() != null ? score.getFeedback() : "해당 영역의 보완이 필요합니다.")
+                        .isBlurred(isDemo && weaknesses.size() >= 1)
+                        .build());
+                
+                recommendations.add(EvaluationResultResponse.Recommendation.builder()
+                        .priority(recPriority++)
+                        .area(areaCode)
+                        .title(areaLabel + " 개선 권장")
+                        .description(score.getFeedback() != null ? score.getFeedback() : "해당 영역의 개선을 권장합니다.")
                         .isBlurred(isDemo)
-                        .build()
-        );
-
-        List<EvaluationResultResponse.FeedbackItem> weaknesses = List.of(
-                EvaluationResultResponse.FeedbackItem.builder()
-                        .area("economics")
-                        .title("수익 모델 구체화 필요")
-                        .description("구체적인 가격 정책이 필요합니다.")
-                        .isBlurred(false)
-                        .build(),
-                EvaluationResultResponse.FeedbackItem.builder()
-                        .area("realization")
-                        .title("개발 일정 검토 필요")
-                        .description("개발 기간이 다소 낙관적으로 설정되어 있습니다.")
-                        .isBlurred(isDemo)
-                        .build()
-        );
-
-        List<EvaluationResultResponse.Recommendation> recommendations = List.of(
-                EvaluationResultResponse.Recommendation.builder()
-                        .priority(1)
-                        .area("economics")
-                        .title("수익 모델 보완")
-                        .description("B2B 연계 모델을 추가하면 수익 안정성이 높아집니다.")
-                        .isBlurred(isDemo)
-                        .build(),
-                EvaluationResultResponse.Recommendation.builder()
-                        .priority(2)
-                        .area("realization")
-                        .title("MVP 범위 조정")
-                        .description("핵심 기능 3개로 MVP 범위를 좁히고 단계적 확장을 권장합니다.")
-                        .isBlurred(isDemo)
-                        .build()
-        );
+                        .build());
+            }
+        }
 
         return EvaluationResultResponse.builder()
                 .evaluationId(evaluationId.toString())
@@ -243,29 +243,26 @@ public class EvaluationService {
                 .build();
     }
 
-    /**
-     * 평가 처리 (비동기)
-     */
     @Transactional
     protected void processEvaluation(UUID evaluationId) {
         try {
-            Thread.sleep(2000); // 시뮬레이션 지연
-
             Evaluation evaluation = evaluationRepository.findById(evaluationId).orElseThrow();
-            Random random = new Random();
+            String inputDataJson = evaluation.getInputData();
 
             int totalScore = 0;
             for (EvaluationScore.AreaCode area : EvaluationScore.AreaCode.values()) {
-                int score = 65 + random.nextInt(25); // 65-90 점
-                totalScore += score;
+                AreaEvaluationResult areaResult = evaluateAreaWithGemini(area, inputDataJson);
+                totalScore += areaResult.score();
 
                 EvaluationScore evalScore = EvaluationScore.builder()
                         .evaluation(evaluation)
                         .areaCode(area)
-                        .score(score)
-                        .feedback("자동 생성된 피드백입니다.")
+                        .score(areaResult.score())
+                        .feedback(areaResult.feedback())
                         .build();
                 evaluationScoreRepository.save(evalScore);
+                
+                log.debug("영역 평가 완료: area={}, score={}", area.name(), areaResult.score());
             }
 
             int avgScore = totalScore / 6;
@@ -280,8 +277,132 @@ public class EvaluationService {
             log.info("AI 평가 완료: evaluationId={}, score={}", evaluationId, avgScore);
         } catch (Exception e) {
             log.error("AI 평가 실패: evaluationId={}", evaluationId, e);
+            handleEvaluationFailure(evaluationId);
         }
     }
+    
+    private AreaEvaluationResult evaluateAreaWithGemini(EvaluationScore.AreaCode area, String inputDataJson) {
+        String systemPrompt = buildEvaluationSystemPrompt();
+        String userPrompt = buildAreaEvaluationPrompt(area, inputDataJson);
+        
+        Prompt prompt = new Prompt(List.of(
+                new SystemMessage(systemPrompt),
+                new UserMessage(userPrompt)
+        ));
+        
+        try {
+            ChatResponse response = chatModel.call(prompt);
+            String content = response.getResult().getOutput().getText();
+            return parseEvaluationResponse(content, area);
+        } catch (Exception e) {
+            log.warn("Gemini 평가 호출 실패 (area={}): {}", area.name(), e.getMessage());
+            return new AreaEvaluationResult(70, "평가 중 오류가 발생했습니다. 기본 점수가 부여되었습니다.");
+        }
+    }
+    
+    private String buildEvaluationSystemPrompt() {
+        return """
+            당신은 정부 지원사업 평가 전문가입니다. 사업계획서의 특정 영역을 0-100점 사이로 평가합니다.
+            
+            평가 기준:
+            - 90-100점: 매우 우수 (정부 지원사업 합격 가능성 높음)
+            - 80-89점: 우수 (보완 시 합격 가능성 높음)
+            - 70-79점: 보통 (추가 보완 필요)
+            - 60-69점: 미흡 (상당한 개선 필요)
+            - 60점 미만: 매우 미흡
+            
+            반드시 다음 JSON 형식으로만 응답하세요:
+            {"score": 숫자, "feedback": "피드백 내용"}
+            """;
+    }
+    
+    private String buildAreaEvaluationPrompt(EvaluationScore.AreaCode area, String inputDataJson) {
+        AreaInfo areaInfo = AREA_INFO.get(area.name());
+        String areaName = areaInfo != null ? areaInfo.label() : area.name();
+        
+        String criteriaDescription = switch (area) {
+            case market -> "시장 규모, 성장성, 타깃 고객 명확성, 경쟁 환경 분석";
+            case ability -> "팀 구성, 관련 경력, 전문성, 실행 역량";
+            case technology -> "기술 차별성, 특허/IP, 기술 완성도, 진입 장벽";
+            case economics -> "수익 모델, 가격 전략, 투자 대비 수익성, BEP 달성 계획";
+            case realization -> "개발 일정, 마일스톤, 리스크 관리, 자원 확보 계획";
+            case social -> "사회적 가치, 일자리 창출, 환경/지역사회 기여";
+        };
+        
+        return """
+            다음 사업계획서 데이터를 기반으로 [%s] 영역을 평가하세요.
+            
+            평가 기준: %s
+            
+            === 사업계획서 데이터 ===
+            %s
+            === 데이터 끝 ===
+            
+            위 데이터에서 [%s] 관련 내용을 분석하고, 점수와 구체적인 피드백을 JSON 형식으로 제공하세요.
+            """.formatted(areaName, criteriaDescription, inputDataJson, areaName);
+    }
+    
+    private AreaEvaluationResult parseEvaluationResponse(String content, EvaluationScore.AreaCode area) {
+        try {
+            Pattern scorePattern = Pattern.compile("\"score\"\\s*:\\s*(\\d+)");
+            Pattern feedbackPattern = Pattern.compile("\"feedback\"\\s*:\\s*\"([^\"]+)\"");
+            
+            Matcher scoreMatcher = scorePattern.matcher(content);
+            Matcher feedbackMatcher = feedbackPattern.matcher(content);
+            
+            int score = 70;
+            String feedback = "평가가 완료되었습니다.";
+            
+            if (scoreMatcher.find()) {
+                score = Math.min(100, Math.max(0, Integer.parseInt(scoreMatcher.group(1))));
+            }
+            if (feedbackMatcher.find()) {
+                feedback = feedbackMatcher.group(1);
+            }
+            
+            return new AreaEvaluationResult(score, feedback);
+        } catch (Exception e) {
+            log.warn("평가 응답 파싱 실패 (area={}): {}", area.name(), e.getMessage());
+            return new AreaEvaluationResult(70, "평가 응답 분석 중 오류가 발생했습니다.");
+        }
+    }
+    
+    private Project getOrCreateDemoProject() {
+        List<Project> demoProjects = projectRepository.findByTemplateCode("demo");
+        if (!demoProjects.isEmpty()) {
+            return demoProjects.get(0);
+        }
+        
+        // Create demo user if needed
+        User demoUser = userRepository.findByEmail("demo@makersround.com")
+                .orElseGet(() -> userRepository.save(User.builder()
+                        .email("demo@makersround.com")
+                        .name("Demo User")
+                        .passwordHash("demo")
+                        .provider(User.AuthProvider.local)
+                        .build()));
+                        
+        return projectRepository.save(Project.builder()
+                .user(demoUser)
+                .name("Demo Project")
+                .templateCode("demo")
+                .status(Project.ProjectStatus.in_progress)
+                .build());
+    }
+    
+    private void handleEvaluationFailure(UUID evaluationId) {
+        try {
+            Evaluation evaluation = evaluationRepository.findById(evaluationId).orElse(null);
+            if (evaluation != null) {
+                evaluation.setStatus(Evaluation.EvaluationStatus.failed);
+                evaluationRepository.save(evaluation);
+            }
+        } catch (Exception ex) {
+            log.error("평가 실패 상태 업데이트 실패: evaluationId={}", evaluationId, ex);
+        }
+    }
+    
+    private record AreaEvaluationResult(int score, String feedback) {}
 
     private List<EvaluationStatusResponse.StageInfo> getInitialStages() {
         return List.of(
