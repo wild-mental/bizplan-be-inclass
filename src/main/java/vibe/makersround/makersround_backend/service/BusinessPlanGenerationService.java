@@ -22,6 +22,7 @@ import vibe.makersround.makersround_backend.dto.businessplan.BusinessPlanGenerat
 import vibe.makersround.makersround_backend.dto.businessplan.BusinessPlanGenerateResponse.GenerationMetadata;
 import vibe.makersround.makersround_backend.entity.BusinessPlan;
 import vibe.makersround.makersround_backend.exception.GeminiGenerationException;
+import vibe.makersround.makersround_backend.exception.ResourceNotFoundException;
 import vibe.makersround.makersround_backend.repository.BusinessPlanGenerationRepository;
 import vibe.makersround.makersround_backend.repository.BusinessPlanRepository;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -208,6 +209,69 @@ public class BusinessPlanGenerationService {
     }
 
     /**
+     * ID로 사업계획서를 조회합니다.
+     * 
+     * @param businessPlanId 사업계획서 ID
+     * @return BusinessPlanGenerateResponse
+     * @throws ResourceNotFoundException 사업계획서를 찾을 수 없는 경우
+     */
+    public BusinessPlanGenerateResponse getBusinessPlan(String businessPlanId) {
+        BusinessPlan businessPlan = businessPlanRepository.findByBusinessPlanId(businessPlanId)
+                .orElseThrow(() -> new ResourceNotFoundException("사업계획서를 찾을 수 없습니다: " + businessPlanId));
+        
+        try {
+            // JSON 역직렬화
+            List<BusinessPlanSection> sections = objectMapper.readValue(
+                    businessPlan.getResponseSectionsJson(), 
+                    new com.fasterxml.jackson.core.type.TypeReference<List<BusinessPlanSection>>() {});
+            
+            // Gemini 메타데이터 역직렬화 (있는 경우)
+            GenerationMetadata metadata = null;
+            if (businessPlan.getGeminiMetadataJson() != null) {
+                GeminiMetadataJson geminiMeta = objectMapper.readValue(
+                        businessPlan.getGeminiMetadataJson(), 
+                        GeminiMetadataJson.class);
+                
+                metadata = GenerationMetadata.builder()
+                        .totalSections(geminiMeta.getTotalSections())
+                        .wordCount(geminiMeta.getWordCount())
+                        .characterCount(geminiMeta.getCharacterCount())
+                        .generationTimeMs(geminiMeta.getGenerationTimeMs())
+                        .modelUsed(geminiMeta.getModelUsed())
+                        .promptTokens(geminiMeta.getPromptTokens())
+                        .completionTokens(geminiMeta.getCompletionTokens())
+                        .totalTokens(geminiMeta.getTotalTokens())
+                        .build();
+            }
+            
+            // Export 옵션 재구성
+            ExportOptions exportOptions = ExportOptions.builder()
+                    .availableFormats(List.of("pdf", "hwp", "docx", "markdown"))
+                    .downloadUrls(Map.of(
+                            "pdf", API_BASE_PATH + businessPlanId + "/export/pdf",
+                            "hwp", API_BASE_PATH + businessPlanId + "/export/hwp",
+                            "docx", API_BASE_PATH + businessPlanId + "/export/docx",
+                            "markdown", API_BASE_PATH + businessPlanId + "/export/markdown"
+                    ))
+                    .build();
+            
+            return BusinessPlanGenerateResponse.builder()
+                    .businessPlanId(businessPlan.getBusinessPlanId())
+                    .projectId(businessPlan.getProjectId() != null ? businessPlan.getProjectId().toString() : null)
+                    .generatedAt(businessPlan.getCreatedAt().toString())
+                    .templateType(businessPlan.getTemplateType())
+                    .sections(sections)
+                    .metadata(metadata)
+                    .exportOptions(exportOptions)
+                    .build();
+                    
+        } catch (JsonProcessingException e) {
+            log.error("사업계획서 데이터 조회 중 JSON 역직렬화 실패: businessPlanId={}", businessPlanId, e);
+            throw new RuntimeException("사업계획서 데이터 손상: JSON 파싱 실패", e);
+        }
+    }
+
+    /**
      * Gemini에 전달할 시스템 프롬프트를 구성합니다.
      * 
      * @return 시스템 프롬프트 문자열 (클래스 상수에서 반환)
@@ -228,7 +292,7 @@ public class BusinessPlanGenerationService {
                 
                 요구사항:
                 - 입력된 6단계 구조(문제 인식 → 시장 분석 → 실현 가능성/비즈니스 모델 → 사업화 전략 → 팀 역량 → 재무 계획)를 크게 벗어나지 않는 선에서 재구성합니다.
-                - 각 단계는 마크다운 섹션 제목(예: `## 1. 사업 개요`)과 하위 소제목으로 구성합니다.
+                - 각 단계는 마크다운 섹션 제목(예: )과 하위 소제목으로 구성합니다.
                 - 문장은 자연스럽고 설득력 있게 다듬고, 불명확한 부분은 합리적인 수준에서 보완 설명을 추가합니다.
                 - 숫자, 지표, 비율 등은 가능하면 유지하되, 해석과 의미를 더 명확히 설명합니다.
                 - FE는 이 마크다운을 그대로 렌더링하여 사용자에게 보여줍니다.
@@ -281,7 +345,7 @@ public class BusinessPlanGenerationService {
         // Pattern.MULTILINE을 사용하여 각 줄의 시작을 인식
         // (?=^## )는 positive lookahead로, ## 뒤에 공백이 오는 경우를 찾아 분할
         // 하지만 split은 첫 번째 부분을 빈 문자열로 만들 수 있으므로, 직접 파싱하는 방식 사용
-        Pattern h2Pattern = Pattern.compile("^##\\s+(.+)$", Pattern.MULTILINE);
+        Pattern h2Pattern = Pattern.compile("^##\s+(.+)$", Pattern.MULTILINE);
         java.util.regex.Matcher matcher = h2Pattern.matcher(generatedContent);
 
         List<BusinessPlanSection> sections = new java.util.ArrayList<>();
@@ -356,7 +420,7 @@ public class BusinessPlanGenerationService {
         }
 
         // 첫 번째 줄에서 ## 제목 형식 추출
-        String[] lines = part.split("\\n", 2);
+        String[] lines = part.split("\n", 2);
         if (lines.length > 0) {
             String firstLine = lines[0].trim();
             // ## 로 시작하는 경우 ## 제거하고 제목 반환
@@ -411,7 +475,7 @@ public class BusinessPlanGenerationService {
 
         int characterCount = fullText != null ? fullText.length() : 0;
         int wordCount = fullText != null && !fullText.isBlank()
-                ? fullText.trim().split("\\s+").length
+                ? fullText.trim().split("\s+").length
                 : 0;
 
         return GenerationMetadata.builder()
@@ -606,4 +670,3 @@ public class BusinessPlanGenerationService {
         private int totalSections;
     }
 }
-

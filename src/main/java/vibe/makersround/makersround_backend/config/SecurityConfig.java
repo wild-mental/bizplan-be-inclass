@@ -120,6 +120,8 @@ public class SecurityConfig {
                 "Authorization", 
                 "Content-Type", 
                 "X-Requested-With",
+                "X-Request-ID",
+                "x-request-id",
                 "Accept",
                 "Origin",
                 "Access-Control-Request-Method",

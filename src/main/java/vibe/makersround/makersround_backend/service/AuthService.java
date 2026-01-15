@@ -38,6 +38,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final EmailService emailService;
+    private final SocialOAuthService socialOAuthService;
 
     // 요금제별 가격 정보
     private static final Map<String, Integer> PLAN_PRICES = Map.of(
@@ -254,33 +255,44 @@ public class AuthService {
     public SocialLoginResponse socialLogin(String provider, SocialLoginRequest request) {
         log.info("소셜 로그인 시도: provider={}", provider);
 
-        // TODO: 실제 소셜 로그인 구현 (OAuth2 토큰 검증)
-        // 현재는 모의 구현으로 처리
+        SocialOAuthService.SocialUserInfo socialUser = socialOAuthService.validateToken(provider, request.getAccessToken());
 
         User.AuthProvider authProvider = User.AuthProvider.valueOf(provider);
+        String providerId = socialUser.id();
+        String email = socialUser.email();
+        String name = socialUser.name();
+
+        Optional<User> existingUser = userRepository.findByProviderAndProviderId(authProvider, providerId);
         
-        // 가상의 소셜 사용자 정보 (실제로는 각 제공자 API 호출 필요)
-        String mockEmail = "social_" + System.currentTimeMillis() + "@" + provider + ".com";
-        String mockProviderId = "social_id_" + System.currentTimeMillis();
-        String mockName = provider.substring(0, 1).toUpperCase() + provider.substring(1) + " User";
+        if (existingUser.isEmpty()) {
+             Optional<User> userByEmail = userRepository.findByEmail(email);
+             if (userByEmail.isPresent()) {
+                 User existing = userByEmail.get();
+                 if (existing.getProvider() == User.AuthProvider.local) {
+                     log.info("기존 로컬 계정 소셜 연동: email={}", email);
+                     existing.linkSocialAccount(authProvider, providerId);
+                     userRepository.save(existing);
+                     existingUser = Optional.of(existing);
+                 } else {
+                     existingUser = Optional.of(existing);
+                 }
+             }
+        }
 
-        // 기존 사용자 조회 또는 신규 생성
-        Optional<User> existingUser = userRepository.findByProviderAndProviderId(authProvider, mockProviderId);
         boolean isNewUser = existingUser.isEmpty();
-
         User user;
+
         if (isNewUser) {
             user = User.builder()
-                    .email(mockEmail)
-                    .name(mockName)
+                    .email(email)
+                    .name(name)
                     .provider(authProvider)
-                    .providerId(mockProviderId)
+                    .providerId(providerId)
                     .marketingConsent(request.getMarketingConsent())
-                    .emailVerified(true) // 소셜 로그인은 이메일 인증된 것으로 처리
+                    .emailVerified(true)
                     .build();
             user = userRepository.save(user);
 
-            // 구독 생성
             String planKey = PLAN_KEYS.getOrDefault(request.getPlan(), "basic");
             int originalPrice = PLAN_PRICES.getOrDefault(planKey, 0);
 
@@ -297,11 +309,13 @@ public class AuthService {
                     .status(Subscription.SubscriptionStatus.active)
                     .build();
             subscriptionRepository.save(subscription);
+            
+            log.info("신규 소셜 회원 가입 완료: email={}, provider={}", email, provider);
         } else {
             user = existingUser.get();
+            log.info("기존 소셜 회원 로그인: email={}", email);
         }
 
-        // 토큰 생성
         String accessToken = jwtTokenProvider.createAccessToken(user.getId(), user.getEmail());
         String refreshToken = createAndSaveRefreshToken(user);
 
