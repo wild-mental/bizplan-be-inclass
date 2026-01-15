@@ -72,6 +72,42 @@ ENCRYPTION_KEY=your-aes256-key-exactly-32chars
 
 ---
 
+## 🗂️ SQLite + Flyway + HikariCP 설정 가이드 (테스트/로컬)
+> Flyway와 JPA(Hibernate)가 동시에 커넥션을 요구하는 초기화/테스트 시점에 커넥션 부족으로 타임아웃이 나는 것을 방지하기 위한 가이드입니다.
+
+- 문제 배경  
+  - SQLite는 단일 쓰기 락 특성이 있어 동시 쓰기 성능이 제한적이지만, 부팅/테스트 시 Flyway와 JPA가 동시에 커넥션을 요구하면 풀 크기 부족으로 `Connection is not available`, `FlywaySqlUnableToConnectToDbException`, `Schema-validation: missing table ...` 등이 발생할 수 있습니다.
+
+- 권장 Hikari 설정 (SQLite 테스트/로컬)  
+  - `spring.datasource.hikari.maximum-pool-size=5` (최소 2 이상 필요. Flyway + JPA 초기화 동시 커넥션 수요 대응)  
+  - `spring.datasource.hikari.minimum-idle=1` (SQLite에서는 idle 커넥션을 많이 두어도 성능 이점이 크지 않음)
+
+- 초기화 순서 및 JPA 설정  
+  - 스키마 관리는 Flyway 전담: `spring.jpa.hibernate.ddl-auto=validate` 또는 `none` 권장  
+  - `spring.jpa.defer-datasource-initialization=true`로 초기 커넥션 경쟁 완화
+
+- 테스트 프로필 외부 의존성 더미 설정 (예: JavaMailSender)  
+  - `spring.mail.host=localhost`  
+  - `spring.mail.port=2525`  
+  - `spring.mail.properties.mail.smtp.auth=false`  
+  - `spring.mail.properties.mail.smtp.starttls.enable=false`  
+  - 목적: 메일 빈 부재로 인한 컨텍스트 로딩 실패 방지
+
+- 파일 기반 SQLite 유의사항  
+  - 오래된 테스트 DB 파일(`./data/makersround-test.db`)이 남아 있으면 스키마 불일치로 검증 실패 가능 → 필요 시 삭제 후 마이그레이션 재적용  
+  - 병렬로 여러 JVM/프로세스가 동일 DB 파일을 잡지 않도록 경로를 격리하거나 in-memory(`:memory:`) 사용을 검토  
+  - 단일 쓰기 락 특성상 동시 쓰기 트래픽은 직렬화됨. 풀 크기는 “초기화 시 커넥션 고갈 방지” 목적에 맞춰 설정
+
+- 체크리스트  
+  1) `maximum-pool-size >= 2` (권장 5), `minimum-idle = 1`  
+  2) DDL 자동 생성 비활성(`validate`/`none`) + Flyway로 스키마 관리  
+  3) `spring.jpa.defer-datasource-initialization=true`  
+  4) 테스트 프로필에 더미 SMTP 설정 포함  
+  5) stale DB 파일 삭제 후 마이그레이션  
+  6) 병렬 실행 시 DB 파일 경로 격리 또는 in-memory 전환
+
+---
+
 ## 🚀 환경별 설정
 
 ### Local (개발)
