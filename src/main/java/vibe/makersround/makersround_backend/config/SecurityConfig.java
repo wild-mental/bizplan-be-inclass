@@ -18,6 +18,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import vibe.makersround.makersround_backend.security.JwtAuthenticationFilter;
+import org.springframework.core.env.Environment;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,9 +36,13 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final LoggingFilter loggingFilter;
+    private final Environment environment;
 
     @Value("${app.cors.allowed-origins:http://localhost:3000,http://localhost:5173}")
     private String allowedOrigins;
+
+    @Value("${app.cors.allowed-origin-patterns:http://localhost:*,http://127.0.0.1:*,http://0.0.0.0:*}")
+    private String allowedOriginPatterns;
 
     /**
      * 보안 필터 체인 설정
@@ -107,10 +112,23 @@ public class SecurityConfig {
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .toList();
+
+        // 패턴 기반 Origin (로컬에서 포트 와일드카드 허용)
+        List<String> originPatterns = Stream.of(allowedOriginPatterns.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
+
+        boolean isLocalProfile = Arrays.stream(environment.getActiveProfiles())
+                .anyMatch(p -> p.equalsIgnoreCase("local"));
         
-        // setAllowCredentials(true)와 함께 사용할 때는 setAllowedOrigins() 사용
-        // 와일드카드(*)는 사용할 수 없으므로 정확한 origin을 지정해야 함
-        configuration.setAllowedOrigins(origins);
+        if (isLocalProfile && !originPatterns.isEmpty()) {
+            // 로컬 프로필: 포트 와일드카드 허용
+            configuration.setAllowedOriginPatterns(originPatterns);
+        } else {
+            // 운영/기타 프로필: 명시적 Origin만 허용
+            configuration.setAllowedOrigins(origins);
+        }
         
         // 허용할 HTTP 메서드 (OPTIONS는 preflight 요청에 필요)
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
