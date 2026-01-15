@@ -1,4 +1,4 @@
-# BizPlan 백엔드 - 예비 창업자를 위한 AI 코파일럿
+# MakersRound 백엔드 - 예비 창업자를 위한 AI 코파일럿
 
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.java.net/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
@@ -8,7 +8,7 @@
 
 ## 📖 개요
 
-**BizPlan Backend**는 복잡한 사업계획서 작성을 데이터 기반의 의사결정 여정으로 바꾸어주는 지능형 백엔드 시스템입니다. 이 프로젝트는 예비 창업자가 정부지원금, 대출 등 다양한 자금 조달 관문을 빠르게 통과하고 본질적인 성장에 집중할 수 있도록 돕는 AI 파트너입니다.
+**MakersRound Backend**는 복잡한 사업계획서 작성을 데이터 기반의 의사결정 여정으로 바꾸어주는 지능형 백엔드 시스템입니다. 이 프로젝트는 예비 창업자가 정부지원금, 대출 등 다양한 자금 조달 관문을 빠르게 통과하고 본질적인 성장에 집중할 수 있도록 돕는 AI 파트너입니다.
 
 ### 비전
 
@@ -57,18 +57,16 @@
                                          │                      │
                                          └──────────────────────┘
                                                     
-┌─────────────────┐      REST API       ┌──────────────────────┐
-│  Spring Boot    │◄────────────────────►│  Python FastAPI      │
-│  Core           │                      │  AI/문서 엔진        │
-│                 │                      │  (LangChain)         │
-└─────────────────┘                      └──────────────────────┘
+┌─────────────────┐
+│  Spring Boot    │──────► Google Gemini API (외부)
+│  Core           │
+└─────────────────┘
 ```
 
 ### 설계 원칙
 
-- **마이크로서비스 준비**: 코어 API와 AI 엔진은 REST 통신
 - **관심사 분리**: 
-  - AI 초안(LLM 기반, 창의적)
+  - AI 초안(LLM 기반, 창의적) - Google Gemini API 직접 호출
   - 재무 엔진(룰 기반, 결정적 - 환각 없음)
 - **보안 우선**:
   - 모든 전송 구간 TLS 1.2+
@@ -87,13 +85,10 @@
 - **ORM**: Spring Data JPA (Hibernate)
 - **테스트**: JUnit 5, Mockito, AssertJ
 
-### AI & 문서 엔진 (Python)
+### AI & 문서 생성
 
-- **언어**: Python 3.10+
-- **프레임워크**: FastAPI
-- **AI 오케스트레이션**: LangChain
-- **LLM 공급자**: Google Gemini (내부 게이트웨이 사용)
-- **테스트**: Pytest
+- **LLM 공급자**: Google Gemini API (외부 API 직접 호출)
+- **통합 방식**: Spring AI를 통한 Gemini API 직접 호출
 
 ### 인프라 & 도구
 
@@ -107,7 +102,6 @@
 
 - Java 21 이상
 - Gradle 8.x 이상
-- Python 3.10+ (AI 엔진용, 선택사항)
 - SQLite 3.x (기본 포함, 로컬/운영/테스트 모두 사용)
 - Docker & Docker Compose (선택사항)
 
@@ -117,7 +111,7 @@
 
 ```bash
 git clone <repository-url>
-cd bizplan-be-inclass
+cd makersround-backend
 ```
 
 2. **환경변수 설정**
@@ -135,15 +129,14 @@ vim .env  # 또는 원하는 에디터 사용
 ```bash
 # ============ DB 설정 ============
 # SQLite는 파일 기반이므로 별도의 호스트/포트/사용자명/비밀번호 불필요
-# 데이터베이스 파일은 ./data/bizplan.db에 자동 생성됨
+# 데이터베이스 파일은 ./data/makersround.db에 자동 생성됨
 
 # ============ Spring Boot 설정 ============
 SPRING_PROFILES_ACTIVE=local        # local | dev | prod
 SERVER_PORT=8080
 
-# ============ AI 엔진 설정 ============
+# ============ Google Gemini API 설정 ============
 GEMINI_API_KEY=your_gemini_api_key  # ⚠️ 필수
-AI_ENGINE_URL=http://localhost:8001
 
 # ============ 보안 설정 ============
 JWT_SECRET=your_jwt_secret_min_32_chars      # ⚠️ 필수 (32자 이상)
@@ -175,7 +168,7 @@ docker-compose up -d
 ## 📁 프로젝트 구조
 
 ```
-bizplan-be-inclass/
+makersround-backend/
 ├── .cursor/              # Cursor IDE 규칙 및 설정
 │   └── rules/           # 개발 가이드 및 표준
 ├── docs/                # 프로젝트 문서
@@ -186,7 +179,7 @@ bizplan-be-inclass/
 ├── src/
 │   ├── main/
 │   │   ├── java/
-│   │   │   └── vibe/bizplan/bizplan_be_inclass/
+│   │   │   └── vibe/makersround/makersround_be_inclass/
 │   │   │       ├── controller/      # REST API 컨트롤러
 │   │   │       ├── service/         # 비즈니스 로직
 │   │   │       ├── repository/      # 데이터 접근 레이어
@@ -385,21 +378,21 @@ export GEMINI_API_KEY="your-api-key"
 
 ### SQLite 데이터베이스 파일 위치
 
-로컬 개발 환경에서는 SQLite 데이터베이스 파일(`./data/bizplan.db`)을 직접 확인할 수 있습니다.
+로컬 개발 환경에서는 SQLite 데이터베이스 파일(`./data/makersround.db`)을 직접 확인할 수 있습니다.
 
 #### 1. 데이터베이스 파일 위치
 
 ```
-bizplan-be-inclass/
+makersround-backend/
 └── data/
-    └── bizplan.db    # SQLite 데이터베이스 파일
+    └── makersround.db    # SQLite 데이터베이스 파일
 ```
 
 #### 2. SQLite CLI로 접속
 
 터미널에서 다음 명령어로 접속:
 ```bash
-sqlite3 ./data/bizplan.db
+sqlite3 ./data/makersround.db
 ```
 
 #### 3. SQLite GUI 도구 사용 (권장)
@@ -504,7 +497,7 @@ SHOW INDEX FROM business_plans;
 ### 유의 사항
 
 1. **데이터 지속성**: SQLite 파일 기반이므로 애플리케이션 재기동 후에도 데이터가 유지됩니다
-2. **백업**: `./data/bizplan.db` 파일을 정기적으로 백업하는 것을 권장합니다
+2. **백업**: `./data/makersround.db` 파일을 정기적으로 백업하는 것을 권장합니다
 3. **동시 접근**: SQLite는 단일 쓰기 락을 사용하므로 동시 쓰기 작업이 제한될 수 있습니다
 
 ### 참고 문서
@@ -643,15 +636,12 @@ CREATE TABLE business_plans (
 #### 파일 구조 예시
 
 ```
-bizplan-be-inclass/
+makersround-backend/
 ├── .env.example                    # ✅ Git 포함(템플릿)
 ├── .env                            # ❌ Git 제외(실제값)
 ├── src/main/resources/
 │   ├── application.properties      # ✅ 환경변수 참조
 │   └── application-local.properties # ❌ Git 제외
-└── ai-engine/
-    ├── .env.example                # ✅ Git 포함
-    └── .env                        # ❌ Git 제외
 ```
 
 #### 필수 환경변수
@@ -935,7 +925,7 @@ curl http://localhost:8080/actuator/health
 open http://localhost:8080/swagger-ui.html
 
 # DB 확인
-mysql -u root -p -e "SELECT 1" bizplan
+mysql -u root -p -e "SELECT 1" makersround
 
 # Gemini API 헬스 및 오류
 tail -n 10 logs/gemini-usage.log
@@ -948,7 +938,7 @@ grep -i "error\|exception\|failed" logs/gemini-usage.log
 ```bash
 find logs/ -name "gemini-usage.*.log" -mtime +30 -exec gzip {} \;
 ```
-- **DB**: SQLite 파일(`./data/bizplan.db`) 정기 백업 권장, Flyway 마이그레이션으로 스키마 관리
+- **DB**: SQLite 파일(`./data/makersround.db`) 정기 백업 권장, Flyway 마이그레이션으로 스키마 관리
 - **설정**: `.env` 파일은 Git 제외, `.env.example`은 템플릿 관리
 
 ## 🐛 문제 해결
@@ -964,10 +954,10 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 21)
 **DB 연결 오류**
 ```bash
 # SQLite 데이터베이스 파일 확인
-ls -la ./data/bizplan.db
+ls -la ./data/makersround.db
 
 # SQLite 파일 권한 확인 및 수정 (필요시)
-chmod 644 ./data/bizplan.db
+chmod 644 ./data/makersround.db
 
 # data 디렉토리가 없는 경우 생성
 mkdir -p ./data

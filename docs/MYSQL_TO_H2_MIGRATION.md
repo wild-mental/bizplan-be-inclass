@@ -65,7 +65,7 @@ spring.datasource.password=
 
 **변경 전 (MySQL)**:
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/bizplan?...
+spring.datasource.url=jdbc:mysql://localhost:3306/makersround?...
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.datasource.username=root
 spring.datasource.password=...
@@ -169,7 +169,7 @@ Unknown data type: "DATETIME"; SQL statement
 
 ### 4. H2 콘솔 설정 클래스 추가 (`H2ConsoleConfig.java`)
 
-**신규 파일 생성**: `src/main/java/vibe/bizplan/bizplan_be_inclass/config/H2ConsoleConfig.java`
+**신규 파일 생성**: `src/main/java/vibe/makersround/makersround_be_inclass/config/H2ConsoleConfig.java`
 
 ```java
 @Configuration
@@ -199,7 +199,7 @@ public class GlobalExceptionHandler {
 
 **변경 후**:
 ```java
-@RestControllerAdvice(basePackages = "vibe.bizplan.bizplan_be_inclass.controller")
+@RestControllerAdvice(basePackages = "vibe.makersround.makersround_be_inclass.controller")
 public class GlobalExceptionHandler {
 ```
 

@@ -66,7 +66,7 @@ spring.ai.google.genai.chat.options.top-p=0.9
 ### 3. 신규 클래스 생성
 
 #### 3.1 `BusinessPlanGenerationService` (Service Layer)
-- **위치**: `src/main/java/vibe/bizplan/bizplan_be_inclass/service/BusinessPlanGenerationService.java`
+- **위치**: `src/main/java/vibe/makersround/makersround_be_inclass/service/BusinessPlanGenerationService.java`
 - **역할**:
   - Spring AI `ChatModel`을 통한 Gemini API 호출
   - 시스템/유저 프롬프트 구성
@@ -81,7 +81,7 @@ spring.ai.google.genai.chat.options.top-p=0.9
 - `buildGenerationMetadata()`: 토큰/시간/텍스트 길이 메타데이터 구성
 
 #### 3.2 `BusinessPlanGenerationRepository` (Repository Layer)
-- **위치**: `src/main/java/vibe/bizplan/bizplan_be_inclass/repository/BusinessPlanGenerationRepository.java`
+- **위치**: `src/main/java/vibe/makersround/makersround_be_inclass/repository/BusinessPlanGenerationRepository.java`
 - **역할**:
   - Gemini 토큰 사용량을 로그로 기록
   - 향후 JPA 기반 DB 저장 확장 대비
@@ -516,7 +516,7 @@ log.info("[Gemini Usage Log] StartTime: {}, EndTime: {}, Duration: {}ms, Input: 
 ```
 2025-12-18 14:30:15.200  WARN  --- [http-nio-8080-exec-1] c.v.b.s.BusinessPlanGenerationService : BusinessPlanGenerateRequest 직렬화에 실패했습니다. 간단한 문자열로 대체합니다.
 com.fasterxml.jackson.core.JsonProcessingException: ...
-    at vibe.bizplan.bizplan_be_inclass.service.BusinessPlanGenerationService.safeSerialize(BusinessPlanGenerationService.java:193)
+    at vibe.makersround.makersround_be_inclass.service.BusinessPlanGenerationService.safeSerialize(BusinessPlanGenerationService.java:193)
     ...
 ```
 
@@ -668,9 +668,9 @@ grep "\[POC-FUNC-001\] 사업계획서 생성 요청 수신" application.log | c
 **프로덕션 환경 권장 설정** (`application.properties`):
 ```properties
 # 로깅 레벨 설정
-logging.level.vibe.bizplan.bizplan_be_inclass.controller=INFO
-logging.level.vibe.bizplan.bizplan_be_inclass.service=INFO
-logging.level.vibe.bizplan.bizplan_be_inclass.repository=INFO
+logging.level.vibe.makersround.makersround_be_inclass.controller=INFO
+logging.level.vibe.makersround.makersround_be_inclass.service=INFO
+logging.level.vibe.makersround.makersround_be_inclass.repository=INFO
 
 # Spring AI 내부 로그는 WARN으로 제한 (너무 상세함)
 logging.level.org.springframework.ai=WARN
@@ -679,7 +679,7 @@ logging.level.org.springframework.ai=WARN
 **개발 환경 설정**:
 ```properties
 # 디버깅을 위해 DEBUG 레벨 활성화 가능
-logging.level.vibe.bizplan.bizplan_be_inclass.service=DEBUG
+logging.level.vibe.makersround.makersround_be_inclass.service=DEBUG
 ```
 
 ### 파일 로깅 설정
@@ -783,7 +783,7 @@ export GEMINI_API_KEY="your-api-key"
 
 ### JacksonConfig 추가 (2025-12-19)
 
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/config/JacksonConfig.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/config/JacksonConfig.java`
 
 **목적**: `BusinessPlanGenerationService`에서 사용하는 `ObjectMapper` 빈을 명시적으로 제공
 

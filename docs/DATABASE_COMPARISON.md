@@ -90,7 +90,7 @@
 ⚠️ 웹 애플리케이션 병목 가능성
 ```
 
-**영향 분석 (BizPlan 프로젝트):**
+**영향 분석 (MakersRound 프로젝트):**
 - 사업계획서 생성은 Gemini API 호출이 병목 (3-5초)
 - DB 쓰기는 상대적으로 짧음
 - 동시 사용자 10명 이하: 문제 없음
@@ -120,7 +120,7 @@
 
 ---
 
-## 🎯 BizPlan 프로젝트 적합성 분석
+## 🎯 MakersRound 프로젝트 적합성 분석
 
 ### 현재 요구사항
 
@@ -182,7 +182,7 @@
 spring.profiles.active=${SPRING_PROFILES_ACTIVE:local}
 
 // 모든 환경에서 SQLite 사용
-spring.datasource.url=jdbc:sqlite:./data/bizplan.db
+spring.datasource.url=jdbc:sqlite:./data/makersround.db
 spring.datasource.driver-class-name=org.sqlite.JDBC
 ```
 
@@ -228,7 +228,7 @@ implementation 'org.flywaydb:flyway-core'
 
 ```properties
 # application-sqlite.properties
-spring.datasource.url=jdbc:sqlite:./data/bizplan.db
+spring.datasource.url=jdbc:sqlite:./data/makersround.db
 spring.datasource.driver-class-name=org.sqlite.JDBC
 spring.jpa.database-platform=org.hibernate.community.dialect.SQLiteDialect
 spring.jpa.hibernate.ddl-auto=update
@@ -237,9 +237,9 @@ spring.jpa.hibernate.ddl-auto=update
 ### 4. 파일 위치
 
 ```
-bizplan-be-inclass/
+makersround-backend/
 └── data/
-    └── bizplan.db    # SQLite 데이터베이스 파일
+    └── makersround.db    # SQLite 데이터베이스 파일
 ```
 
 > ⚠️ Docker 배포 시 볼륨 마운트 필요: `-v ./data:/app/data`
@@ -266,7 +266,7 @@ bizplan-be-inclass/
 ### 상용 서비스 단계
 > **MySQL 권장** - 확장성, 안정성, 도구 지원
 
-### BizPlan 프로젝트
+### MakersRound 프로젝트
 > **현재: SQLite 사용 중**
 > - SQLite 기반 구현 완료
 > - Flyway 마이그레이션 작성됨 (SQLite용)

@@ -1,31 +1,31 @@
-# [#008] 사업계획서 생성 LLM 엔진 및 프롬프트 구현
+# [#008] 사업계획서 생성 LLM 통합 및 프롬프트 구현
 
 ## Labels
-`epic:EPIC_1_PASS_THE_TEST`, `type:ai`, `type:backend`, `component:ai-engine`, `priority:Must`, `effort:L`
+`epic:EPIC_1_PASS_THE_TEST`, `type:ai`, `type:backend`, `component:backend`, `priority:Must`, `effort:L`
 
 ## Description
-Wizard 답변(JSON)을 입력받아, LangChain 및 LLM(Gemini)을 사용하여 섹션별 사업계획서 초안을 생성하는 Python API를 구현합니다.
+Wizard 답변(JSON)을 입력받아, Spring Boot 서비스에서 Google Gemini API를 직접 호출하여 섹션별 사업계획서 초안을 생성하는 기능을 구현합니다.
 
 ## Scope
-- FastAPI 서버 구축
+- Spring Boot 서비스에서 Gemini API 직접 호출
 - `POST /generate`: 문서 생성 엔드포인트
 - Prompt Template 관리 (섹션별 프롬프트)
-- LLM Gateway(Gemini) 연동
+- Spring AI를 통한 Gemini API 연동
 
 ### Out of Scope
 - 복잡한 RAG(검색 증강)
 - Fine-tuning
+- 별도 AI 엔진 서비스
 
 ## Requirements
-- **프롬프트 전략**: 'Role: 전문 컨설턴트', 'Context: 사용자 답변', 'Task: 섹션별 초안 작성' 구조의 프롬프트 체이닝
+- **프롬프트 전략**: 'Role: 전문 컨설턴트', 'Context: 사용자 답변', 'Task: 섹션별 초안 작성' 구조의 프롬프트 구성
 - **출력 포맷**: JSON 형태로 `{ "section_1": "...", "section_2": "..." }` 반환
-- **안정성**: LLM 오류 시 재시도 로직(LangChain 기능 활용)
+- **안정성**: LLM 오류 시 재시도 로직 구현
 
 ## Technical Stack
-- Python 3.10+
-- FastAPI
-- LangChain
-- Google Gemini API
+- Java 21 + Spring Boot 4.0.0
+- Spring AI
+- Google Gemini API (외부 API 직접 호출)
 
 ## API Specification
 
@@ -56,10 +56,10 @@ Wizard 답변(JSON)을 입력받아, LangChain 및 LLM(Gemini)을 사용하여 �
 ```
 
 ## Implementation Steps
-1. FastAPI 프로젝트 셋업
-2. LangChain Gemini ChatModel 연동
+1. Spring AI Gemini ChatModel 설정
+2. Gemini API 직접 호출 구현
 3. PromptTemplate 정의 (섹션별)
-4. LLMChain 구성 및 실행 로직
+4. Service 레이어에서 Gemini API 호출 로직 구현
 5. 에러 핸들링 및 재시도 로직
 
 ## Acceptance Criteria

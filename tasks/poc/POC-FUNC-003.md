@@ -83,7 +83,7 @@
 ### Phase 1: 데이터 모델 확장
 
 #### 1.1 BusinessPlanDocument 엔티티 생성
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/entity/BusinessPlanDocument.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/entity/BusinessPlanDocument.java`
 
 **엔티티 구조**:
 ```java
@@ -144,7 +144,7 @@ public class BusinessPlanDocument {
 ### Phase 2: Gemini API 클라이언트 구현
 
 #### 2.1 Gemini API 클라이언트
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/client/GeminiApiClient.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/client/GeminiApiClient.java`
 
 **기능**:
 - WebClient를 사용한 HTTP 클라이언트
@@ -163,7 +163,7 @@ public GeminiGenerateResponse generateContent(String prompt);
 ---
 
 #### 2.2 프롬프트 빌더
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/service/PromptBuilder.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/service/PromptBuilder.java`
 
 **기능**:
 - BusinessPlanData → 프롬프트 변환
@@ -188,8 +188,8 @@ public String buildBusinessPlanPrompt(
 ---
 
 #### 2.3 Gemini API 요청/응답 DTO
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/dto/gemini/GeminiGenerateRequest.java`  
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/dto/gemini/GeminiGenerateResponse.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/dto/gemini/GeminiGenerateRequest.java`  
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/dto/gemini/GeminiGenerateResponse.java`
 
 **작업 내용**:
 - Gemini API 요청/응답 DTO 생성
@@ -203,7 +203,7 @@ public String buildBusinessPlanPrompt(
 ### Phase 3: 사업계획서 생성 서비스
 
 #### 3.1 BusinessPlanGenerationService
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/service/BusinessPlanGenerationService.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/service/BusinessPlanGenerationService.java`
 
 **기능**:
 - BusinessPlanSubmission 조회 및 데이터 파싱
@@ -223,7 +223,7 @@ public BusinessPlanDocument generateBusinessPlan(UUID submissionId);
 ---
 
 #### 3.2 응답 파서
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/service/ResponseParser.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/service/ResponseParser.java`
 
 **기능**:
 - Gemini API 응답 텍스트를 섹션별로 파싱
@@ -241,7 +241,7 @@ public List<BusinessPlanSection> parseResponse(String responseText);
 ### Phase 4: API 엔드포인트
 
 #### 4.1 AI 생성 API 엔드포인트
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/controller/BusinessPlanController.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/controller/BusinessPlanController.java`
 
 **엔드포인트**: `POST /api/v1/business-plan/submissions/{submissionId}/generate`
 
@@ -283,7 +283,7 @@ public List<BusinessPlanSection> parseResponse(String responseText);
 ---
 
 #### 4.2 응답 DTO
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/dto/businessplan/BusinessPlanGenerationResponse.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/dto/businessplan/BusinessPlanGenerationResponse.java`
 
 ```java
 @Getter
@@ -338,7 +338,7 @@ gemini.api.timeout=60000
 ---
 
 #### 5.2 WebClient 설정
-**파일**: `src/main/java/vibe/bizplan/bizplan_be_inclass/config/WebClientConfig.java`
+**파일**: `src/main/java/vibe/makersround/makersround_be_inclass/config/WebClientConfig.java`
 
 **기능**:
 - WebClient 빈 등록

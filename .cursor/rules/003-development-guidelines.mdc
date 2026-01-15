@@ -15,12 +15,10 @@ Referenced in: [001-project-overview.mdc](001-project-overview.mdc), [002-tech-s
 ## Technology Constraints (C-TEC)
 - **Frontend:** Vite + React + TypeScript (SPA).
 - **Backend Core:** Java 21 + Spring Boot 4.0.0 (REST API).
-- **AI/Doc Engine:** Python + FastAPI + LangChain.
 - **Database:** SQLite (파일 기반, 개발/운영/테스트 모두 동일).
-- **LLM Provider:** Google Gemini (via Internal Gateway).
+- **LLM Provider:** Google Gemini (외부 API 직접 호출).
 
 ## Architecture Principles
-- **Micro-Service Ready:** Core API and AI Engine communicate via REST.
 - **Security:**
   - TLS 1.2+ for all transit.
   - AES-256 for sensitive data at rest.

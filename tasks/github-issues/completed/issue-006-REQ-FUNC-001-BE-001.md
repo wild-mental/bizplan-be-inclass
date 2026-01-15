@@ -213,10 +213,10 @@ sequenceDiagram
 
 ### 1. Entity Layer (데이터 저장 구조)
 
-**파일: `src/main/java/vibe/bizplan/entity/Project.java`**
+**파일: `src/main/java/vibe/makersround/entity/Project.java`**
 
 ```java
-package vibe.bizplan.entity;
+package vibe.makersround.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -291,14 +291,14 @@ public class Project {
 
 ### 2. Repository Layer (데이터 액세스)
 
-**파일: `src/main/java/vibe/bizplan/repository/ProjectRepository.java`**
+**파일: `src/main/java/vibe/makersround/repository/ProjectRepository.java`**
 
 ```java
-package vibe.bizplan.repository;
+package vibe.makersround.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import vibe.bizplan.entity.Project;
+import vibe.makersround.entity.Project;
 
 import java.util.List;
 import java.util.UUID;
@@ -330,10 +330,10 @@ public interface ProjectRepository extends JpaRepository<Project, UUID> {
 
 ### 3. Service Layer (비즈니스 로직)
 
-**파일: `src/main/java/vibe/bizplan/service/TemplateService.java`**
+**파일: `src/main/java/vibe/makersround/service/TemplateService.java`**
 
 ```java
-package vibe.bizplan.service;
+package vibe.makersround.service;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -395,17 +395,17 @@ public class TemplateService {
 }
 ```
 
-**파일: `src/main/java/vibe/bizplan/service/ProjectService.java`**
+**파일: `src/main/java/vibe/makersround/service/ProjectService.java`**
 
 ```java
-package vibe.bizplan.service;
+package vibe.makersround.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vibe.bizplan.entity.Project;
-import vibe.bizplan.exception.InvalidTemplateException;
-import vibe.bizplan.repository.ProjectRepository;
+import vibe.makersround.entity.Project;
+import vibe.makersround.exception.InvalidTemplateException;
+import vibe.makersround.repository.ProjectRepository;
 
 import java.util.UUID;
 
@@ -457,23 +457,23 @@ public class ProjectService {
 
 ### 4. Controller Layer (인터페이스)
 
-**파일: `src/main/java/vibe/bizplan/controller/ProjectController.java`**
+**파일: `src/main/java/vibe/makersround/controller/ProjectController.java`**
 
 ```java
-package vibe.bizplan.controller;
+package vibe.makersround.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vibe.bizplan.dto.ApiResponse;
-import vibe.bizplan.dto.CreateProjectRequest;
-import vibe.bizplan.dto.ProjectResponse;
-import vibe.bizplan.dto.TemplateDto;
-import vibe.bizplan.entity.Project;
-import vibe.bizplan.service.ProjectService;
-import vibe.bizplan.service.TemplateService;
+import vibe.makersround.dto.ApiResponse;
+import vibe.makersround.dto.CreateProjectRequest;
+import vibe.makersround.dto.ProjectResponse;
+import vibe.makersround.dto.TemplateDto;
+import vibe.makersround.entity.Project;
+import vibe.makersround.service.ProjectService;
+import vibe.makersround.service.TemplateService;
 
 import java.util.List;
 
@@ -524,10 +524,10 @@ public class ProjectController {
 
 ### 5. DTO Classes
 
-**파일: `src/main/java/vibe/bizplan/dto/ApiResponse.java`**
+**파일: `src/main/java/vibe/makersround/dto/ApiResponse.java`**
 
 ```java
-package vibe.bizplan.dto;
+package vibe.makersround.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -569,10 +569,10 @@ public class ApiResponse<T> {
 }
 ```
 
-**파일: `src/main/java/vibe/bizplan/dto/CreateProjectRequest.java`**
+**파일: `src/main/java/vibe/makersround/dto/CreateProjectRequest.java`**
 
 ```java
-package vibe.bizplan.dto;
+package vibe.makersround.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -590,14 +590,14 @@ public class CreateProjectRequest {
 }
 ```
 
-**파일: `src/main/java/vibe/bizplan/dto/ProjectResponse.java`**
+**파일: `src/main/java/vibe/makersround/dto/ProjectResponse.java`**
 
 ```java
-package vibe.bizplan.dto;
+package vibe.makersround.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import vibe.bizplan.entity.Project;
+import vibe.makersround.entity.Project;
 
 import java.time.LocalDateTime;
 
@@ -627,10 +627,10 @@ public class ProjectResponse {
 }
 ```
 
-**파일: `src/main/java/vibe/bizplan/dto/TemplateDto.java`**
+**파일: `src/main/java/vibe/makersround/dto/TemplateDto.java`**
 
 ```java
-package vibe.bizplan.dto;
+package vibe.makersround.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -651,10 +651,10 @@ public class TemplateDto {
 
 ### 6. Exception Handling
 
-**파일: `src/main/java/vibe/bizplan/exception/InvalidTemplateException.java`**
+**파일: `src/main/java/vibe/makersround/exception/InvalidTemplateException.java`**
 
 ```java
-package vibe.bizplan.exception;
+package vibe.makersround.exception;
 
 /**
  * 유효하지 않은 템플릿 코드 예외
@@ -667,17 +667,17 @@ public class InvalidTemplateException extends RuntimeException {
 }
 ```
 
-**파일: `src/main/java/vibe/bizplan/exception/GlobalExceptionHandler.java`**
+**파일: `src/main/java/vibe/makersround/exception/GlobalExceptionHandler.java`**
 
 ```java
-package vibe.bizplan.exception;
+package vibe.makersround.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import vibe.bizplan.dto.ApiResponse;
+import vibe.makersround.dto.ApiResponse;
 
 /**
  * 전역 예외 처리기
@@ -848,7 +848,7 @@ public class GlobalExceptionHandler {
 ## File Structure
 
 ```
-src/main/java/vibe/bizplan/
+src/main/java/vibe/makersround/
 ├── BizplanBeInclassApplication.java
 ├── controller/
 │   └── ProjectController.java

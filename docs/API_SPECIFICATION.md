@@ -1,4 +1,4 @@
-# BizPlan Backend API 명세서
+# MakersRound Backend API 명세서
 
 **버전**: 1.0.0  
 **기본 URL**: `http://localhost:8080`  

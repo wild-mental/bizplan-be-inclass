@@ -1,28 +1,29 @@
-# [#011] PMF 진단 및 리포트 생성 LLM 엔진 구현
+# [#011] PMF 진단 및 리포트 생성 LLM 통합 구현
 
 ## Labels
-`epic:EPIC_2_AVOID_FAILURE`, `type:ai`, `type:backend`, `component:ai-engine`, `priority:Should`, `effort:M`
+`epic:EPIC_2_AVOID_FAILURE`, `type:ai`, `type:backend`, `component:backend`, `priority:Should`, `effort:M`
 
 ## Description
-사용자의 PMF 설문 응답을 분석하여 PMF 단계(Stage), 리스크, 개선 권고를 도출하는 LLM 기반 진단 엔진을 구현합니다.
+사용자의 PMF 설문 응답을 분석하여 PMF 단계(Stage), 리스크, 개선 권고를 도출하는 LLM 기반 진단 기능을 구현합니다.
 
 ## Scope
 - `POST /pmf/analyze`: 진단 요청 처리
 - PMF 진단 프롬프트 엔지니어링 (Persona: 스타트업 액셀러레이터 심사역)
 - 응답 데이터 부족 시 예외 처리 (Rule Base + LLM)
+- Spring Boot 서비스에서 Gemini API 직접 호출
 
 ### Out of Scope
 - 진단 이력 관리(Backend DB 역할)
+- 별도 AI 엔진 서비스
 
 ## Requirements
 - **진단 로직**: 10개 이상의 문항 답변을 종합하여 'Problem-Solution Fit', 'Product-Market Fit', 'Scale-up' 중 단계 판정
 - **리스크 추출**: 답변 내용 중 논리적 비약이나 시장성 부족 신호를 찾아 Top 3 리스크로 정리
 
 ## Technical Stack
-- Python 3.10+
-- FastAPI (REQ-FUNC-003-AI-001과 동일 환경 공유)
-- LangChain
-- Google Gemini API
+- Java 21 + Spring Boot 4.0.0
+- Spring AI
+- Google Gemini API (외부 API 직접 호출)
 
 ## API Specification
 
@@ -68,17 +69,17 @@
 ## Implementation Steps
 1. PMF 진단용 System Prompt 작성
 2. 답변 개수 부족 시 Early Return 로직 구현
-3. LangChain Chain 구성 (JSON Output Parser 활용)
-4. FastAPI 엔드포인트 연동
+3. Spring AI를 통한 Gemini API 호출 구현
+4. Service 레이어에서 PMF 진단 로직 구현
 5. 에러 핸들링
 
 ## Acceptance Criteria
-- [ ] REQ-FUNC-003-AI-001 환경(FastAPI/Gemini) 공용 사용
+- [ ] REQ-FUNC-003-AI-001 완료 (Gemini API 통합 환경)
 - [ ] 설문 답변 입력 시 분석된 리포트 JSON이 반환됨
 - [ ] 답변 수 부족 시 적절한 에러 응답
 
 ## Dependencies
-- #008 (REQ-FUNC-003-AI-001) - FastAPI 환경 공유
+- #008 (REQ-FUNC-003-AI-001) - Gemini API 통합 환경
 
 ## Parallelizable With
 - #009, #010, #012 (독립적 기능)

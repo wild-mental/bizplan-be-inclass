@@ -564,7 +564,7 @@ GitHub Issue #2를 업데이트된 내용으로 동기화합니다.
 
 ### 2. GitHub Issue 동기화
 
-- **Issue #2**: https://github.com/wild-mental/bizplan-be-inclass/issues/2
+- **Issue #2**: https://github.com/wild-mental/makersround-backend/issues/2
 - 업데이트된 명세가 GitHub에 반영되었습니다.
 
 ### 주요 변경 사항
@@ -822,10 +822,10 @@ sequenceDiagram
 
 ### 1. Entity Layer (데이터 저장 구조)
 
-**파일: `src/main/java/vibe/bizplan/entity/Project.java`**
+**파일: `src/main/java/vibe/makersround/entity/Project.java`**
 
 ```java
-package vibe.bizplan.entity;
+package vibe.makersround.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -900,14 +900,14 @@ public class Project {
 
 ### 2. Repository Layer (데이터 액세스)
 
-**파일: `src/main/java/vibe/bizplan/repository/ProjectRepository.java`**
+**파일: `src/main/java/vibe/makersround/repository/ProjectRepository.java`**
 
 ```java
-package vibe.bizplan.repository;
+package vibe.makersround.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import vibe.bizplan.entity.Project;
+import vibe.makersround.entity.Project;
 
 import java.util.List;
 import java.util.UUID;
@@ -939,10 +939,10 @@ public interface ProjectRepository extends JpaRepository<Project, UUID> {
 
 ### 3. Service Layer (비즈니스 로직)
 
-**파일: `src/main/java/vibe/bizplan/service/TemplateService.java`**
+**파일: `src/main/java/vibe/makersround/service/TemplateService.java`**
 
 ```java
-package vibe.bizplan.service;
+package vibe.makersround.service;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -1004,17 +1004,17 @@ public class TemplateService {
 }
 ```
 
-**파일: `src/main/java/vibe/bizplan/service/ProjectService.java`**
+**파일: `src/main/java/vibe/makersround/service/ProjectService.java`**
 
 ```java
-package vibe.bizplan.service;
+package vibe.makersround.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vibe.bizplan.entity.Project;
-import vibe.bizplan.exception.InvalidTemplateException;
-import vibe.bizplan.repository.ProjectRepository;
+import vibe.makersround.entity.Project;
+import vibe.makersround.exception.InvalidTemplateException;
+import vibe.makersround.repository.ProjectRepository;
 
 import java.util.UUID;
 
@@ -1066,23 +1066,23 @@ public class ProjectService {
 
 ### 4. Controller Layer (인터페이스)
 
-**파일: `src/main/java/vibe/bizplan/controller/ProjectController.java`**
+**파일: `src/main/java/vibe/makersround/controller/ProjectController.java`**
 
 ```java
-package vibe.bizplan.controller;
+package vibe.makersround.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vibe.bizplan.dto.ApiResponse;
-import vibe.bizplan.dto.CreateProjectRequest;
-import vibe.bizplan.dto.ProjectResponse;
-import vibe.bizplan.dto.TemplateDto;
-import vibe.bizplan.entity.Project;
-import vibe.bizplan.service.ProjectService;
-import vibe.bizplan.service.TemplateService;
+import vibe.makersround.dto.ApiResponse;
+import vibe.makersround.dto.CreateProjectRequest;
+import vibe.makersround.dto.ProjectResponse;
+import vibe.makersround.dto.TemplateDto;
+import vibe.makersround.entity.Project;
+import vibe.makersround.service.ProjectService;
+import vibe.makersround.service.TemplateService;
 
 import java.util.List;
 
@@ -1133,10 +1133,10 @@ public class ProjectController {
 
 ### 5. DTO Classes
 
-**파일: `src/main/java/vibe/bizplan/dto/ApiResponse.java`**
+**파일: `src/main/java/vibe/makersround/dto/ApiResponse.java`**
 
 ```java
-package vibe.bizplan.dto;
+package vibe.makersround.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -1178,10 +1178,10 @@ public class ApiResponse<T> {
 }
 ```
 
-**파일: `src/main/java/vibe/bizplan/dto/CreateProjectRequest.java`**
+**파일: `src/main/java/vibe/makersround/dto/CreateProjectRequest.java`**
 
 ```java
-package vibe.bizplan.dto;
+package vibe.makersround.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -1199,14 +1199,14 @@ public class CreateProjectRequest {
 }
 ```
 
-**파일: `src/main/java/vibe/bizplan/dto/ProjectResponse.java`**
+**파일: `src/main/java/vibe/makersround/dto/ProjectResponse.java`**
 
 ```java
-package vibe.bizplan.dto;
+package vibe.makersround.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import vibe.bizplan.entity.Project;
+import vibe.makersround.entity.Project;
 
 import java.time.LocalDateTime;
 
@@ -1236,10 +1236,10 @@ public class ProjectResponse {
 }
 ```
 
-**파일: `src/main/java/vibe/bizplan/dto/TemplateDto.java`**
+**파일: `src/main/java/vibe/makersround/dto/TemplateDto.java`**
 
 ```java
-package vibe.bizplan.dto;
+package vibe.makersround.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -1260,10 +1260,10 @@ public class TemplateDto {
 
 ### 6. Exception Handling
 
-**파일: `src/main/java/vibe/bizplan/exception/InvalidTemplateException.java`**
+**파일: `src/main/java/vibe/makersround/exception/InvalidTemplateException.java`**
 
 ```java
-package vibe.bizplan.exception;
+package vibe.makersround.exception;
 
 /**
  * 유효하지 않은 템플릿 코드 예외
@@ -1276,17 +1276,17 @@ public class InvalidTemplateException extends RuntimeException {
 }
 ```
 
-**파일: `src/main/java/vibe/bizplan/exception/GlobalExceptionHandler.java`**
+**파일: `src/main/java/vibe/makersround/exception/GlobalExceptionHandler.java`**
 
 ```java
-package vibe.bizplan.exception;
+package vibe.makersround.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import vibe.bizplan.dto.ApiResponse;
+import vibe.makersround.dto.ApiResponse;
 
 /**
  * 전역 예외 처리기
@@ -1457,7 +1457,7 @@ public class GlobalExceptionHandler {
 ## File Structure
 
 ```
-src/main/java/vibe/bizplan/
+src/main/java/vibe/makersround/
 ├── BizplanBeInclassApplication.java
 ├── controller/
 │   └── ProjectController.java
@@ -1551,7 +1551,7 @@ Phase 4: Testing & Verification
 
 ### GitHub Issue 동기화
 
-- **Issue #2**: https://github.com/wild-mental/bizplan-be-inclass/issues/2
+- **Issue #2**: https://github.com/wild-mental/makersround-backend/issues/2
 - Mermaid 다이어그램 및 예제 코드가 모두 포함되어 업데이트됨
 
 ```plaintext
@@ -1702,13 +1702,13 @@ SSH 연결이 타임아웃되었습니다. HTTPS로 시도해보겠습니다.
 |------|-----|
 | **푸시된 커밋** | `f2999e1..d2d7800` |
 | **브랜치** | `docs/update-issue-management-workflow` |
-| **원격** | `https://github.com/wild-mental/bizplan-be-inclass.git` |
+| **원격** | `https://github.com/wild-mental/makersround-backend.git` |
 
 > ⚠️ **참고**: SSH 연결이 타임아웃되어 HTTPS로 푸시했습니다. 로컬 `git status`에서 "1개 커밋 앞섬"으로 표시될 수 있으나, 실제로 원격에는 정상 반영되었습니다.
 
 ### 확인 링크
-- **브랜치**: https://github.com/wild-mental/bizplan-be-inclass/tree/docs/update-issue-management-workflow
-- **Issue #2**: https://github.com/wild-mental/bizplan-be-inclass/issues/2
+- **브랜치**: https://github.com/wild-mental/makersround-backend/tree/docs/update-issue-management-workflow
+- **Issue #2**: https://github.com/wild-mental/makersround-backend/issues/2
 
 ---
 
@@ -1852,10 +1852,10 @@ dependencies {
 #### Step 1.2: `application.properties` DB 설정
 
 ```properties
-spring.application.name=bizplan-be-inclass
+spring.application.name=makersround-backend
 
 # MySQL Configuration (Rule 303)
-spring.datasource.url=jdbc:mysql://localhost:3306/bizplan?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+spring.datasource.url=jdbc:mysql://localhost:3306/makersround?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
 spring.datasource.username=${DB_USERNAME:root}
 spring.datasource.password=${DB_PASSWORD:}
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
@@ -1890,8 +1890,8 @@ CREATE TABLE projects (
 
 #### Step 1.4: Entity & Repository 생성
 
-- `src/main/java/vibe/bizplan/bizplan_be_inclass/entity/Project.java`
-- `src/main/java/vibe/bizplan/bizplan_be_inclass/repository/ProjectRepository.java`
+- `src/main/java/vibe/makersround/makersround_be_inclass/entity/Project.java`
+- `src/main/java/vibe/makersround/makersround_be_inclass/repository/ProjectRepository.java`
 
 #### Step 1.5: Commit (Atomic)
 
@@ -1922,12 +1922,12 @@ flowchart TB
 
 #### Step 2.1: Service 클래스 생성
 
-- `src/main/java/vibe/bizplan/bizplan_be_inclass/service/TemplateService.java`
-- `src/main/java/vibe/bizplan/bizplan_be_inclass/service/ProjectService.java`
+- `src/main/java/vibe/makersround/makersround_be_inclass/service/TemplateService.java`
+- `src/main/java/vibe/makersround/makersround_be_inclass/service/ProjectService.java`
 
 #### Step 2.2: Exception 클래스 생성
 
-- `src/main/java/vibe/bizplan/bizplan_be_inclass/exception/InvalidTemplateException.java`
+- `src/main/java/vibe/makersround/makersround_be_inclass/exception/InvalidTemplateException.java`
 
 #### Step 2.3: Commit (Atomic)
 
@@ -1957,18 +1957,18 @@ flowchart TB
 
 #### Step 3.1: DTO 클래스 생성 (Rule 301 - DTO Pattern)
 
-- `src/main/java/vibe/bizplan/bizplan_be_inclass/dto/ApiResponse.java`
-- `src/main/java/vibe/bizplan/bizplan_be_inclass/dto/CreateProjectRequest.java`
-- `src/main/java/vibe/bizplan/bizplan_be_inclass/dto/ProjectResponse.java`
-- `src/main/java/vibe/bizplan/bizplan_be_inclass/dto/TemplateDto.java`
+- `src/main/java/vibe/makersround/makersround_be_inclass/dto/ApiResponse.java`
+- `src/main/java/vibe/makersround/makersround_be_inclass/dto/CreateProjectRequest.java`
+- `src/main/java/vibe/makersround/makersround_be_inclass/dto/ProjectResponse.java`
+- `src/main/java/vibe/makersround/makersround_be_inclass/dto/TemplateDto.java`
 
 #### Step 3.2: Controller 생성 (Rule 304 - /api/v1/ 접두사)
 
-- `src/main/java/vibe/bizplan/bizplan_be_inclass/controller/ProjectController.java`
+- `src/main/java/vibe/makersround/makersround_be_inclass/controller/ProjectController.java`
 
 #### Step 3.3: Exception Handler 생성 (Rule 301)
 
-- `src/main/java/vibe/bizplan/bizplan_be_inclass/exception/GlobalExceptionHandler.java`
+- `src/main/java/vibe/makersround/makersround_be_inclass/exception/GlobalExceptionHandler.java`
 
 #### Step 3.4: Commit (Atomic)
 
@@ -2000,12 +2000,12 @@ flowchart TB
 
 #### Step 4.1: 단위 테스트
 
-- `src/test/java/vibe/bizplan/bizplan_be_inclass/service/TemplateServiceTest.java`
-- `src/test/java/vibe/bizplan/bizplan_be_inclass/service/ProjectServiceTest.java`
+- `src/test/java/vibe/makersround/makersround_be_inclass/service/TemplateServiceTest.java`
+- `src/test/java/vibe/makersround/makersround_be_inclass/service/ProjectServiceTest.java`
 
 #### Step 4.2: 통합 테스트
 
-- `src/test/java/vibe/bizplan/bizplan_be_inclass/controller/ProjectControllerTest.java`
+- `src/test/java/vibe/makersround/makersround_be_inclass/controller/ProjectControllerTest.java`
 
 #### Step 4.3: Commit (Atomic)
 
@@ -2037,7 +2037,7 @@ Closes #2"
 ## 📁 최종 파일 구조
 
 ```
-src/main/java/vibe/bizplan/bizplan_be_inclass/
+src/main/java/vibe/makersround/makersround_be_inclass/
 ├── BizplanBeInclassApplication.java
 ├── controller/
 │   └── ProjectController.java
@@ -2062,7 +2062,7 @@ src/main/resources/
 └── db/migration/
     └── V1__create_projects_table.sql
 
-src/test/java/vibe/bizplan/bizplan_be_inclass/
+src/test/java/vibe/makersround/makersround_be_inclass/
 ├── controller/
 │   └── ProjectControllerTest.java
 └── service/
@@ -2138,10 +2138,10 @@ dependencies {
 ```
 
 ```properties
-spring.application.name=bizplan-be-inclass
+spring.application.name=makersround-backend
 
 # MySQL Configuration (Rule 303)
-spring.datasource.url=jdbc:mysql://localhost:3306/bizplan?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+spring.datasource.url=jdbc:mysql://localhost:3306/makersround?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
 spring.datasource.username=${DB_USERNAME:root}
 spring.datasource.password=${DB_PASSWORD:}
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
@@ -2246,7 +2246,7 @@ Closes #2"
 ```
 
 ```plaintext
-src/main/java/vibe/bizplan/bizplan_be_inclass/
+src/main/java/vibe/makersround/makersround_be_inclass/
 ├── BizplanBeInclassApplication.java
 ├── controller/
 │   └── ProjectController.java
@@ -2271,7 +2271,7 @@ src/main/resources/
 └── db/migration/
     └── V1__create_projects_table.sql
 
-src/test/java/vibe/bizplan/bizplan_be_inclass/
+src/test/java/vibe/makersround/makersround_be_inclass/
 ├── controller/
 │   └── ProjectControllerTest.java
 └── service/
@@ -2302,9 +2302,9 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'vibe.bizplan'
+group = 'vibe.makersround'
 version = '0.0.1-SNAPSHOT'
-description = 'BizPlan Backend API - AI Co-Pilot for First-time Founders'
+description = 'MakersRound Backend API - AI Co-Pilot for First-time Founders'
 
 java {
 	toolchain {
@@ -2353,12 +2353,12 @@ tasks.named('test') {
 ```
 
 ```spring-boot-properties
-spring.application.name=bizplan-be-inclass
+spring.application.name=makersround-backend
 
 # ============================================
 # MySQL Database Configuration (Rule 303)
 # ============================================
-spring.datasource.url=jdbc:mysql://localhost:3306/bizplan?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+spring.datasource.url=jdbc:mysql://localhost:3306/makersround?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
 spring.datasource.username=${DB_USERNAME:root}
 spring.datasource.password=${DB_PASSWORD:}
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
@@ -2408,7 +2408,7 @@ COMMENT='사용자가 생성한 사업계획서 프로젝트';
 ```
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.entity;
+package vibe.makersround.makersround_be_inclass.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -2421,7 +2421,7 @@ import java.util.UUID;
  * 프로젝트 엔티티
  * 사용자가 생성한 사업계획서 프로젝트를 나타냅니다.
  * 
- * @see <a href="https://github.com/wild-mental/bizplan-be-inclass/issues/2">GitHub Issue #2</a>
+ * @see <a href="https://github.com/wild-mental/makersround-backend/issues/2">GitHub Issue #2</a>
  */
 @Entity
 @Table(name = "projects", indexes = {
@@ -2501,11 +2501,11 @@ public class Project {
 ```
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.repository;
+package vibe.makersround.makersround_be_inclass.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import vibe.bizplan.bizplan_be_inclass.entity.Project;
+import vibe.makersround.makersround_be_inclass.entity.Project;
 
 import java.util.List;
 import java.util.UUID;
@@ -2514,7 +2514,7 @@ import java.util.UUID;
  * 프로젝트 Repository
  * Spring Data JPA가 구현체를 자동 생성합니다.
  * 
- * @see <a href="https://github.com/wild-mental/bizplan-be-inclass/issues/2">GitHub Issue #2</a>
+ * @see <a href="https://github.com/wild-mental/makersround-backend/issues/2">GitHub Issue #2</a>
  */
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, UUID> {
@@ -2545,7 +2545,7 @@ Phase 1 빌드 성공! 커밋을 수행합니다.
 Phase 1 완료! Phase 2를 시작합니다.
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.service;
+package vibe.makersround.makersround_be_inclass.service;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -2558,7 +2558,7 @@ import java.util.Optional;
  * 템플릿 서비스
  * 하드코딩된 템플릿 목록을 관리합니다.
  * 
- * @see <a href="https://github.com/wild-mental/bizplan-be-inclass/issues/2">GitHub Issue #2</a>
+ * @see <a href="https://github.com/wild-mental/makersround-backend/issues/2">GitHub Issue #2</a>
  */
 @Service
 public class TemplateService {
@@ -2620,13 +2620,13 @@ public class TemplateService {
 ```
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.exception;
+package vibe.makersround.makersround_be_inclass.exception;
 
 /**
  * 유효하지 않은 템플릿 코드 예외
  * 지원하지 않는 템플릿 코드가 요청되었을 때 발생합니다.
  * 
- * @see <a href="https://github.com/wild-mental/bizplan-be-inclass/issues/2">GitHub Issue #2</a>
+ * @see <a href="https://github.com/wild-mental/makersround-backend/issues/2">GitHub Issue #2</a>
  */
 public class InvalidTemplateException extends RuntimeException {
     
@@ -2643,14 +2643,14 @@ public class InvalidTemplateException extends RuntimeException {
 ```
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.service;
+package vibe.makersround.makersround_be_inclass.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vibe.bizplan.bizplan_be_inclass.entity.Project;
-import vibe.bizplan.bizplan_be_inclass.exception.InvalidTemplateException;
-import vibe.bizplan.bizplan_be_inclass.repository.ProjectRepository;
+import vibe.makersround.makersround_be_inclass.entity.Project;
+import vibe.makersround.makersround_be_inclass.exception.InvalidTemplateException;
+import vibe.makersround.makersround_be_inclass.repository.ProjectRepository;
 
 import java.util.UUID;
 
@@ -2660,7 +2660,7 @@ import java.util.UUID;
  * 
  * Rule 303: @Transactional(readOnly = true) at class level
  * 
- * @see <a href="https://github.com/wild-mental/bizplan-be-inclass/issues/2">GitHub Issue #2</a>
+ * @see <a href="https://github.com/wild-mental/makersround-backend/issues/2">GitHub Issue #2</a>
  */
 @Service
 @RequiredArgsConstructor
@@ -2715,7 +2715,7 @@ public class ProjectService {
 Phase 2 완료! Phase 3을 시작합니다.
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.dto;
+package vibe.makersround.makersround_be_inclass.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -2733,7 +2733,7 @@ import lombok.Getter;
  * }
  * 
  * @param <T> 응답 데이터 타입
- * @see <a href="https://github.com/wild-mental/bizplan-be-inclass/issues/2">GitHub Issue #2</a>
+ * @see <a href="https://github.com/wild-mental/makersround-backend/issues/2">GitHub Issue #2</a>
  */
 @Getter
 @AllArgsConstructor
@@ -2781,7 +2781,7 @@ public class ApiResponse<T> {
 ```
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.dto;
+package vibe.makersround.makersround_be_inclass.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -2793,7 +2793,7 @@ import lombok.NoArgsConstructor;
  * 
  * Rule 301: Use jakarta.validation annotations
  * 
- * @see <a href="https://github.com/wild-mental/bizplan-be-inclass/issues/2">GitHub Issue #2</a>
+ * @see <a href="https://github.com/wild-mental/makersround-backend/issues/2">GitHub Issue #2</a>
  */
 @Getter
 @NoArgsConstructor
@@ -2811,11 +2811,11 @@ public class CreateProjectRequest {
 ```
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.dto;
+package vibe.makersround.makersround_be_inclass.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import vibe.bizplan.bizplan_be_inclass.entity.Project;
+import vibe.makersround.makersround_be_inclass.entity.Project;
 
 import java.time.LocalDateTime;
 
@@ -2824,7 +2824,7 @@ import java.time.LocalDateTime;
  * 
  * Rule 301: Never expose Entity in Controller, always map to DTO
  * 
- * @see <a href="https://github.com/wild-mental/bizplan-be-inclass/issues/2">GitHub Issue #2</a>
+ * @see <a href="https://github.com/wild-mental/makersround-backend/issues/2">GitHub Issue #2</a>
  */
 @Getter
 @Builder
@@ -2869,7 +2869,7 @@ public class ProjectResponse {
 ```
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.dto;
+package vibe.makersround.makersround_be_inclass.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -2877,7 +2877,7 @@ import lombok.Getter;
 /**
  * 템플릿 응답 DTO
  * 
- * @see <a href="https://github.com/wild-mental/bizplan-be-inclass/issues/2">GitHub Issue #2</a>
+ * @see <a href="https://github.com/wild-mental/makersround-backend/issues/2">GitHub Issue #2</a>
  */
 @Getter
 @AllArgsConstructor
@@ -2902,20 +2902,20 @@ public class TemplateDto {
 ```
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.controller;
+package vibe.makersround.makersround_be_inclass.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vibe.bizplan.bizplan_be_inclass.dto.ApiResponse;
-import vibe.bizplan.bizplan_be_inclass.dto.CreateProjectRequest;
-import vibe.bizplan.bizplan_be_inclass.dto.ProjectResponse;
-import vibe.bizplan.bizplan_be_inclass.dto.TemplateDto;
-import vibe.bizplan.bizplan_be_inclass.entity.Project;
-import vibe.bizplan.bizplan_be_inclass.service.ProjectService;
-import vibe.bizplan.bizplan_be_inclass.service.TemplateService;
+import vibe.makersround.makersround_be_inclass.dto.ApiResponse;
+import vibe.makersround.makersround_be_inclass.dto.CreateProjectRequest;
+import vibe.makersround.makersround_be_inclass.dto.ProjectResponse;
+import vibe.makersround.makersround_be_inclass.dto.TemplateDto;
+import vibe.makersround.makersround_be_inclass.entity.Project;
+import vibe.makersround.makersround_be_inclass.service.ProjectService;
+import vibe.makersround.makersround_be_inclass.service.TemplateService;
 
 import java.util.List;
 
@@ -2926,7 +2926,7 @@ import java.util.List;
  * Rule 304: /api/v1/ prefix for all endpoints
  * Rule 301: Constructor Injection via @RequiredArgsConstructor
  * 
- * @see <a href="https://github.com/wild-mental/bizplan-be-inclass/issues/2">GitHub Issue #2</a>
+ * @see <a href="https://github.com/wild-mental/makersround-backend/issues/2">GitHub Issue #2</a>
  */
 @RestController
 @RequestMapping("/api/v1/projects")
@@ -2987,7 +2987,7 @@ public class ProjectController {
 ```
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.exception;
+package vibe.makersround.makersround_be_inclass.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -2995,7 +2995,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import vibe.bizplan.bizplan_be_inclass.dto.ApiResponse;
+import vibe.makersround.makersround_be_inclass.dto.ApiResponse;
 
 /**
  * 전역 예외 처리기
@@ -3003,7 +3003,7 @@ import vibe.bizplan.bizplan_be_inclass.dto.ApiResponse;
  * Rule 301: Use global @RestControllerAdvice with standard error response
  * Rule 304: Consistent error response structure
  * 
- * @see <a href="https://github.com/wild-mental/bizplan-be-inclass/issues/2">GitHub Issue #2</a>
+ * @see <a href="https://github.com/wild-mental/makersround-backend/issues/2">GitHub Issue #2</a>
  */
 @Slf4j
 @RestControllerAdvice
@@ -3088,7 +3088,7 @@ public class GlobalExceptionHandler {
 Phase 3 완료! Phase 4를 시작합니다 - 테스트 코드 작성.
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.service;
+package vibe.makersround.makersround_be_inclass.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -3179,7 +3179,7 @@ class TemplateServiceTest {
 ```
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.service;
+package vibe.makersround.makersround_be_inclass.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -3188,9 +3188,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import vibe.bizplan.bizplan_be_inclass.entity.Project;
-import vibe.bizplan.bizplan_be_inclass.exception.InvalidTemplateException;
-import vibe.bizplan.bizplan_be_inclass.repository.ProjectRepository;
+import vibe.makersround.makersround_be_inclass.entity.Project;
+import vibe.makersround.makersround_be_inclass.exception.InvalidTemplateException;
+import vibe.makersround.makersround_be_inclass.repository.ProjectRepository;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -3295,7 +3295,7 @@ class ProjectServiceTest {
 ```
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.controller;
+package vibe.makersround.makersround_be_inclass.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -3305,11 +3305,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import vibe.bizplan.bizplan_be_inclass.dto.CreateProjectRequest;
-import vibe.bizplan.bizplan_be_inclass.entity.Project;
-import vibe.bizplan.bizplan_be_inclass.exception.InvalidTemplateException;
-import vibe.bizplan.bizplan_be_inclass.service.ProjectService;
-import vibe.bizplan.bizplan_be_inclass.service.TemplateService;
+import vibe.makersround.makersround_be_inclass.dto.CreateProjectRequest;
+import vibe.makersround.makersround_be_inclass.entity.Project;
+import vibe.makersround.makersround_be_inclass.exception.InvalidTemplateException;
+import vibe.makersround.makersround_be_inclass.service.ProjectService;
+import vibe.makersround.makersround_be_inclass.service.TemplateService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -3457,9 +3457,9 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'vibe.bizplan'
+group = 'vibe.makersround'
 version = '0.0.1-SNAPSHOT'
-description = 'BizPlan Backend API - AI Co-Pilot for First-time Founders'
+description = 'MakersRound Backend API - AI Co-Pilot for First-time Founders'
 
 java {
 	toolchain {
@@ -3515,9 +3515,9 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'vibe.bizplan'
+group = 'vibe.makersround'
 version = '0.0.1-SNAPSHOT'
-description = 'BizPlan Backend API - AI Co-Pilot for First-time Founders'
+description = 'MakersRound Backend API - AI Co-Pilot for First-time Founders'
 
 java {
 	toolchain {
@@ -3569,7 +3569,7 @@ tasks.named('test') {
 Spring Boot 4.0.0의 웹 테스트 모듈 이슈가 있습니다. `@SpringBootTest`로 변경합니다.
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.controller;
+package vibe.makersround.makersround_be_inclass.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -3580,11 +3580,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import vibe.bizplan.bizplan_be_inclass.dto.CreateProjectRequest;
-import vibe.bizplan.bizplan_be_inclass.entity.Project;
-import vibe.bizplan.bizplan_be_inclass.exception.InvalidTemplateException;
-import vibe.bizplan.bizplan_be_inclass.service.ProjectService;
-import vibe.bizplan.bizplan_be_inclass.service.TemplateService;
+import vibe.makersround.makersround_be_inclass.dto.CreateProjectRequest;
+import vibe.makersround.makersround_be_inclass.entity.Project;
+import vibe.makersround.makersround_be_inclass.exception.InvalidTemplateException;
+import vibe.makersround.makersround_be_inclass.service.ProjectService;
+import vibe.makersround.makersround_be_inclass.service.TemplateService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -3724,7 +3724,7 @@ class ProjectControllerTest {
 
 ```spring-boot-properties
 # Test Configuration
-spring.application.name=bizplan-be-inclass-test
+spring.application.name=makersround-backend-test
 
 # H2 In-Memory Database for Tests
 spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
@@ -3745,7 +3745,7 @@ spring.flyway.enabled=false
 Spring Boot 4.0.0의 테스트 모듈 구조가 다릅니다. MockMvc를 수동으로 설정합니다.
 
 ```java
-package vibe.bizplan.bizplan_be_inclass.controller;
+package vibe.makersround.makersround_be_inclass.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -3758,12 +3758,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import vibe.bizplan.bizplan_be_inclass.dto.CreateProjectRequest;
-import vibe.bizplan.bizplan_be_inclass.entity.Project;
-import vibe.bizplan.bizplan_be_inclass.exception.GlobalExceptionHandler;
-import vibe.bizplan.bizplan_be_inclass.exception.InvalidTemplateException;
-import vibe.bizplan.bizplan_be_inclass.service.ProjectService;
-import vibe.bizplan.bizplan_be_inclass.service.TemplateService;
+import vibe.makersround.makersround_be_inclass.dto.CreateProjectRequest;
+import vibe.makersround.makersround_be_inclass.entity.Project;
+import vibe.makersround.makersround_be_inclass.exception.GlobalExceptionHandler;
+import vibe.makersround.makersround_be_inclass.exception.InvalidTemplateException;
+import vibe.makersround.makersround_be_inclass.service.ProjectService;
+import vibe.makersround.makersround_be_inclass.service.TemplateService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -3900,7 +3900,7 @@ class ProjectControllerTest {
 ### 생성된 파일 (15개)
 
 ```
-src/main/java/vibe/bizplan/bizplan_be_inclass/
+src/main/java/vibe/makersround/makersround_be_inclass/
 ├── controller/
 │   └── ProjectController.java
 ├── service/
@@ -3940,7 +3940,7 @@ src/test/java/.../
 
 ### Pull Request
 
-- **PR #13**: https://github.com/wild-mental/bizplan-be-inclass/pull/13
+- **PR #13**: https://github.com/wild-mental/makersround-backend/pull/13
 - **상태**: ✅ Ready for Review
 - **브랜치**: `feat/006-project-api` → `main`
 
@@ -3951,7 +3951,7 @@ src/test/java/.../
 3. 다음 이슈 (#007) 착수
 
 ```plaintext
-src/main/java/vibe/bizplan/bizplan_be_inclass/
+src/main/java/vibe/makersround/makersround_be_inclass/
 ├── controller/
 │   └── ProjectController.java
 ├── service/
@@ -3999,8 +3999,8 @@ src/test/java/.../
 
 **작성일**: 2025-11-27  
 **브랜치**: `feat/006-project-api`  
-**PR**: [#13](https://github.com/wild-mental/bizplan-be-inclass/pull/13)  
-**관련 이슈**: [#2](https://github.com/wild-mental/bizplan-be-inclass/issues/2)
+**PR**: [#13](https://github.com/wild-mental/makersround-backend/pull/13)  
+**관련 이슈**: [#2](https://github.com/wild-mental/makersround-backend/issues/2)
 
 ---
 
@@ -4031,7 +4031,7 @@ src/test/java/.../
 ### 2.1 Production Code (10개 파일)
 
 ```
-src/main/java/vibe/bizplan/bizplan_be_inclass/
+src/main/java/vibe/makersround/makersround_be_inclass/
 ├── controller/
 │   └── ProjectController.java          # REST API 엔드포인트
 ├── service/
@@ -4063,7 +4063,7 @@ src/main/resources/
 ### 2.3 Test Code (4개 파일)
 
 ```
-src/test/java/vibe/bizplan/bizplan_be_inclass/
+src/test/java/vibe/makersround/makersround_be_inclass/
 ├── BizplanBeInclassApplicationTests.java  # Spring Boot 기본 테스트
 ├── controller/
 │   └── ProjectControllerTest.java         # Controller 테스트
@@ -4318,9 +4318,9 @@ CREATE TABLE projects (
 ### 9.1 사전 조건
 
 1. MySQL 8.x 설치 및 실행
-2. `bizplan` 데이터베이스 생성
+2. `makersround` 데이터베이스 생성
    ```sql
-   CREATE DATABASE bizplan CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   CREATE DATABASE makersround CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
    ```
 
 ### 9.2 환경 변수 설정
@@ -4424,7 +4424,7 @@ docs-for-implementation-review/ISSUE-006-IMPLEMENTATION-REVIEW.md
 
 - **커밋**: `1a32157`
 - **브랜치**: `feat/006-project-api`
-- **PR**: https://github.com/wild-mental/bizplan-be-inclass/pull/13
+- **PR**: https://github.com/wild-mental/makersround-backend/pull/13
 
 ```plaintext
 docs-for-implementation-review/ISSUE-006-IMPLEMENTATION-REVIEW.md
@@ -4456,7 +4456,7 @@ tasks/github-issues/docs-for-implementation-review 경로에 템플릿 콘텐츠
 ```markdown
 # Issue #006 구현 리뷰 - 템플릿 API
 
-**PR**: [#13](https://github.com/wild-mental/bizplan-be-inclass/pull/13) | **브랜치**: `feat/006-project-api`
+**PR**: [#13](https://github.com/wild-mental/makersround-backend/pull/13) | **브랜치**: `feat/006-project-api`
 
 ## 템플릿 콘텐츠
 
@@ -4602,7 +4602,7 @@ Rule 200에 따라 체크리스트를 수행합니다.
 
 | 항목 | 값 |
 |------|-----|
-| **PR** | [#13](https://github.com/wild-mental/bizplan-be-inclass/pull/13) |
+| **PR** | [#13](https://github.com/wild-mental/makersround-backend/pull/13) |
 | **상태** | ✅ Ready for Review |
 | **브랜치** | `feat/006-project-api` → `main` |
 | **Closes** | #2 |
@@ -4632,7 +4632,7 @@ SSH 연결 타임아웃 문제입니다. HTTPS로 푸시합니다.
 
 ### 원인
 ```
-origin	git@github.com:wild-mental/bizplan-be-inclass.git (SSH)
+origin	git@github.com:wild-mental/makersround-backend.git (SSH)
 ```
 
 `origin` 원격이 **SSH**로 설정되어 있는데, **SSH 포트 22 연결이 타임아웃**되고 있습니다.
@@ -4641,18 +4641,18 @@ origin	git@github.com:wild-mental/bizplan-be-inclass.git (SSH)
 
 **옵션 1: HTTPS로 직접 푸시 (현재 사용 중)**
 ```bash
-git push https://github.com/wild-mental/bizplan-be-inclass.git feat/006-project-api
+git push https://github.com/wild-mental/makersround-backend.git feat/006-project-api
 ```
 ✅ 이미 성공 - `Everything up-to-date`
 
 **옵션 2: Origin을 HTTPS로 변경 (영구 해결)**
 
 ```plaintext
-origin	git@github.com:wild-mental/bizplan-be-inclass.git (SSH)
+origin	git@github.com:wild-mental/makersround-backend.git (SSH)
 ```
 
 ```shellscript
-git push https://github.com/wild-mental/bizplan-be-inclass.git feat/006-project-api
+git push https://github.com/wild-mental/makersround-backend.git feat/006-project-api
 ```
 
 ## ✅ 해결 완료
