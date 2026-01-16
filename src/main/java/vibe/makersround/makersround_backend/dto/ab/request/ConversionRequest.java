@@ -27,4 +27,6 @@ public class ConversionRequest {
     private String eventType;
 
     private Map<String, Object> eventData;
+
+    private UserPropertiesDto userProperties;
 }

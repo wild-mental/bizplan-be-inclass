@@ -49,6 +49,9 @@ class ABTestServiceTest {
     @Mock
     private ABConversionRepository conversionRepository;
 
+    @Mock
+    private vibe.makersround.makersround_backend.util.AnalyticsEventLogger analyticsEventLogger;
+
     @Spy
     private ObjectMapper objectMapper = new ObjectMapper();
 
