@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import vibe.makersround.makersround_backend.dto.ApiResponse;
@@ -17,7 +18,7 @@ import vibe.makersround.makersround_backend.dto.ApiResponse;
  * @see <a href="https://github.com/wild-mental/bizplan-be-inclass/issues/2">GitHub Issue #2</a>
  */
 @Slf4j
-@RestControllerAdvice(basePackages = "vibe.bizplan.bizplan_be_inclass.controller")
+@RestControllerAdvice(basePackages = "vibe.makersround.makersround_backend.controller")
 public class GlobalExceptionHandler {
 
     /**
@@ -41,6 +42,24 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error("INVALID_INPUT", message));
+    }
+
+    /**
+     * 필수 요청 파라미터 누락 처리 (400 Bad Request)
+     * 
+     * @param ex MissingServletRequestParameterException
+     * @return 에러 응답
+     */
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMissingServletRequestParameterException(
+            MissingServletRequestParameterException ex) {
+        
+        String message = String.format("필수 파라미터 '%s'이(가) 누락되었습니다", ex.getParameterName());
+        log.warn("Missing parameter: {}", ex.getParameterName());
+        
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error("MISSING_PARAMETER", message));
     }
 
     /**
