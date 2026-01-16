@@ -19,6 +19,11 @@ import vibe.makersround.makersround_backend.repository.ab.ABAssignmentRepository
 import vibe.makersround.makersround_backend.repository.ab.ABConversionRepository;
 import vibe.makersround.makersround_backend.repository.ab.ABExperimentRepository;
 import vibe.makersround.makersround_backend.repository.ab.ABVariantRepository;
+import vibe.makersround.makersround_backend.util.AnalyticsEventLogger;
+import vibe.makersround.makersround_backend.dto.ab.AnalyticsEventLog.PersonaInfo;
+import vibe.makersround.makersround_backend.dto.ab.AnalyticsEventLog.AttributionInfo;
+import vibe.makersround.makersround_backend.dto.ab.AnalyticsEventLog.DeviceInfo;
+import vibe.makersround.makersround_backend.dto.ab.request.UserPropertiesDto;
 
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -35,6 +40,7 @@ public class ABTestService {
     private final ABAssignmentRepository assignmentRepository;
     private final ABConversionRepository conversionRepository;
     private final ObjectMapper objectMapper;
+    private final AnalyticsEventLogger analyticsEventLogger;
 
     private static final DateTimeFormatter ISO_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
@@ -139,12 +145,56 @@ public class ABTestService {
 
         ABConversion saved = conversionRepository.save(conversion);
 
+        logConversionToAnalytics(request, assignment.get());
+
         return ConversionResponse.builder()
                 .conversionId(saved.getId())
                 .assignmentId(assignment.get().getId())
                 .eventType(saved.getEventType())
                 .convertedAt(saved.getConvertedAt().format(ISO_FORMATTER))
                 .build();
+    }
+
+    private void logConversionToAnalytics(ConversionRequest request, ABAssignment assignment) {
+        try {
+            UserPropertiesDto userProps = request.getUserProperties();
+            
+            PersonaInfo persona = null;
+            AttributionInfo attribution = null;
+            DeviceInfo device = null;
+            
+            if (userProps != null) {
+                persona = PersonaInfo.builder()
+                        .jtbd(userProps.getJtbd())
+                        .source(userProps.getSource())
+                        .build();
+                
+                attribution = AttributionInfo.builder()
+                        .utmSource(userProps.getUtmSource())
+                        .utmMedium(userProps.getUtmMedium())
+                        .utmCampaign(userProps.getUtmCampaign())
+                        .utmContent(userProps.getUtmContent())
+                        .referer(userProps.getReferer())
+                        .build();
+                
+                device = DeviceInfo.builder()
+                        .userAgent(userProps.getBrowser() + " / " + userProps.getOs())
+                        .build();
+            }
+            
+            analyticsEventLogger.logConversionWithAttribution(
+                    request.getExperimentId(),
+                    assignment.getVariant().getId(),
+                    request.getVisitorId(),
+                    request.getEventType(),
+                    null,
+                    persona,
+                    attribution,
+                    device
+            );
+        } catch (Exception e) {
+            log.warn("Failed to log conversion to analytics: {}", e.getMessage());
+        }
     }
 
     public List<ExperimentResponse> getAllExperiments() {

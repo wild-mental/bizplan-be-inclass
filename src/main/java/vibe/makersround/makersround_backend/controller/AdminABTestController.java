@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +15,11 @@ import vibe.makersround.makersround_backend.dto.ab.request.ExperimentCreateReque
 import vibe.makersround.makersround_backend.dto.ab.request.ExperimentUpdateRequest;
 import vibe.makersround.makersround_backend.dto.ab.response.ExperimentResponse;
 import vibe.makersround.makersround_backend.dto.ab.response.ExperimentStatsResponse;
+import vibe.makersround.makersround_backend.dto.ab.response.FunnelAnalysisResponse;
 import vibe.makersround.makersround_backend.service.ABTestService;
+import vibe.makersround.makersround_backend.service.AnalyticsLogParserService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -26,6 +30,7 @@ import java.util.List;
 public class AdminABTestController {
 
     private final ABTestService abTestService;
+    private final AnalyticsLogParserService analyticsLogParserService;
 
     @Operation(
             summary = "전체 실험 목록 조회",
@@ -134,5 +139,23 @@ public class AdminABTestController {
         log.debug("A/B 테스트 통계 조회 - id: {}", id);
         ExperimentStatsResponse stats = abTestService.getExperimentStats(id);
         return ResponseEntity.ok(ApiResponse.success(stats));
+    }
+
+    @Operation(
+            summary = "퍼널 분석 조회",
+            description = "A/B 테스트 실험의 퍼널 분석을 조회합니다. 단계별 전환율과 변형별 비교를 제공합니다."
+    )
+    @GetMapping("/analytics/funnel")
+    public ResponseEntity<ApiResponse<FunnelAnalysisResponse>> getFunnelAnalysis(
+            @Parameter(description = "실험 ID", required = true)
+            @RequestParam String experimentId,
+            @Parameter(description = "시작 날짜 (ISO 형식: yyyy-MM-dd)", required = true)
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @Parameter(description = "종료 날짜 (ISO 형식: yyyy-MM-dd)", required = true)
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ) {
+        log.debug("퍼널 분석 조회 - experimentId: {}, startDate: {}, endDate: {}", experimentId, startDate, endDate);
+        FunnelAnalysisResponse response = analyticsLogParserService.analyzeFunnel(experimentId, startDate, endDate);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

@@ -55,6 +55,16 @@ public class AnalyticsEventLogger {
     public void logConversion(String experimentId, String variantId,
                               String visitorId, String conversionType,
                               String conversionValue) {
+        logConversionWithAttribution(experimentId, variantId, visitorId, 
+                conversionType, conversionValue, null, null, null);
+    }
+
+    public void logConversionWithAttribution(String experimentId, String variantId,
+                                             String visitorId, String conversionType,
+                                             String conversionValue,
+                                             PersonaInfo persona,
+                                             AttributionInfo attribution,
+                                             DeviceInfo device) {
         ExperimentInfo experiment = ExperimentInfo.builder()
                 .id(experimentId)
                 .variantId(variantId)
@@ -75,6 +85,9 @@ public class AnalyticsEventLogger {
                 .experiment(experiment)
                 .user(user)
                 .conversion(conversion)
+                .persona(persona)
+                .attribution(attribution)
+                .device(device)
                 .build();
 
         logEvent(eventLog);
