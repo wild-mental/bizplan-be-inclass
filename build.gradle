@@ -95,10 +95,27 @@ tasks.named('jar') {
 tasks.named('test') {
 	useJUnitPlatform()
 	
-	// 통합 테스트 실행 시 로깅 테스트 활성화
-	// IntegrationTest로 끝나는 테스트 클래스를 실행할 때 자동으로 활성화
 	if (project.hasProperty('integration') || 
 		project.gradle.startParameter.taskNames.any { it.contains('IntegrationTest') }) {
 		systemProperty 'runIntegrationTests', 'true'
+	}
+}
+
+tasks.register('testABTest', Test) {
+	description = 'Run A/B Test related tests only'
+	group = 'verification'
+	
+	useJUnitPlatform()
+	
+	filter {
+		// Match all test classes in ab packages (repository, service, controller)
+		includeTestsMatching 'vibe.makersround.makersround_backend.repository.ab.*'
+		includeTestsMatching 'vibe.makersround.makersround_backend.service.ab.*'
+		includeTestsMatching 'vibe.makersround.makersround_backend.controller.ab.*'
+	}
+	
+	testLogging {
+		events 'passed', 'skipped', 'failed'
+		showStandardStreams = true
 	}
 }

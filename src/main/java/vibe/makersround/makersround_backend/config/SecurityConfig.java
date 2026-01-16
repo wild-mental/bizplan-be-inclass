@@ -71,6 +71,10 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/pre-registrations/**").permitAll()
                 .requestMatchers("/api/v1/public/**").permitAll()  // 공개 분석 API
                 
+                // A/B 테스트 API (MVP: 인증 없이 개방)
+                .requestMatchers("/api/v1/ab-tests/**").permitAll()
+                .requestMatchers("/api/v1/admin/ab-tests/**").permitAll()
+                
                 // 헬스체크 엔드포인트 (배포 후 상태 확인용)
                 .requestMatchers("/api/v1/health/**").permitAll()
                 .requestMatchers("/health", "/health/**").permitAll()
