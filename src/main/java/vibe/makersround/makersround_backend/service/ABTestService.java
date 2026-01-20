@@ -45,8 +45,11 @@ public class ABTestService {
     private static final DateTimeFormatter ISO_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     public ActiveExperimentsResponse getActiveExperiments(String page, String visitorId) {
+        // 페이지 파라미터 정규화: 'landing' -> '/'
+        String normalizedPage = normalizePage(page);
+        
         List<ABExperiment> activeExperiments = experimentRepository
-                .findActiveExperimentsWithVariants("running", page);
+                .findActiveExperimentsWithVariants("running", normalizedPage);
 
         List<AssignedExperimentDto> assignedExperiments = new ArrayList<>();
 
@@ -452,5 +455,31 @@ public class ABTestService {
             log.warn("Failed to serialize content", e);
             return "{}";
         }
+    }
+
+    /**
+     * 페이지 파라미터를 정규화합니다.
+     * 프론트엔드에서 'landing'으로 요청하는 경우를 '/'로 변환합니다.
+     * 
+     * @param page 원본 페이지 파라미터
+     * @return 정규화된 페이지 경로
+     */
+    private String normalizePage(String page) {
+        if (page == null || page.isEmpty()) {
+            return "/";
+        }
+        
+        // 'landing'을 '/'로 변환
+        if ("landing".equalsIgnoreCase(page)) {
+            return "/";
+        }
+        
+        // 이미 '/'로 시작하면 그대로 반환
+        if (page.startsWith("/")) {
+            return page;
+        }
+        
+        // 그 외의 경우 '/'를 앞에 추가
+        return "/" + page;
     }
 }
