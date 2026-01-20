@@ -129,6 +129,25 @@
         <appender-ref ref="API_LOG_FILE"/>
     </logger>
 
+    <!-- Analytics Events 전용 파일 출력 (A/B 테스트 이벤트) -->
+    <appender name="ANALYTICS_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/analytics-events.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/analytics-events.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>90</maxHistory>
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- Analytics 로거: JSON Lines 형식으로 분석 이벤트 기록 -->
+    <logger name="analytics.events" level="INFO" additivity="false">
+        <appender-ref ref="ANALYTICS_FILE"/>
+    </logger>
+
     <!-- 루트 로거: 콘솔 출력 및 애플리케이션 로그 파일 출력 -->
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
